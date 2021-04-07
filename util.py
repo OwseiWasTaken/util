@@ -1156,8 +1156,7 @@ def MessageMid(msg,WindoLen,OffsetChar=' '):
 	off = OffsetChar*(WindoLen//2)
 	return f"{off}{msg}{off}"
 
-# 543 + 123 = 666 wow
-# 543 - 123 = 420 wow!
+
 '''
 type = FuncType
 type = NoneType
