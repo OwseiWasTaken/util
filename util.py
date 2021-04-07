@@ -10,10 +10,11 @@ from sys import stdout as sout
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp
 from sys import argv,exit as exi, getsizeof as sizeof
-from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls
-from os.path import isfile
+from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
+from os.path import isfile,exists
 
 
+USER = getenv("USER")
 FuncType = type(lambda a:a )
 NoneType = type(None)
 iterables = [type(list),type(set),type(frozenset)]
@@ -44,10 +45,10 @@ class log:
 	def __repr__(self) -> str:
 		return f'{self.LOG}'
 
-	def get(self,int:int) -> str:
-		return self.LOG[int]
+	def get(self,num:int) -> str:
+		return self.LOG[num]
 
-	def __getitem__(self,num:int) -> object:
+	def __getitem__(self,num:int) -> str:
 		return self.LOG[num]
 
 	def __call__(self) -> list:
@@ -1121,21 +1122,30 @@ class var(object):
 
 class BDP:
 	def __init__(this,name):
-		# _log.add(f"")
-		# name ~/BDP/*
-		if not name.startswith("~/BDP/"):
-			name = f"~/BDP/{name}.bdp"
-		name = name.replace("//",'/')
-		name = name.replace('~',"/home/owsei")
-		this.name = name
+		# for unix like system
 
+		if not exists(f"/home/{USER}/BDP"):
+			ss("mkdir /BDP/")
+
+		if not name.startswith("~/BDP/"):
+			name = f"~/BDP/{name}"
+		if not name.endswith(".bdp"):
+			name = f"{name}.bdp"
+
+		name = name.replace("//",'/')
+		name = name.replace('~',f"/home/{USER}")
+
+		this.name = name
 		this.data = None
 
 
 	def save(this,data=None):
 		if data == None:
 			data = this.data
-		ss(f"touch {this.name}")
+
+		if not exists(f"{this.name}"):
+			ss(f"touch {this.name}")
+
 		use_file(this.name,'w',data)
 
 	def load(this,file=None):
@@ -1149,7 +1159,6 @@ class BDP:
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
 			return f"name: {this.name}\n{color['yellow']}data: data too big{color['nc']}"
-
 
 def MessageMid(msg,WindoLen,OffsetChar=' '):
 
@@ -1236,11 +1245,11 @@ func( MessageMid)
 '''
 
 if __name__ == "__main__":
-	for i in r(argv,1):
-		if i == "pass" or i == "":continue
-		print(f'q{i}: {argv[i]}')
-		try:
-			print(f'a{i}: {eval(argv[i])}')
-		except Exception as f:print(f'{color["red"]}ERR: {f}{color["nc"]}')
-		print('\n')
+# 	for i in r(argv,1):
+# 		if i == "pass" or i == "":continue
+# 		print(f'q{i}: {argv[i]}')
+# 		try:
+# 			print(f'a{i}: {eval(argv[i])}')
+# 		except Exception as f:print(f'{color["red"]}ERR: {f}{color["nc"]}')
+# 		print('\n')
 	exit(0)
