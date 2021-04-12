@@ -565,7 +565,7 @@ def rchar(size=1):
 
 printf=print
 
-def get_w_len(msg:str,ln:int,end:str='\n') -> int:
+def GetWLen(msg:str,ln:int,end:str='\n') -> int:
 	AssureType(int,ln,ErrorMsg=f"lengh type != int \n {ln} of type {type(ln)} != int")
 	'''
 	will return an str by inputing a string with {msg , end}
@@ -582,16 +582,16 @@ def get_w_len(msg:str,ln:int,end:str='\n') -> int:
 	if len(x) == ln:
 		return x
 	else:
-		get_w_len(msg,ln,end)
+		GetWLen(msg,ln,end)
 
-def call_w_except(funct:FuncType,excpts:BaseException,*args:object,call:bool=False,call_f:bool=None) -> object:
+def CallWExcept(funct:FuncType,excpts:BaseException,*args:object,call:bool=False,call_f:bool=None) -> object:
 	# _log.add(f'func ( call_w_except ) with {funct , excpts , *args , call , call_f }')
 	x = funct(*args)
 	if x in excpts:
 		if call:
 			call_f()
 		else:
-			call_w_except(funct,excpts,*args)
+			CallWExcept(funct,excpts,*args)
 	else:
 		return x
 
@@ -666,6 +666,8 @@ def argv_assing(argvs:iter) -> dict:
 				add[AddIndex] = add[AddIndex].replace("/-",'-')
 			ret[argvs[indcn[i]]] = add#argvs[indcn[i]+1:]
 	return ret
+
+ArgvAssing = argv_assing
 
 class time:
 	@property
@@ -1136,11 +1138,7 @@ def MessageMid(msg,WindoLen,OffsetChar=' '):
 
 
 def NumberToExponent(number):
-
-	# ret = ''
 	smol = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','.':'.'}
-	# for i in str(number):
-	# 	ret+=smol[i]
 
 	ret = ''.join([smol[i] for i in str(number)])
 	return ret
