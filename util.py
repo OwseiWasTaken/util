@@ -1,15 +1,13 @@
 #! /usr/bin/python3.8
 
 # util.py imports
-from time import strftime as __ftime__
-from pickle import dump as __f_dump__, load as __f_load__
-from json import dump as __j_dump__, load as __j_load__
-from sys import stdout as sout
+from pickle import dump as _PickleDump, load as _PickleLoad
+from json import dump as _JsonDump, load as _JsonLoad
 
 # general imports
 from random import randint as rint, choice as ritem
-from time import time as tm, sleep as slp
-from sys import argv,exit as exi, getsizeof as sizeof
+from time import time as tm, sleep as slp , strftime as __ftime__
+from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
 from os.path import isfile,exists
 
@@ -191,14 +189,14 @@ def UseFile(file:str,mode:str,obj=None) -> object or None:
 		mode+='b'
 
 	if obj == None:
-		return __f_load__(open(file,mode))
+		return _PickleLoad(open(file,mode))
 	else:
-		__f_dump__(obj,open(file,mode))
+		_PickleDump(obj,open(file,mode))
 
 def json(file:str,obj:object=None) -> dict or None:
 	# _log.add(f'func (js) with {file , obj}')
-	if obj == None:	return __j_load__(open(file))
-	else:__j_dump__(obj, file)
+	if obj == None:	return _JsonLoad(open(file))
+	else:_JsonDump(obj, file)
 
 def GetInt(msg:str,end='\n') -> int:
 	'''
