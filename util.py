@@ -78,17 +78,18 @@ class log:
 
 def r(end:object,start:int=0,jmp:int=1):
 	# _log.add(f'func (r) = {end , start, jmp} => yield')
-
 	try:
-		end = len(end)
-	except TypeError:
+		try:
+			end = len(end)
+		except TypeError:
+			end = end.keys()
+	except AttributeError:
 		end = int(end)
 
 	index = start
 	while end > index:
 		yield index
 		index+=jmp
-
 
 def AssureType(value:object,types:type,err:bool=True,ErrorMsg=None) -> TypeError or bool:
 	# _log.add(f'func (AssureType) = {values , types, err} => TypeError or bool')
@@ -143,7 +144,7 @@ class timer:
 		# _log.add(f'class (timer) -> __repr__ ')
 		return f'{self.get}'
 
-def make_dict(ls1:list or set,ls2:list or set) -> dict:
+def MakeDict(ls1:list or set,ls2:list or set) -> dict:
 	# _log.add(f'func (make_dict) with {ls1,ls2}')
 	'''
 	return a dictionary with ls1 as key and ls2 as result
@@ -168,13 +169,9 @@ def pc(x:int,y:int) -> float:
 
 def even(var:int) -> bool:
 	# _log.add(f'func (even) with ({var})')
-	return var%2 == 0
+	return not var%2
 
-def odd(var:int) -> bool:
-	# _log.add(f'func (odd) with ({var})')
-	return not even(var)
-
-def rng_n_rep(v_min:int,v_max:int,how_many:int=1) -> list:
+def RngNoRepetition(v_min:int,v_max:int,how_many:int=1) -> list:
 	'''
 	if how_many is bigger or equal to v_max
 	this function will return None
@@ -187,7 +184,7 @@ def rng_n_rep(v_min:int,v_max:int,how_many:int=1) -> list:
 		ret_list.append(tmp.pop(rint(v_min,len(tmp))))
 	return ret_list
 
-def use_file(file:str,mode:str,obj=None) -> object or None:
+def UseFile(file:str,mode:str,obj=None) -> object or None:
 	"""pickled file btw"""
 	# _log.add(f'func ( use_file ) with {file , mode , obj}')
 	if mode[-1] != 'b':
@@ -203,7 +200,7 @@ def json(file:str,obj:object=None) -> dict or None:
 	if obj == None:	return __j_load__(open(file))
 	else:__j_dump__(obj, file)
 
-def get_int(msg:str,end='\n') -> int:
+def GetInt(msg:str,end='\n') -> int:
 	'''
 	will return an integer by inputing a string with {msg , end}
 	and converting it to int
@@ -215,9 +212,9 @@ def get_int(msg:str,end='\n') -> int:
 		y=int(x)
 		return y
 	except ValueError:
-		get_int(msg,end)
+		GetInt(msg,end)
 
-def get_float(msg:str,end='\n') -> float:
+def GetFloat(msg:str,end='\n') -> float:
 	'''
 	will return an float by inputing a string with {msg , end}
 	and converting it to int
@@ -229,9 +226,9 @@ def get_float(msg:str,end='\n') -> float:
 		y=float(x)
 		return y
 	except ValueError:
-		get_float(msg,end)
+		GetFloat(msg,end)
 
-def is_prime(ask:int) -> bool:
+def IsPrime(ask:int) -> bool:
 	# _log.add(f'func (is_prime) with ({ask})')
 	msg = False
 	if ask > 1:
@@ -245,31 +242,8 @@ def is_prime(ask:int) -> bool:
 		msg = False
 	return msg
 
-def case(var:int or float or str,index:int) -> int:
-	tp = type(var)
-	# _log.add(f'func (case) with {var , tp , index}')
-	flt=False
-	if tp == float:
-		arr=0
-		while int(var) < var:
-			arr+=1
-			var*=10
-		flt=True
-		tp = int
-		var=int(var)
-	if tp == int:
-		var=''.join(f'{var}')
-		tp = str
-	if tp==str:
-		var=var[index]
-		try:
-			var=eval(var)
-		except NameError:pass
-		tp=type(var)
-	ret=var
-	if flt:
-		ret = (var/10**(arr))*10
-	return ret
+def case(var:int or float,index:int) -> str:
+	return str(var)[index]
 
 def fib(n:int) -> list:
 	# _log.add(f'func (fib) with ({n})')
@@ -309,15 +283,15 @@ class rng:
 		self.new
 		return f'{var}'
 
-	def new_size(self,size):
+	def NewSize(self,size):
 		# _log.add(f'class (rng) -> new_size with ({size})')
 		self.size=size
 		self.new
 
-	def new_min(self,mn):
+	def NewMin(self,mn):
 		# _log.add(f'class (rng) -> new_min with {self,mn}')
 		self.mn=mn
-	def new_max(self,mx):
+	def NewMax(self,mx):
 		# _log.add(f'class (rng) -> new_max with {self,mx}')
 		self.mx=mx
 
@@ -325,10 +299,11 @@ class rng:
 		return self.get()
 
 def print(*msg,end='\n'):
-	try:
-		b=any([i.__print__(end,rep=False) for i in msg if type(i) == var])
-		if b:return
-	except NameError:pass
+	# if type(msg)
+	# try:
+		# b=any([i.__print__(end,rep=False) for i in msg if type(i) == var])
+		# if b:return
+	# except NameError:pass
 
 	try:
 		if len(msg) == 1:
@@ -338,7 +313,7 @@ def print(*msg,end='\n'):
 	except TypeError:pass
 
 	sout.write(f'{msg}{end}')
-	
+
 	# return f'{msg}{end}'
 
 # start of chaos
@@ -426,7 +401,7 @@ color={
 #normal
 
 
-def split_bracket(string:str,bracket:str,closing_bracket=''):
+def SplitBracket(string:str,bracket:str,closing_bracket=''):
 	# _log.add(f'func (split_bracket) with {string , bracket , closing_bracket}')
 
 	if closing_bracket == '':
@@ -436,73 +411,76 @@ def split_bracket(string:str,bracket:str,closing_bracket=''):
 		,'{':'}'
 		}
 		closing_bracket = r[bracket]
-
+	# "[](){}" bracket = '(' => ["[]","){}"] => "[])){}" => ["[]","{}"]
+	# don't touch it! (i don't know HOW it works, but it works)
 	return closing_bracket.join(str(string).split( bracket )).split(closing_bracket)
 
-def any_str_in_list(ipt,ls):
-	# _log.add(f'func (any_str_in_list) with {ipt , ls}')
-	return any([bool(ipt.find(l)+1) for l in ls])
-
-def str_to_ms(ipt):
+def StrToMs(ipt):
 	# _log.add(f'func (str_to_ms) with ({ipt})')
 	ipt=ipt.split()
 	n,ipt = float(ipt[0]),ipt[1]
-	if ipt in ['years','year','yrs','yr','ys','y']:	return n * 220903200000
-	elif ipt in ['weeks','week','w']:	return n * 604800000
-	elif ipt in ['days','day','d']:return n * 86400000
-	elif ipt in ['hours','hour','hrs','hr','h']:return n * 3600000
-	elif ipt in ['minutes','minute','mins','min','m']:return n * 60000
-	elif ipt in ['seconds','second','secs','sec','s']:return n * 1000
-	elif ipt in ['milliseconds','millisecond','msecs','msec','ms']:return n * 1
+	TypesToStr = {
+	tuple(["years","year","yrs","yr","ys",'y']):220903200000,
+	tuple(["weeks","week","w"]):604800000,
+	tuple(["days","day",'d']):86400000,
+	tuple(['hours','hour','hrs','hr','h']):3600000,
+	tuple(['minutes','minute','mins','min','m']):60000,
+	tuple(['seconds','second','secs','sec','s']):1000,
+	tuple(['milliseconds','millisecond','msecs','msec','ms']):1
+	}
+	for i in TypesToStr.keys():
+		if ipt in i:
+			return n*TypesToStr[i]
 	return None
 
-def remove_all(string:str,char:str) -> str:
+def FindAll(string:str,char:str) -> str:
 	# _log.add(f'func (remove_all) with {string,char}')
-	ls = list(string)
-	while char in ls:
-		ls.remove(char)
-	return ''.join(ls)
+	ret = []
+	for i in r(string):
+		if char == string[i]:
+			ret.append(i)
+	return ret
 
 # chaos (pt 2)
 
-def adv_encpt_file(encpt_key:str,file:str,bin:bool=False) -> open:
-	# _log.add(f'func ( adv_encpt ) with {encpt_key , file}')
-	if not bin:
-		with open(file,'r') as fl:
-			a = list(fl.readlines())
-	else:
-		a = list(use_file(file,'rb'))
+# def adv_encpt_file(encpt_key:str,file:str,bin:bool=False) -> open:
+# 	# _log.add(f'func ( adv_encpt ) with {encpt_key , file}')
+# 	if not bin:
+# 		with open(file,'r') as fl:
+# 			a = list(fl.readlines())
+# 	else:
+# 		a = list(UseFile(file,'rb'))
 
-	for j in r(a):
-			for i in encpt_key:
-				a[j] = encpt(a[j],i,'a')
-	return a
+# 	for j in r(a):
+# 			for i in encpt_key:
+# 				a[j] = encpt(a[j],i,'a')
+# 	return a
 
-def adv_decpt_file(encpt_key:str,file:str,bin:bool=False) -> open:
-	# _log.add(f'func ( adv_encpt ) with {encpt_key , file}')
-	if not bin:
-		with open(file,'r') as fl:
-			a = list(fl.readlines())
-	else:
-		a = list(use_file(file,'rb'))
-	for j in r(a):
-		for i in encpt_key:
-			a[j] = decpt(a[j],i,'a')
-	return a
+# def adv_decpt_file(encpt_key:str,file:str,bin:bool=False) -> open:
+# 	# _log.add(f'func ( adv_encpt ) with {encpt_key , file}')
+# 	if not bin:
+# 		with open(file,'r') as fl:
+# 			a = list(fl.readlines())
+# 	else:
+# 		a = list(UseFile(file,'rb'))
+# 	for j in r(a):
+# 		for i in encpt_key:
+# 			a[j] = decpt(a[j],i,'a')
+# 	return a
 
-def adv_encpt_str(key:str,string):
-	# _log.add(f'func ( adv_encpt_str ) with {key , string}')
-	for i in key:
-		string = encpt(string,'a',i)
-	return string
+# def adv_encpt_str(key:str,string):
+# 	# _log.add(f'func ( adv_encpt_str ) with {key , string}')
+# 	for i in key:
+# 		string = encpt(string,'a',i)
+# 	return string
 
-def adv_decpt_str(key:str,string):
-	# _log.add(f'func ( adv_decpt_str ) with {key , string}')
-	for i in key:
-		string = encpt(string,i,'a')
-	return string
+# def adv_decpt_str(key:str,string):
+# 	# _log.add(f'func ( adv_decpt_str ) with {key , string}')
+# 	for i in key:
+# 		string = encpt(string,i,'a')
+# 	return string
 
-# end of chaos (pt 2)
+# # end of chaos (pt 2)
 
 def bhask(a,b,c):
 	# _log.add(f'func ( bhask ) with {a,b,c}')
@@ -513,8 +491,9 @@ def bhask(a,b,c):
 	y = (b - delt)/a
 	return x,y
 
-def near(base:float or int,num:float or int,dif_up:float or int,dif_down:float or int) -> bool:
+def near(base:float or int,num:float or int,dif_up:float or int,dif_down:float or int=None) -> bool:
 	# _log.add(f'func ( near ) with {base,num,dif_up,dif_down}')
+	if dif_down == None:dif_down = dif_up
 	return base+dif_up >= num >= base-dif_down
 
 def lst1(lst:object) -> object:
@@ -525,45 +504,45 @@ def lst1(lst:object) -> object:
 
 # chaos (pt 3)
 
-def adv_encpt2(key,string,_jam='p',_k=0):
-	'''
-	how to use adv_encpt2 / adv_decpt2
+# def adv_encpt2(key,string,_jam='p',_k=0):
+# 	'''
+# 	how to use adv_encpt2 / adv_decpt2
 
-	key = rchar(30)
-	print(''.join(key))
-	j='5429535101028y5'
-	j=adv_encpt2(key,j)
-	print(f'result: {j}')
-	j=adv_decpt2(key,j)
-	ss('clear')
-	print(f'result: {j}')
-	'''
+# 	key = rchar(30)
+# 	print(''.join(key))
+# 	j='542953510102865'
+# 	j=adv_encpt2(key,j)
+# 	print(f'result: {j}')
+# 	j=adv_decpt2(key,j)
+# 	ss('clear')
+# 	print(f'result: {j}')
+# 	'''
 
-	# _log.add(f'funct ( adv_encpt2 ) with {key , string , _jam , _k}')
-	if len(key) == _k:return 1
-	if _jam == 'p':
-		j = 'p'
-		_jam = 'n'
-	else:
-		j='n'
-		_jam = 'p'
-	k = key[_k]
+# 	# _log.add(f'funct ( adv_encpt2 ) with {key , string , _jam , _k}')
+# 	if len(key) == _k:return 1
+# 	if _jam == 'p':
+# 		j = 'p'
+# 		_jam = 'n'
+# 	else:
+# 		j='n'
+# 		_jam = 'p'
+# 	k = key[_k]
 
-	if j == 'n':
-		s=''.join([encpt(string,k,'a')])
-	elif j == 'p':
-		s=''.join([encpt(string,'a',k)])
+# 	if j == 'n':
+# 		s=''.join([encpt(string,k,'a')])
+# 	elif j == 'p':
+# 		s=''.join([encpt(string,'a',k)])
 
-	x=adv_encpt2(key,s,_jam=_jam,_k=_k+1)
-	if x == 1:return s
-	return x
+# 	x=adv_encpt2(key,s,_jam=_jam,_k=_k+1)
+# 	if x == 1:return s
+# 	return x
 
-def adv_decpt2(key,string,_jam='p',_k=0):
-	# _log.add(f'funct ( adv_decpt2 ) with {key , string , _jam , _k}')
-	key=key[::-1]
-	return adv_encpt2(key,string,_jam=_jam,_k=_k)
+# def adv_decpt2(key,string,_jam='p',_k=0):
+# 	# _log.add(f'funct ( adv_decpt2 ) with {key , string , _jam , _k}')
+# 	key=key[::-1]
+# 	return adv_encpt2(key,string,_jam=_jam,_k=_k)
 
-# end of chaos (pt 3)
+# # end of chaos (pt 3)
 
 def rsymb(size=1):
 	# _log.add(f'funct ( rsymb ) with ({ size })')
@@ -666,10 +645,10 @@ def argv_assing(argvs:iter) -> dict:
 
 	if indcn == [] and argvs != []:
 		ret[None] = argvs
-	
+
 	elif indcn == []:
 		ret[None] = []
-	
+
 	elif indcn[0] > 0:
 		ret[None] = argvs[0:indcn[0]]
 
@@ -689,38 +668,35 @@ def argv_assing(argvs:iter) -> dict:
 	return ret
 
 class time:
-	def _time(self,string):
-		return __ftime__(f"%{string}")
-
 	@property
 	def sec(self):
 		# _log.add(f'class ( time ) -> sec')
-		return self._time("S")
+		return __ftime__(f"%S")
 
 	@property
 	def min(self):
 		# _log.add(f'class ( time ) -> min')
-		return self._time("M")
+		return __ftime__(f"%M")
 
 	@property
 	def hour(self):
 		# _log.add(f'class ( time ) -> hour')
-		return self._time("H")
+		return __ftime__("%H")
 
 	@property
 	def day(self):
 		# _log.add(f'class ( time ) -> day')
-		return self._time("D").split('/')[1]
+		return __ftime__("%D").split('/')[1]
 
 	@property
 	def month(self):
 		# _log.add(f'class ( time ) -> month')
-		return self._time("D").split('/')[0]
+		return __ftime__("%D").split('/')[0]
 
 	@property
 	def year(self):
 		# _log.add(f'class ( time ) -> year')
-		return self._time("D").split("/")[2]
+		return __ftime__("%D").split("/")[2]
 
 try:
 	import gi
@@ -745,7 +721,7 @@ try:
 
 except ImportError:
 	if '--debug' in argv:
-		print(f'{color["red"]}[{color["yellow"]}WARNING{color["red"]}]{color["nc"]} notify won\'t work without python 3.8')
+		NotifyError = f'{color["red"]}[{color["yellow"]}WARNING{color["red"]}]{color["nc"]} notify won\'t work without python 3.8'
 
 def exit(num:int=1) -> None:
 	# _log.add(f'class ( exit ) = ({num}) => act')
@@ -838,7 +814,7 @@ class code:
 		if type(self.code) == str:self.code=self.code.split('\n')
 		for line in self.code:
 			exec(compile(line,self.name,self.mode))
-	
+
 	def __repr__(self):
 		msg = ""
 		if type(self.code) == str:self.code=self.code.split('\n')
@@ -849,34 +825,13 @@ class code:
 			msg = f"{self.code[0]}"
 		return msg
 
-# \/ old var.__repr__
-"""
-	# honestly useless __repr__ start
-
-	def __repr__(self):
-		msg = ''
-		if self.IsIterable:
-			for thingIndex in r(self.Value):
-				thing = self.Value[thingIndex]
-				TypeMsg = f'{type(thing)}'.split('\'')[1]
-				msg += f"{thingIndex} : {TypeMsg} : {thing}\n"
-		else:
-			TypeMsg = f'{self.Type}'.split('\'')[1]
-			msg += f"{TypeMsg} : {self.Value}"
-		return msg
-
-	# honestly useless __repr__ done
-"""
-# /\ old var.__repr__
-# this code is @ var.__print__
-
 class var(object):
 	'''
 	this class should NOT be used for items in iterables!
 
 	this class "contains" the other classes in it,
-	so you can stop worring about doing this DoShit(class,param),
-	and start doing this class.DoShit(param)
+	so you can stop worring about doing this foo=DoShit(foo,args),
+	and start doing this foo.DoShit(args)
 	'''
 	def __init__(self,Value:object,Type:type=None,PrintMutipleLines=True):
 		if type(Value) == type and type(Type) != type:
@@ -887,12 +842,26 @@ class var(object):
 		self.Type = Type
 		self.Value = Value
 		self.PrintMutipleLines=bool(PrintMutipleLines)
+		
+		Types = {
+			(float,int):"IsNumber",
+			(list,set,str):"IsIterable",
+			(str,):"IsString",
+			(frozenset,):"IsFrozenset",
+			(dict,):"IsDict"
+		}
 
-		self.IsNumber = self.Type in [float,int]
-		self.IsIterable = self.Type in [list,set,str]
-		self.IsString = self.Type in [str]
-		self.IsFrozenSet = self.Type in [frozenset]
-		self.IsDict = self.Type in [dict]
+		for i in types.keys():
+			if self.Type in i:
+				exec(f"self.{types[i]} = True")
+			else:
+				exec(f"self.{types[i]} = False")
+
+		# self.IsNumber = self.Type in [float,int]
+		# self.IsIterable = self.Type in [list,set,str]
+		# self.IsString = self.Type in [str]
+		# self.IsFrozenSet = self.Type in [frozenset]
+		# self.IsDict = self.Type in [dict]
 
 	# math shit start
 
@@ -962,6 +931,7 @@ class var(object):
 
 	def __truediv__(self,add):
 		if type(add) == var:add=add.Value
+
 		if self.IsNumber:
 			return var(self.Value / add,PrintMutipleLines=self.PrintMutipleLines)
 		else:
@@ -969,6 +939,7 @@ class var(object):
 
 	def __floordiv__(self,add):
 		if type(add) == var:add=add.Value
+
 		if self.IsNumber:
 			return var(self.Value // add,PrintMutipleLines=self.PrintMutipleLines)
 		else:
@@ -993,10 +964,10 @@ class var(object):
 	# (other) magic methods start
 
 	def dict(self,lst:list):
-		return var(make_dict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
+		return var(MakeDict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
 
 	def __dict__(self,lst:list):
-		return var(make_dict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
+		return var(MakeDict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
 
 	def __len__(self):
 		if self.IsDict:
@@ -1006,19 +977,20 @@ class var(object):
 	def __r__(self,start: int=0  ,jmp: int=1):
 		return range(start,len(self.Value),jmp)
 
-	def __repr__(self):return self.__print__(rep=True)
-
 	def __setitem__(self, index, obj):
+		if self.IsFrozenSet:
+			raise TypeError(f"can't set value of FrozenSet\nvalue:{self.Value}")
 		if self.IsString:
 			ret = list(self.Value)
 			ret[index] = obj
 		else:
 			ret = [self.Value]
 			ret[index] = obj
+		
 		self.Value = ret
 
 
-	def __print__(self,end='\n',rep=True):
+	def __repr__(self):
 		msg = ''
 		if self.IsIterable and not self.IsString:
 			for thingIndex in r(self.Value):
@@ -1041,10 +1013,8 @@ class var(object):
 				msg+=f"{TypeMsg} : {''.join(self.Value)}"
 			else:
 				msg += f"{TypeMsg} : {self.Value}"
-		if rep:
-			return msg
-		else:
-			print(msg,end=end)
+
+		return msg
 
 	# magic methods done
 	# complex methods start
@@ -1055,7 +1025,7 @@ class var(object):
 			ret = self.Value.split()
 		else:
 			ret = self.Value.split(string)
-		
+
 		if type(ret)!=var:
 			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
 		return ret
@@ -1084,9 +1054,9 @@ class var(object):
 		# AssureType(self.Value,str)
 
 		if ClosingBracket == "default":
-			ret = split_bracket(self.Value,bracket)
+			ret = SplitBracket(self.Value,bracket)
 		else:
-			ret = split_bracket(self.Value,bracket,ClosingBracket)
+			ret = SplitBracket(self.Value,bracket,ClosingBracket)
 		if type(ret)!=var:
 			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
 		return ret
@@ -1095,25 +1065,25 @@ class var(object):
 	def keys(self):
 		return list(self.Value.keys())
 
-	def index(self,index_or_content:object):
+	def index(self,IndexOrContent:object):
 		ret = None
 		if self.IsIterable:
-			ret = self.Value.index(index_or_content)
+			ret = self.Value.index(IndexOrContent)
 		elif self.IsDict:
 			mkdict = {}
 			for i in self.keys():
 				mkdict[self[i]] = i
-			ret = mkdict[index_or_content]
+			ret = mkdict[IndexOrContent]
 
 		else:
 			raise TypeError(f"{self} is not iterable or dictionary")
 		if type(ret)!=var:
 			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
 		return ret
-	
+
 	def copy(self):
 		return var(self.Value,PrintMutipleLines=self.PrintMutipleLines)
-	
+
 	def pop(self,index):
 		return var(self.Value.pop(index),PrintMutipleLines=self.PrintMutipleLines)
 
@@ -1146,14 +1116,14 @@ class BDP:
 		if not exists(f"{this.name}"):
 			ss(f"touch {this.name}")
 
-		use_file(this.name,'w',data)
+		UseFile(this.name,'w',data)
 
 	def load(this,file=None):
 		if file == None:
 			file = this.name
-		this.data = use_file(file,'r')
+		this.data = UseFile(file,'r')
 		return this.data
-	
+
 	def __repr__(this):
 		if len(f"{this.data}") < 40:
 			return f"name: {this.name}\ndata: {this.data}"
@@ -1161,87 +1131,87 @@ class BDP:
 			return f"name: {this.name}\n{color['yellow']}data: data too big{color['nc']}"
 
 def MessageMid(msg,WindoLen,OffsetChar=' '):
-
 	off = OffsetChar*(WindoLen//2)
 	return f"{off}{msg}{off}"
 
 
 def NumberToExponent(number):
-	
+
 	# ret = ''
 	smol = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','.':'.'}
 	# for i in str(number):
-	# ret+=smol[i]
-	
+	# 	ret+=smol[i]
+
 	ret = ''.join([smol[i] for i in str(number)])
 	return ret
 
+# funcs/classes
 '''
-type = FuncType
-type = NoneType
-list = iterables
-class NumberTooBigError
-class log
-func( AssureType)
-func( r)
-class timer
-func( make_dict)
-func( sleep)
-func( pc)
-func( even)
-func( odd)
-func( rng_n_rep)
-func( use_file)
-func( js)
-func( is_prime)
-func( case)
-func( fib)
-class rng
-func( print)
-func( muid)
-func( encpt)
-func( decpt)
-func( index)
-class color
-func( split_bracket)
-func( any_str_in_list)
-func( remove_all)
-func( adv_encpt_file)
-func( adv_decpt_file)
-func( adv_encpt_str)
-func( adv_decpt_str)
-func( bhask)
-func( near)
-func( lst1)
-class const
-func( adv_encpt2)
-func( adv_decpt2)
-func( rsymb)
-func( rchar)
-func( ritem)
-func( get_w_len)
-func( call_w_except)
-func( mmc)
-func( lcm)
-func( fact)
-func( argv_assing)
-class time
-class notify
-func( exit)
-func( between)
-func( ls)
-func( rstr)
-func( clear)
-func( ln)
-func( inrange)
-func( ANDGroups)
-func( ORGroups)
-func( XORGroups)
-class code
-class var
-class BDP
-func( mid)
-func( MessageMid)
+	type = FuncType
+	type = NoneType
+	list = iterables
+	class NumberTooBigError
+	class log
+	func( AssureType)
+	func( r)
+	class timer
+	func( make_dict)
+	func( sleep)
+	func( pc)
+	func( even)
+	func( odd)
+	func( rng_n_rep)
+	func( use_file)
+	func( js)
+	func( is_prime)
+	func( case)
+	func( fib)
+	class rng
+	func( print)
+	func( muid)
+	func( encpt)
+	func( decpt)
+	func( index)
+	class color
+	func( split_bracket)
+	func( any_str_in_list)
+	func( remove_all)
+	func( adv_encpt_file)
+	func( adv_decpt_file)
+	func( adv_encpt_str)
+	func( adv_decpt_str)
+	func( bhask)
+	func( near)
+	func( lst1)
+	class const
+	func( adv_encpt2)
+	func( adv_decpt2)
+	func( rsymb)
+	func( rchar)
+	func( ritem)
+	func( get_w_len)
+	func( call_w_except)
+	func( mmc)
+	func( lcm)
+	func( fact)
+	func( argv_assing)
+	class time
+	class notify
+	func( exit)
+	func( between)
+	func( ls)
+	func( rstr)
+	func( clear)
+	func( ln)
+	func( inrange)
+	func( ANDGroups)
+	func( ORGroups)
+	func( XORGroups)
+	class code
+	class var
+	class BDP
+	func( mid)
+	func( MessageMid)
 '''
 
 if __name__ == "__main__":
