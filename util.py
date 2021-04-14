@@ -142,7 +142,7 @@ class timer:
 		# _log.add(f'class (timer) -> __repr__ ')
 		return f'{self.get}'
 
-def MakeDict(ls1:list or set,ls2:list or set) -> dict:
+def MakeDict(ls1:[list, set, tuple],ls2:[list, set, tuple]) -> dict:
 	# _log.add(f'func (make_dict) with {ls1,ls2}')
 	'''
 	return a dictionary with ls1 as key and ls2 as result
@@ -150,12 +150,10 @@ def MakeDict(ls1:list or set,ls2:list or set) -> dict:
 	'''
 	ls1=list(ls1)
 	ls2=list(ls2)
-	if len(ls1) != len(ls2):
-		return None
-	ret_dict = dict('')
-	for i in r(ls1):
-		ret_dict[ls1[i]] = ls2[i]
-	return ret_dict
+
+	ret = {x:y for x,y in zip(list(ls1),list(ls2))}
+	return ret
+
 
 def sleep(seg:float=0,sec:float=0,ms:float=0,min:float=0,hour:float=0,day:float=0) -> None:
 	# _log.add(f'func (sleep) with {seg , min , hour , day}')
@@ -561,8 +559,6 @@ def rchar(size=1):
 	#65-90 97-122
 	return lst1([(chr(rint(65,90))) if rint(0,1) else (chr(rint(97,122))) for char in r(size)])
 
-printf=print
-
 def GetWLen(msg:str,ln:int,end:str='\n') -> int:
 	AssureType(int,ln,ErrorMsg=f"lengh type != int \n {ln} of type {type(ln)} != int")
 	'''
@@ -851,11 +847,11 @@ class var(object):
 			(dict,):"IsDict"
 		}
 
-		for i in types.keys():
+		for i in Types.keys():
 			if self.Type in i:
-				exec(f"self.{types[i]} = True")
+				exec(f"self.{Types[i]} = True")
 			else:
-				exec(f"self.{types[i]} = False")
+				exec(f"self.{Types[i]} = False")
 
 		# self.IsNumber = self.Type in [float,int]
 		# self.IsIterable = self.Type in [list,set,str]
@@ -891,8 +887,7 @@ class var(object):
 			ret = self.Value
 			for i in add.keys():
 				ret[i] = add[i]
-			ReturnVAr =  var(self.Type,ret)
-		return var(ReturnVar,PrintMutipleLines=self.PrintMutipleLines)
+		return ReturnVar
 
 	def __sub__(self,add):
 		# var - var
@@ -956,26 +951,22 @@ class var(object):
 	def __getitem__(self,index_or_content):
 		if type(index_or_content) == var:index_or_content = index_or_content.Value
 		ret = self.Value[index_or_content]
-		if type(ret)!=var:
-			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
+
 		return ret
 
 	# list/dict stuff done
 	# (other) magic methods start
 
 	def dict(self,lst:list):
-		return var(MakeDict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
+		return MakeDict(self.Value,lst)
 
 	def __dict__(self,lst:list):
-		return var(MakeDict(self.Value,lst),PrintMutipleLines=self.PrintMutipleLines)
+		return MakeDict(self.Value,lst)
 
 	def __len__(self):
 		if self.IsDict:
 			return len(self.Value.Keys())
 		return len(self.Value)
-
-	def __r__(self,start: int=0  ,jmp: int=1):
-		return range(start,len(self.Value),jmp)
 
 	def __setitem__(self, index, obj):
 		if self.IsFrozenSet:
@@ -1026,8 +1017,6 @@ class var(object):
 		else:
 			ret = self.Value.split(string)
 
-		if type(ret)!=var:
-			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
 		return ret
 
 	def join(self,string:str or var):
@@ -1040,10 +1029,7 @@ class var(object):
 				else:
 					ret+=f"{string}{thing}"
 
-			ret = ret[1:]
-			if type(ret)!=var:
-				ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
-			return ret
+			return ret[1:]
 		else:
 			raise TypeError(f"\n{var} is not iterable")
 
@@ -1058,7 +1044,7 @@ class var(object):
 		else:
 			ret = SplitBracket(self.Value,bracket,ClosingBracket)
 		if type(ret)!=var:
-			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
+			ret = ret
 		return ret
 
 
@@ -1077,15 +1063,13 @@ class var(object):
 
 		else:
 			raise TypeError(f"{self} is not iterable or dictionary")
-		if type(ret)!=var:
-			ret = var(ret,PrintMutipleLines=self.PrintMutipleLines)
 		return ret
 
 	def copy(self):
 		return var(self.Value,PrintMutipleLines=self.PrintMutipleLines)
 
 	def pop(self,index):
-		return var(self.Value.pop(index),PrintMutipleLines=self.PrintMutipleLines)
+		return self.Value.pop(index)
 
 	# complex methods done
 
@@ -1118,10 +1102,8 @@ class BDP:
 
 		UseFile(this.name,'w',data)
 
-	def load(this,file=None):
-		if file == None:
-			file = this.name
-		this.data = UseFile(file,'r')
+	def load(this):
+		this.data = UseFile(this.name,'r')
 		return this.data
 
 	def __repr__(this):
@@ -1129,6 +1111,17 @@ class BDP:
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
 			return f"name: {this.name}\n{color['yellow']}data: data too big{color['nc']}"
+	
+	def __call__(this,data=None):
+		if this.data == None:
+			this.data = data
+
+		if this.data != None:
+			this.save()
+			return "saved"
+		else:
+			return this.load()
+			
 
 def MessageMid(msg,WindoLen,OffsetChar=' '):
 	off = OffsetChar*(WindoLen//2)
@@ -1140,6 +1133,23 @@ def NumberToExponent(number):
 
 	ret = ''.join([smol[i] for i in str(number)])
 	return ret
+
+def rbool(OneIn=2):return bool(rint(0,OneIn-1))
+
+def rcase(words:list):
+	ReturnWords = []
+
+	for word in words:
+		wd = ''
+
+		for case in word:
+			if rbool():
+				case = case.upper()
+			wd+=case
+
+		ReturnWords.append(wd)
+
+	return ReturnWords
 
 # funcs/classes
 '''
@@ -1209,13 +1219,3 @@ def NumberToExponent(number):
 	func( mid)
 	func( MessageMid)
 '''
-
-if __name__ == "__main__":
-# 	for i in r(argv,1):
-# 		if i == "pass" or i == "":continue
-# 		print(f'q{i}: {argv[i]}')
-# 		try:
-# 			print(f'a{i}: {eval(argv[i])}')
-# 		except Exception as f:print(f'{color["red"]}ERR: {f}{color["nc"]}')
-# 		print('\n')
-	exit(0)
