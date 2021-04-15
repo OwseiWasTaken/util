@@ -1134,22 +1134,22 @@ def NumberToExponent(number):
 	ret = ''.join([smol[i] for i in str(number)])
 	return ret
 
-def rbool(OneIn=2):return bool(rint(0,OneIn-1))
+def rbool(OneIn=2):
+	# rint(0,OneIn-1 (-1 cus we are not start ate 1))
+	# not so a. return a number b. so we ret 1 in X not X in one  e.g.
+	# no "not" rbool(4) av = .75 (not 1 in 4)
+	# w/ "not" rbool(4) av = .25 (1 in 4)
+	return not rint(0,OneIn-1)
 
-def rcase(words:list):
-	ReturnWords = []
+def rcase(word:str):
+	wd = ''
+	for case in word:
+		if rbool():
+			case = case.upper()
+		wd+=case
 
-	for word in words:
-		wd = ''
+	return wd
 
-		for case in word:
-			if rbool():
-				case = case.upper()
-			wd+=case
-
-		ReturnWords.append(wd)
-
-	return ReturnWords
 
 # funcs/classes
 '''
@@ -1166,8 +1166,8 @@ def rcase(words:list):
 	func( pc)
 	func( even)
 	func( odd)
-	func( rng_n_rep)
-	func( use_file)
+	func( RngNoRepepetition)
+	func( UseFile)
 	func( js)
 	func( is_prime)
 	func( case)
@@ -1179,24 +1179,24 @@ def rcase(words:list):
 	func( decpt)
 	func( index)
 	class color
-	func( split_bracket)
+	func( SplitBracket)
 	func( any_str_in_list)
 	func( remove_all)
-	func( adv_encpt_file)
-	func( adv_decpt_file)
-	func( adv_encpt_str)
-	func( adv_decpt_str)
+	#func( adv_encpt_file)
+	#func( adv_decpt_file)
+	#func( adv_encpt_str)
+	#func( adv_decpt_str)
 	func( bhask)
 	func( near)
 	func( lst1)
 	class const
-	func( adv_encpt2)
-	func( adv_decpt2)
+	#func( adv_encpt2)
+	#func( adv_decpt2)
 	func( rsymb)
 	func( rchar)
 	func( ritem)
-	func( get_w_len)
-	func( call_w_except)
+	func( GetWLen)
+	func( CallWExcept)
 	func( mmc)
 	func( lcm)
 	func( fact)
@@ -1218,4 +1218,7 @@ def rcase(words:list):
 	class BDP
 	func( mid)
 	func( MessageMid)
+	func( NumberToExponent)
+	func( rbool)
+	func( rcase)
 '''
