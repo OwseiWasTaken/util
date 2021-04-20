@@ -2,12 +2,13 @@
 #imports
 from util import *
 
+
 #main
-class Program:
-	def __init__(this,argv):
+class program:
+	def __init__(this,argv,argk):
 		# declare vars
 		this.argv = argv
-		this.argk = list(argv.keys())
+		this.argk = argk
 
 
 	def Main(this):
@@ -16,18 +17,24 @@ class Program:
 
 		return 0
 
+
+
+
+
+
 #start
 if __name__ == '__main__':
-	argv.pop(0)
-	argv = argv_assing(argv)
+	argv = argv_assing(argv[1:])
+	argk = list(argv.keys())
+	code = program(argv,argk).Main
 
-	if (debug:='--debug' in argv.keys()):
+	if '--debug' in argk:
 		start = tm()
+		ExitCode = code()
 
-	exit_code = Program(argv).Main()
-
-	if debug:
-		if not exit_code:print(f'{color["green"]}code successfully exited in',end='')
+		if not ExitCode:print(f'{color["green"]}code successfully exited in',end='')
 		else:print(f'{color["red"]}code exited with error {exit_code} in',end='')
 		print(f' {round(tm()-start,5)} seconds{color["nc"]}')
-	exit(exit_code)
+	else:
+		ExitCode = code()
+	exit(ExitCode)
