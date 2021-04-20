@@ -19,50 +19,51 @@ iterables = [type(list),type(set),type(frozenset)]
 class NumberTooBigError(BaseException):pass
 
 class log:
-	def __init__(self,sep=', ',tm=True,file="log"):
-		self.tm = tm
-		self.sep = sep
-		self.LOG = []
-		self.add('the log was created')
-		self.file = file
-	def add(self,*ask) -> None:
-		tm = self.tm
-		ask=self.sep.join([str(ak) for ak in ask])
+	def __init__(this,sep=', ',tm=True,file="log"):
+		this.tm = tm
+		this.sep = sep
+		this.LOG = []
+		this.add('the log was created')
+		this.file = file
+	def add(this,*ask) -> None:
+		tm = this.tm
+		ask=this.sep.join([str(ak) for ak in ask])
 
 		tme = ''
 		if tm:tme = f'at {__ftime__("%D %H:%M:%S")} : '
-		self.LOG.append(f'{tme}{ask}')
+		this.LOG.append(f'{tme}{ask}')
 
-	def remove(self,index_or_content:int or str) -> None:
+	def remove(this,index_or_content:int or str) -> None:
+		
 		if type(index_or_content) == int:
-			return self.LOG.pop(index_or_content)
+			return this.LOG.pop(index_or_content)
 		else:
-			self.LOG.index(index_or_content)
-			return self.LOG.pop(index_or_content)
+			this.LOG.index(index_or_content)
+			return this.LOG.pop(index_or_content)
 		raise ValueError
-	def __repr__(self) -> str:
-		return f'{self.LOG}'
+	def __repr__(this) -> str:
+		return f'{this.LOG}'
 
-	def get(self,num:int) -> str:
-		return self.LOG[num]
+	def get(this,num:int) -> str:
+		return this.LOG[num]
 
-	def __getitem__(self,num:int) -> str:
-		return self.LOG[num]
+	def __getitem__(this,num:int) -> str:
+		return this.LOG[num]
 
-	def __call__(self) -> list:
-		return self.LOG
+	def __call__(this) -> list:
+		return this.LOG
 
-	def __iter__(self) -> None:
-		for i in self():
+	def __iter__(this) -> None:
+		for i in this():
 			yield i
 
-	def show(self) -> None:
-		for i in self:
+	def show(this) -> None:
+		for i in this:
 			print(i)
 
-	def save(self) -> None:
-		with open(self.file,'w') as save_file_log:
-			for i in self.LOG:
+	def save(this) -> None:
+		with open(this.file,'w') as save_file_log:
+			for i in this.LOG:
 				save_file_log.write(f'{i}\n')
 
 
@@ -105,42 +106,42 @@ def AssureType(value:object,types:type,err:bool=True,ErrorMsg=None) -> TypeError
 	return True
 
 class timer:
-	def __init__(self,auto:bool=True):
+	def __init__(this,auto:bool=True):
 		# _log.add(f'class (timer.__init__) = {auto} ')
-		self.markers = []
-		if auto:self.st = tm()
+		this.markers = []
+		if auto:this.st = tm()
 
-	def start(self):
+	def start(this):
 		# _log.add(f'class (timer.start) = None => None')
-		self.st = tm()
+		this.st = tm()
 
-	def mark(self):
+	def mark(this):
 		# _log.add(f'class (timer.mark) = None => None')
-		self.markers.append(self.get())
+		this.markers.append(this.get())
 
-	def marks(self) -> list:
+	def marks(this) -> list:
 		# _log.add(f'class (timer.marks) = None => list')
-		return self.markers
+		return this.markers
 
-	def get(self) -> float:
+	def get(this) -> float:
 		# _log.add(f'class (timer.get) = None => float')
-		return tm() - self.st
+		return tm() - this.st
 
-	def __call__(self) -> float:
+	def __call__(this) -> float:
 		# _log.add(f'class (timer()) => float')
-		if not self.st:
-			self.st = tm()
+		if not this.st:
+			this.st = tm()
 		else:
-			return self.get()
+			return this.get()
 
-	def __iter__(self) -> iter:
+	def __iter__(this) -> iter:
 		# _log.add(f'class (for i in timer) => yield marks[i]')
-		for i in self.markers:
+		for i in this.markers:
 			yield i
 
-	def __repr__(self) -> str(float):
+	def __repr__(this) -> str(float):
 		# _log.add(f'class (timer) -> __repr__ ')
-		return f'{self.get}'
+		return f'{this.get}'
 
 def MakeDict(ls1:[list, set, tuple],ls2:[list, set, tuple]) -> dict:
 	# _log.add(f'func (make_dict) with {ls1,ls2}')
@@ -251,48 +252,48 @@ def fib(n:int) -> list:
 	return result
 
 class rng:
-	def new(self):
+	def new(this):
 		# _log.add(f'class (rng) -> new prop')
-		self.var = []
-		for _ in range(self.size):
-			self.var.append(rint(self.mn,self.mx))
-		return self.var
+		this.var = []
+		for _ in range(this.size):
+			this.var.append(rint(this.mn,this.mx))
+		return this.var
 
-	def get(self):
+	def get(this):
 		# _log.add(f'class (rng) -> get prop')
-		self.var = []
-		for _ in range(self.size):
-			self.var.append(rint(self.mn,self.mx))
-		return self.var
+		this.var = []
+		for _ in range(this.size):
+			this.var.append(rint(this.mn,this.mx))
+		return this.var
 
-	def __init__(self,mn,mx,size=1):
-		# _log.add(f'class (rng) -> __init__ with {self,mn,mx,size}')
-		self.size=size
-		self.mn=mn
-		self.mx=mx
-		self.new
+	def __init__(this,mn,mx,size=1):
+		# _log.add(f'class (rng) -> __init__ with {this,mn,mx,size}')
+		this.size=size
+		this.mn=mn
+		this.mx=mx
+		this.new
 
-	def __repr__(self):
+	def __repr__(this):
 		# _log.add(f'class (rng) -> __repr__')
-		if len((var:=self.var))==1:
-			var=self.var[0]
-		self.new
+		if len((var:=this.var))==1:
+			var=this.var[0]
+		this.new
 		return f'{var}'
 
-	def NewSize(self,size):
+	def NewSize(this,size):
 		# _log.add(f'class (rng) -> new_size with ({size})')
-		self.size=size
-		self.new
+		this.size=size
+		this.new
 
-	def NewMin(self,mn):
-		# _log.add(f'class (rng) -> new_min with {self,mn}')
-		self.mn=mn
-	def NewMax(self,mx):
-		# _log.add(f'class (rng) -> new_max with {self,mx}')
-		self.mx=mx
+	def NewMin(this,mn):
+		# _log.add(f'class (rng) -> new_min with {this,mn}')
+		this.mn=mn
+	def NewMax(this,mx):
+		# _log.add(f'class (rng) -> new_max with {this,mx}')
+		this.mx=mx
 
-	def __call__(self):
-		return self.get()
+	def __call__(this):
+		return this.get()
 
 def print(*msg,end='\n'):
 	# if type(msg)
@@ -345,7 +346,7 @@ def index(ls:list,var,many=False) -> list:
 
 #bash colors
 #\/ \/ \/ \/
-#
+
 color={
 	'nc':'\033[0m'
 	,'white':'\033[0m'
@@ -665,32 +666,32 @@ ArgvAssing = argv_assing
 
 class time:
 	@property
-	def sec(self):
+	def sec(this):
 		# _log.add(f'class ( time ) -> sec')
 		return __ftime__(f"%S")
 
 	@property
-	def min(self):
+	def min(this):
 		# _log.add(f'class ( time ) -> min')
 		return __ftime__(f"%M")
 
 	@property
-	def hour(self):
+	def hour(this):
 		# _log.add(f'class ( time ) -> hour')
 		return __ftime__("%H")
 
 	@property
-	def day(self):
+	def day(this):
 		# _log.add(f'class ( time ) -> day')
 		return __ftime__("%D").split('/')[1]
 
 	@property
-	def month(self):
+	def month(this):
 		# _log.add(f'class ( time ) -> month')
 		return __ftime__("%D").split('/')[0]
 
 	@property
-	def year(self):
+	def year(this):
 		# _log.add(f'class ( time ) -> year')
 		return __ftime__("%D").split("/")[2]
 
@@ -699,21 +700,21 @@ try:
 	gi.require_version('Notify', '0.7')
 	from gi.repository import Notify
 	class notify:
-		def __init__(self,title:str="",body:str="",instant:bool=False,name:str="GNOME-notify-class util.py"):
+		def __init__(this,title:str="",body:str="",instant:bool=False,name:str="GNOME-notify-class util.py"):
 			# _log.add(f'class ( notify ) -> {title , body , instant , name}')
 			Notify.init(name)
 			if title or body:
-				self.notf=Notify.Notification.new(str(title),str(body))
+				this.notf=Notify.Notification.new(str(title),str(body))
 				if instant:
-					self.notf.show()
+					this.notf.show()
 			else:
-				self.notf=Notify.Notification.new("","")
-		def new(self,title,body,instant=False):
-			self.notf=Notify.Notification.new(str(title),str(body))
-			return self
-		def __call__(self):self.notf.show()
-		def __repr__(self):return f'{self.notf}'
-		def show(self):self()
+				this.notf=Notify.Notification.new("","")
+		def new(this,title,body,instant=False):
+			this.notf=Notify.Notification.new(str(title),str(body))
+			return this
+		def __call__(this):this.notf.show()
+		def __repr__(this):return f'{this.notf}'
+		def show(this):this()
 
 except ImportError:
 	if '--debug' in argv:
@@ -799,45 +800,56 @@ def NOTGroups(g1:[set, list, frozenset],g2:[set, list, frozenset]):
 	return Gret
 
 class code:
-	def __init__(self,name="test",mode="exec",code=[]):
-		self.name,self.mode,self.code = name,mode,code
+	def __init__(this,name="test",mode="exec",code=[]):
+		this.name,this.mode,this.code = name,mode,code
 
-	def __add__(self,line):
-		self.code.append(line)
-		return code(self.name,self.mode,self.code)
+	def __add__(this,line):
+		this.code.append(line)
+		return code(this.name,this.mode,this.code)
 
-	def __call__(self):
-		if type(self.code) == str:self.code=self.code.split('\n')
-		for line in self.code:
-			exec(compile(line,self.name,self.mode))
+	def __call__(this):
+		if type(this.code) == str:this.code=this.code.split('\n')
+		for line in this.code:
+			exec(compile(line,this.name,this.mode))
 
-	def __repr__(self):
+	def __repr__(this):
 		msg = ""
-		if type(self.code) == str:self.code=self.code.split('\n')
-		if len(self.code) > 1:
-			for line in self.code:
+		if type(this.code) == str:this.code=this.code.split('\n')
+		if len(this.code) > 1:
+			for line in this.code:
 				msg+=f"{line}\n"
 		else:
-			msg = f"{self.code[0]}"
+			msg = f"{this.code[0]}"
 		return msg
 
 class var(object):
 	'''
-	this class should NOT be used for items in iterables!
+	this class should NOT be used for items in iterables! (like lists)
 
 	this class "contains" the other classes in it,
-	so you can stop worring about doing this foo=DoShit(foo,args),
+	so you can stop worring about doing this foo=DoShit(foo,args)
 	and start doing this foo.DoShit(args)
+	and facilitating your life when using dicts
+	
+	for i in {'a':1,'b':2,'c':3} = 	ERROR
+	for i in var({'a':1,'b':2,'c':3}) = dict.keys()
+
+	"hello world"[3] = '!' = ERROR
+	var("hello world")[3] = '!' = "hel!o world"
+
+	[1,2,3]+[2,3,4] = ERROR
+	var([1,2,3])+[2,3,4] = [1,2,3,2,3,4]
+	var([1,2,3])+var([2,3,4]) = [1,2,3,2,3,4]
 	'''
-	def __init__(self,Value:object,Type:type=None,PrintMutipleLines=True):
+	def __init__(this,Value:object,Type:type=None,PrintMutipleLines=True):
 		if type(Value) == type and type(Type) != type:
 			Value,Type = Type,Value
 
 		if Type == None:Type=type(Value)
 
-		self.Type = Type
-		self.Value = Value
-		self.PrintMutipleLines=bool(PrintMutipleLines)
+		this.Type = Type
+		this.Value = Value
+		this.PrintMutipleLines=bool(PrintMutipleLines)
 		
 		Types = {
 			(float,int):"IsNumber",
@@ -848,62 +860,53 @@ class var(object):
 		}
 
 		for i in Types.keys():
-			if self.Type in i:
-				exec(f"self.{Types[i]} = True")
-			else:
-				exec(f"self.{Types[i]} = False")
-
-		# self.IsNumber = self.Type in [float,int]
-		# self.IsIterable = self.Type in [list,set,str]
-		# self.IsString = self.Type in [str]
-		# self.IsFrozenSet = self.Type in [frozenset]
-		# self.IsDict = self.Type in [dict]
+			exec(f"this.{Types[i]} = {this.Type in i}")
 
 	# math shit start
 
 
 
-	def __add__(self,add):
+	def __add__(this,add):
 		try:
-			return self.Value.__add__(add)
+			return this.Value.__add__(add)
 		except Exception:pass
 		# var + var
 		ReturnVar = None
 		if type(add) == var:add=add.Value
 
 		# frozen set is frozen set!
-		if self.IsFrozenSet:
+		if this.IsFrozenSet:
 			raise TypeError
 
 		# var != dict
-		if not self.IsDict:
-			if self.IsIterable:
-				ReturnVar = self.Type(ORGroups(self.Value,add))
+		if not this.IsDict:
+			if this.IsIterable:
+				ReturnVar = this.Type(ORGroups(this.Value,add))
 			else:
-				ReturnVar = self.Value+add
+				ReturnVar = this.Value+add
 
 		# var = dict
-		elif self.IsDict:
-			ret = self.Value
+		elif this.IsDict:
+			ret = this.Value
 			for i in add.keys():
 				ret[i] = add[i]
 		return ReturnVar
 
-	def __sub__(self,add):
+	def __sub__(this,add):
 		# var - var
-		ReturnVar,ReturnType = None,self.Type
+		ReturnVar,ReturnType = None,this.Type
 		if type(add) == var:add=add.Value
 
 		# var != dict
-		if not self.IsDict:
-			if self.IsIterable:
-				ReturnVar = self.Type(NOTGroups(self.Value,add))
+		if not this.IsDict:
+			if this.IsIterable:
+				ReturnVar = this.Type(NOTGroups(this.Value,add))
 			else:
-				ReturnVar = self.Value-add
+				ReturnVar = this.Value-add
 
 		# var == dict
 		else:
-			ret = self.Value
+			ret = this.Value
 			retK = ret.keys()
 			if type(add) == dict:
 				for i in add.keys():
@@ -914,116 +917,115 @@ class var(object):
 			ReturnVar = ret
 
 		# return var obj of same type and (probably) different value
-		return var(ReturnVar,PrintMutipleLines=self.PrintMutipleLines)
+		return ReturnVar
 
-	def __mul__(self,add):
+	def __mul__(this,add):
 		if type(add) == var:add=add.Value
 
-		if self.IsNumber:
-			return var(self.Value * add,PrintMutipleLines=self.PrintMutipleLines)
+		if this.IsNumber:
+			return this.Value * add
 		else:
-			raise WrongType(f"var class can't multiply {self.Value} with {add}")
+			raise WrongType(f"var class can't multiply {this.Value} with {add}")
 
-	def __truediv__(self,add):
+	def __truediv__(this,add):
 		if type(add) == var:add=add.Value
 
-		if self.IsNumber:
-			return var(self.Value / add,PrintMutipleLines=self.PrintMutipleLines)
+		if this.IsNumber:
+			return this.Value / add
 		else:
-			raise WrongType(f"var class can't divide {self.Value} with {add}")
+			raise WrongType(f"var class can't divide {this.Value} with {add}")
 
-	def __floordiv__(self,add):
+	def __floordiv__(this,add):
 		if type(add) == var:add=add.Value
 
-		if self.IsNumber:
-			return var(self.Value // add,PrintMutipleLines=self.PrintMutipleLines)
+		if this.IsNumber:
+			return this.Value // add
 		else:
-			raise WrongType(f"var class can't (floor) divide {self.Value} with {add}")
+			raise WrongType(f"var class can't (floor) divide {this.Value} with {add}")
 
 	# math shit done
 	# list/dict stuff start
 
-	def __iter__(self):
-		for i in self.Value:
+	def __iter__(this):
+		for i in this.Value:
 			yield i
 
 	# calling method
-	def __getitem__(self,index_or_content):
+	def __getitem__(this,index_or_content):
 		if type(index_or_content) == var:index_or_content = index_or_content.Value
-		ret = self.Value[index_or_content]
+		ret = this.Value[index_or_content]
 
 		return ret
 
 	# list/dict stuff done
 	# (other) magic methods start
 
-	def dict(self,lst:list):
-		return MakeDict(self.Value,lst)
+	def dict(this,lst:list):
+		return MakeDict(this.Value,lst)
 
-	def __dict__(self,lst:list):
-		return MakeDict(self.Value,lst)
+	def __dict__(this,lst:list):
+		return MakeDict(this.Value,lst)
 
-	def __len__(self):
-		if self.IsDict:
-			return len(self.Value.Keys())
-		return len(self.Value)
+	def __len__(this):
+		if this.IsDict:
+			return len(this.Value.Keys())
+		return len(this.Value)
 
-	def __setitem__(self, index, obj):
-		if self.IsFrozenSet:
-			raise TypeError(f"can't set value of FrozenSet\nvalue:{self.Value}")
-		if self.IsString:
-			ret = list(self.Value)
+	def __setitem__(this, index, obj):
+		if this.IsFrozenSet:
+			raise TypeError(f"can't set value of FrozenSet\nvalue:{this.Value}")
+		if this.IsString:
+			ret = list(this.Value)
 			ret[index] = obj
 		else:
-			ret = [self.Value]
+			ret = [this.Value]
 			ret[index] = obj
 		
-		self.Value = ret
+		this.Value = ret
 
 
-	def __repr__(self):
+	def __repr__(this):
 		msg = ''
-		if self.IsIterable and not self.IsString:
-			for thingIndex in r(self.Value):
-				thing = self.Value[thingIndex].__repr__()
+		if this.IsIterable and not this.IsString:
+			for thingIndex in r(this.Value):
+				thing = this.Value[thingIndex].__repr__()
 				# if type(thing).find("__main__.") != -1:
 					# TypeMsg = f"{type(thing)}".split("__main__.")[1]
 				# else:
 				TypeMsg = f'{type(thing)}'.split('\'')[1]
-				if self.PrintMutipleLines:
+				if this.PrintMutipleLines:
 					msg += f"{thingIndex} : {TypeMsg} : {thing}\n"
 				else:
 					msg += f"{TypeMsg}: {thing}, "
 			msg = msg[:-1]
 		else:
-			# if f"{type(self.Value)}".find("__main__.") != -1:
-				# TypeMsg = f"{type(self.Value)}".split("__main__.")[1][:-2]
+			# if f"{type(this.Value)}".find("__main__.") != -1:
+				# TypeMsg = f"{type(this.Value)}".split("__main__.")[1][:-2]
 			# else:
-			TypeMsg = f'{self.Type}'.split('\'')[1]
-			if self.IsString:
-				msg+=f"{TypeMsg} : {''.join(self.Value)}"
+			TypeMsg = f'{this.Type}'.split('\'')[1]
+			if this.IsString:
+				msg+=f"{TypeMsg} : {''.join(this.Value)}"
 			else:
-				msg += f"{TypeMsg} : {self.Value}"
+				msg += f"{TypeMsg} : {this.Value}"
 
 		return msg
 
 	# magic methods done
 	# complex methods start
 
-	def split(self,string:str=None):
+	def split(this,string:str=None):
 		if type(string) == var:string = string.Value
 		if string == None:
-			ret = self.Value.split()
+			ret = this.Value.split()
 		else:
-			ret = self.Value.split(string)
-
+			ret = this.Value.split(string)
 		return ret
 
-	def join(self,string:str or var):
+	def join(this,string:str or var):
 		if type(string) == var:string = string.Value
 		ret = ""
-		if self.IsIterable:
-			for thing in self.Value:
+		if this.IsIterable:
+			for thing in this.Value:
 				if type(thing) == var:
 					ret+=f"{string}{thing.Value}"
 				else:
@@ -1033,50 +1035,55 @@ class var(object):
 		else:
 			raise TypeError(f"\n{var} is not iterable")
 
-	def SplitBracket(self,bracket,ClosingBracket="default"):
+	def SplitBracket(this,bracket,ClosingBracket="default"):
 		if type(bracket) == var:bracket = bracket.Value
 		if type(ClosingBracket) == var:ClosingBracket = ClosingBracket.Value
 
-		# AssureType(self.Value,str)
+		# AssureType(this.Value,str)
 
 		if ClosingBracket == "default":
-			ret = SplitBracket(self.Value,bracket)
+			ret = SplitBracket(this.Value,bracket)
 		else:
-			ret = SplitBracket(self.Value,bracket,ClosingBracket)
+			ret = SplitBracket(this.Value,bracket,ClosingBracket)
 		if type(ret)!=var:
 			ret = ret
 		return ret
 
 
-	def keys(self):
-		return list(self.Value.keys())
+	def keys(this):
+		return list(this.Value.keys())
 
-	def index(self,IndexOrContent:object):
+	def index(this,content:object):
 		ret = None
-		if self.IsIterable:
-			ret = self.Value.index(IndexOrContent)
-		elif self.IsDict:
+		if this.IsIterable:
+			ret = this.Value.index(content)
+		elif this.IsDict:
 			mkdict = {}
-			for i in self.keys():
-				mkdict[self[i]] = i
-			ret = mkdict[IndexOrContent]
+			for i in this.keys():
+				mkdict[this[i]] = i
+			ret = mkdict[content]
 
 		else:
-			raise TypeError(f"{self} is not iterable or dictionary")
+			raise TypeError(f"{this} is not iterable or dictionary")
 		return ret
 
-	def copy(self):
-		return var(self.Value,PrintMutipleLines=self.PrintMutipleLines)
+	def pop(this,index):
+		return this.Value.pop(index)
 
-	def pop(self,index):
-		return self.Value.pop(index)
+	def remove(this,content):
+		this.Value.remove(this)
+
+	def copy(this):
+		return var(this.Value,PrintMutipleLines=this.PrintMutipleLines)
+
 
 	# complex methods done
 
-
 class BDP:
-	def __init__(this,name):
+	def __init__(this,name,IgnoreDataSize=False):
 		# for unix like system
+
+		this.IgnoreDataSize = IgnoreDataSize
 
 		if not exists(f"/home/{USER}/BDP"):
 			ss("mkdir /BDP/")
@@ -1107,26 +1114,25 @@ class BDP:
 		return this.data
 
 	def __repr__(this):
-		if len(f"{this.data}") < 40:
+		if len(f"{this.data}") < 100 or this.IgnoreDataSize:
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
-			return f"name: {this.name}\n{color['yellow']}data: data too big{color['nc']}"
-	
+			return f"name: {this.name}\n{color['yellow']}data too big to display\nBDP(IgnoreDataSize=True) to ignore size{color['nc']}"
+
 	def __call__(this,data=None):
-		if this.data == None:
+		
+		if data == None and this.data == None:
+			return this.load()
+
+		elif this.data == None:
 			this.data = data
 
-		if this.data != None:
-			this.save()
-			return "saved"
-		else:
-			return this.load()
-			
+		this.save()
+		return "saved"
 
 def MessageMid(msg,WindoLen,OffsetChar=' '):
 	off = OffsetChar*(WindoLen//2)
 	return f"{off}{msg}{off}"
-
 
 def NumberToExponent(number):
 	smol = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','.':'.'}
@@ -1135,10 +1141,6 @@ def NumberToExponent(number):
 	return ret
 
 def rbool(OneIn=2):
-	# rint(0,OneIn-1 (-1 cus we are not start ate 1))
-	# not so a. return a number b. so we ret 1 in X not X in one  e.g.
-	# no "not" rbool(4) av = .75 (not 1 in 4)
-	# w/ "not" rbool(4) av = .25 (1 in 4)
 	return not rint(0,OneIn-1)
 
 def rcase(word:str):
@@ -1147,7 +1149,6 @@ def rcase(word:str):
 		if rbool():
 			case = case.upper()
 		wd+=case
-
 	return wd
 
 
@@ -1166,8 +1167,8 @@ def rcase(word:str):
 	func( pc)
 	func( even)
 	func( odd)
-	func( RngNoRepepetition)
-	func( UseFile)
+	func( rng_n_rep)
+	func( use_file)
 	func( js)
 	func( is_prime)
 	func( case)
@@ -1179,24 +1180,24 @@ def rcase(word:str):
 	func( decpt)
 	func( index)
 	class color
-	func( SplitBracket)
+	func( split_bracket)
 	func( any_str_in_list)
 	func( remove_all)
-	#func( adv_encpt_file)
-	#func( adv_decpt_file)
-	#func( adv_encpt_str)
-	#func( adv_decpt_str)
+	func( adv_encpt_file)
+	func( adv_decpt_file)
+	func( adv_encpt_str)
+	func( adv_decpt_str)
 	func( bhask)
 	func( near)
 	func( lst1)
 	class const
-	#func( adv_encpt2)
-	#func( adv_decpt2)
+	func( adv_encpt2)
+	func( adv_decpt2)
 	func( rsymb)
 	func( rchar)
 	func( ritem)
-	func( GetWLen)
-	func( CallWExcept)
+	func( get_w_len)
+	func( call_w_except)
 	func( mmc)
 	func( lcm)
 	func( fact)
