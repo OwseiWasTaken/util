@@ -1,7 +1,7 @@
 #! /usr/bin/python3.8
 
 # util.py imports
-from pickle import dump as _PickleDump, load as _PickleLoad
+from pickle import dump as _PickleDump, load as _PickleLoad, dumps as PickleString, loads as UnpickleString
 from json import dump as _JsonDump, load as _JsonLoad
 
 # general imports
@@ -12,10 +12,10 @@ from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
 from os.path import isfile,exists
 
 
-USER = getenv("USER")
-FuncType = type(lambda a:a )
-NoneType = type(None)
-iterables = [type(list),type(set),type(frozenset)]
+USER:str = getenv("USER")
+FuncType:type = type(lambda a:a )
+NoneType:type = type(None)
+iterables:list = [type(list),type(set),type(frozenset)]
 class NumberTooBigError(BaseException):pass
 
 class log:
@@ -315,17 +315,17 @@ def print(*msg,end='\n'):
 
 # start of chaos
 
-def encpt(string:str,fm:str,tm:str):
-	# _log.add(f'func (encpt) with {string , fm , tm}')
-	string = list(string)
-	dif = ord(fm) - ord(tm)
-	for s in r(string):
-		string[s]=chr( ord( string[s] ) + dif )
-	return ''.join(string)
+# def encpt(string:str,fm:str,tm:str):
+# 	# _log.add(f'func (encpt) with {string , fm , tm}')
+# 	string = list(string)
+# 	dif = ord(fm) - ord(tm)
+# 	for s in r(string):
+# 		string[s]=chr( ord( string[s] ) + dif )
+# 	return ''.join(string)
 
-def decpt(string:str,fm:str,tm:str):
-	# _log.add(f'func (decpt) with {string , fm , tm}')
-	return encpt(string,tm,fm)
+# def decpt(string:str,fm:str,tm:str):
+# 	# _log.add(f'func (decpt) with {string , fm , tm}')
+# 	return encpt(string,tm,fm)
 
 # end of chaos (pt 1)
 
@@ -1082,7 +1082,7 @@ class var(object):
 class BDP:
 	def __init__(this,name,IgnoreDataSize=False):
 		# for unix like system
-
+		# c:/users/{USER}/bdp
 		this.IgnoreDataSize = IgnoreDataSize
 
 		if not exists(f"/home/{USER}/BDP"):
@@ -1090,8 +1090,8 @@ class BDP:
 
 		if not name.startswith("~/BDP/"):
 			name = f"~/BDP/{name}"
-		if not name.endswith(".bdp"):
-			name = f"{name}.bdp"
+		if not name.endswith(".pog"):
+			name = f"{name}.pog"
 
 		name = name.replace("//",'/')
 		name = name.replace('~',f"/home/{USER}")
@@ -1148,9 +1148,56 @@ def rcase(word:str):
 	for case in word:
 		if rbool():
 			case = case.upper()
+		else:
+			case = case.lower()
 		wd+=case
 	return wd
 
+def invert(var):
+	return var[::-1]
+
+def EncryptS(var,key:int or float):
+	return [ord(char)+key for char in var]
+	# ret = []
+	# for char in str(var):
+		# ret.append(ord(char)+key)
+	# return ret
+
+def DecryptS(var:str,key:int or float):
+	return "".join([f"{chr(char-key)}" for char in var])
+	# ret = []
+	# for char in var:
+		# ret.append(f"{chr(char-key)}")
+	# return "".join(ret)
+
+def AdvEncryptS(var,key,deep):
+	if deep < 0:
+		deep*=1
+	elif deep == 1 or deep == 0:
+		return EncryptS(var, key)
+	else:
+		return AdvEncryptS(var, key*deep, deep-1)
+
+def AdvDecryptS(var,key,deep):
+	if deep < 0:
+		deep*=1
+	elif deep == 1 or deep == 0:
+		return DecryptS(var, key)
+	else:
+		return AdvDecryptS(var, key*deep, deep-1)
+
+def PosOrNeg(num):
+	try:
+		return 1//num*2+1
+	except ZeroDivisionError:
+		return 0
+
+def odd(var:int) -> bool:
+	return var%2
+
+
+def numbers(times,nums=0):
+	return eval(f'[{nums}'+f",{nums}"*(times-1)+']')
 
 # funcs/classes
 '''
