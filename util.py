@@ -1,16 +1,22 @@
-#! /usr/bin/python3.8
+#! /usr/bin/python3.9
 
 # util.py imports
 from pickle import dump as _PickleDump, load as _PickleLoad, dumps as PickleString, loads as UnpickleString
 from json import dump as _JsonDump, load as _JsonLoad
+from tty import setraw
+from termios import tcgetattr , tcsetattr , TCSADRAIN , TIOCGWINSZ
+import gi
+gi.require_version('Notify', '0.7')
+from gi.repository import Notify
 
 # general imports
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp , strftime as __ftime__
-from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout
+from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
 from os.path import isfile,exists
-
+from fcntl import ioctl
+from struct import pack, unpack
 
 USER:str = getenv("USER")
 FuncType:type = type(lambda a:a )
@@ -34,7 +40,7 @@ class log:
 		this.LOG.append(f'{tme}{ask}')
 
 	def remove(this,index_or_content:int or str) -> None:
-		
+
 		if type(index_or_content) == int:
 			return this.LOG.pop(index_or_content)
 		else:
@@ -296,12 +302,6 @@ class rng:
 		return this.get()
 
 def print(*msg,end='\n'):
-	# if type(msg)
-	# try:
-		# b=any([i.__print__(end,rep=False) for i in msg if type(i) == var])
-		# if b:return
-	# except NameError:pass
-
 	try:
 		if len(msg) == 1:
 			msg = msg[0]
@@ -311,7 +311,29 @@ def print(*msg,end='\n'):
 
 	sout.write(f'{msg}{end}')
 
-	# return f'{msg}{end}'
+def printl(*msg):
+	try:
+		if len(msg) == 1:
+			msg = msg[0]
+		if len(msg) == 0:
+			msg = ''
+	except TypeError:pass
+
+	sout.write(f'{msg}')
+
+
+# def input(*msg,joiner=", "):
+# 	print(joiner.join(msg),end="")
+# 	for line in sin:
+# 		return line[0:-1]
+# issue prints AFTER reading input (WTF)
+# e.i
+# input(':') & user enters'd'
+# result:
+# d
+# :⏎
+# return d
+
 
 # start of chaos
 
@@ -348,33 +370,59 @@ def index(ls:list,var,many=False) -> list:
 #\/ \/ \/ \/
 
 color={
-	'nc':'\033[0m'
-	,'white':'\033[0m'
-	,'black' : '\033[0;30m'
-	,'red' : '\033[0;31m'
-	,'green' : '\033[0;32m'
-	,'yellow' : '\033[0;33m'
-	,'blue' : '\033[0;34m'
-	,'magenta' : '\033[0;35m'
-	,'cyan' : '\033[0;36m'
-	,'light gray' : '\033[0;37m'
-	,'light grey' : '\033[0;37m'
-	,'dark gray' : '\033[0;90m'
-	,'dark grey' : '\033[0;90m'
-	,'light red' : '\033[0;91m'
-	,'light green' : '\033[0;92m'
-	,'light yellow' : '\033[0;93m'
-	,'light blue' : '\033[0;94m'
-	,'light magenta' : '\033[0;95m'
-	,'light cyan' : '\033[0;96m'
-	,'br gray' : '\033[0;37m'
-	,'br grey' : '\033[0;37m'
-	,'br red' : '\033[0;91m'
-	,'br green' : '\033[0;92m'
-	,'br yellow' : '\033[0;93m'
-	,'br blue' : '\033[0;94m'
-	,'br magenta' : '\033[0;95m'
-	,'br cyan' : '\033[0;96m'
+# formating: '$(name)' : '\003[$(mode);$(ColorCode)m'
+# modes: 0:normal 1:bold? 2:dark 3:italics 4:underline 5:blinking 6:blinking2? 7:bkground
+	'nc':'\033[0m',
+	'white':'\033[0m',
+	'black' : '\033[0;30m',
+	'red' : '\033[0;31m',
+	'green' : '\033[0;32m',
+	'yellow' : '\033[0;33m',
+	'blue' : '\033[0;34m',
+	'magenta' : '\033[0;35m',
+	'cyan' : '\033[0;36m',
+	
+	'dark gray' : '\033[0;90m',
+	'dark grey' : '\033[0;90m',
+	
+	'light gray' : '\033[0;37m',
+	'light grey' : '\033[0;37m',
+	'light red' : '\033[0;91m',
+	'light green' : '\033[0;92m',
+	'light yellow' : '\033[0;93m',
+	'light blue' : '\033[0;94m',
+	'light magenta' : '\033[0;95m',
+	'light cyan' : '\033[0;96m',
+	
+	'br gray' : '\033[0;37m',
+	'br grey' : '\033[0;37m',
+	'br red' : '\033[0;91m',
+	'br green' : '\033[0;92m',
+	'br yellow' : '\033[0;93m',
+	'br blue' : '\033[0;94m',
+	'br magenta' : '\033[0;95m',
+	'br cyan' : '\033[0;96m',
+	
+	'bk nc':'\033[7;0m',
+	'bk white':'\033[7;0m',
+	'bk black' : '\033[7;30m',
+	'bk red' : '\033[7;31m',
+	'bk green' : '\033[7;32m',
+	'bk yellow' : '\033[7;33m',
+	'bk blue' : '\033[7;34m',
+	'bk magenta' : '\033[7;35m',
+	'bk cyan' : '\033[7;36m',
+	'bk light gray' : '\033[7;37m',
+	'bk light grey' : '\033[7;37m',
+	'bk dark gray' : '\033[7;90m',
+	'bk dark grey' : '\033[7;90m',
+	'bk light red' : '\033[7;91m',
+	'bk light green' : '\033[7;92m',
+	'bk light yellow' : '\033[7;93m',
+	'bk light blue' : '\033[7;94m',
+	'bk light magenta' : '\033[7;95m',
+	'bk light cyan' : '\033[7;96m',
+	
 }
 
 #fish basic color list
@@ -403,9 +451,9 @@ def SplitBracket(string:str,bracket:str,closing_bracket=''):
 
 	if closing_bracket == '':
 		r = {
-		'(':')'
-		,'[':']'
-		,'{':'}'
+		'(' : ')',
+		'[' : ']',
+		'{' : '}',
 		}
 		closing_bracket = r[bracket]
 	# "[](){}" bracket = '(' => ["[]","){}"] => "[])){}" => ["[]","{}"]
@@ -623,7 +671,7 @@ def fact(n:int) -> int:
 		Fact*=i
 	return Fact
 
-def argv_assing(argvs:iter) -> dict:
+def ArgvAssing(argvs:iter) -> dict:
 	'''
 	this function will loop through all argvs, and will define the ones starting with - as indicators
 	and the others just normal arguments
@@ -638,31 +686,34 @@ def argv_assing(argvs:iter) -> dict:
 		if str(argvs[i])[0] == '-':
 			indcn.append(i)
 
-	if indcn == [] and argvs != []:
-		ret[None] = argvs
-
-	elif indcn == []:
-		ret[None] = []
+	if indcn == []:
+		if argv == []:
+			ret[None] = []
+		else:
+			ret[None] = argvs
 
 	elif indcn[0] > 0:
 		ret[None] = argvs[0:indcn[0]]
 
+	for index in r(argvs):
+		argvs[index] = argvs[index].replace("/-",'-')
 
 	for i in r(indcn):
 		try:
 			dif = indcn[i+1]-indcn[i]
 			add = argvs[indcn[i]:indcn[i]+dif][1:]
-			for AddIndex in r(add):
-				add[AddIndex] = add[AddIndex].replace("/-",'-')
+			# for AddIndex in r(add):
+				# add[AddIndex] = add[AddIndex].replace("/-",'-')
 			ret[argvs[indcn[i]:indcn[i]+dif][0]] = add#argvs[indcn[i]:indcn[i]+dif][1:]
 		except IndexError:
 			add = argvs[indcn[i]+1:]
-			for AddIndex in r(add):
-				add[AddIndex] = add[AddIndex].replace("/-",'-')
+			# for AddIndex in r(add):
+				# add[AddIndex] = add[AddIndex].replace("/-",'-')
 			ret[argvs[indcn[i]]] = add#argvs[indcn[i]+1:]
 	return ret
 
-ArgvAssing = argv_assing
+
+argv_assing = ArgvAssing
 
 class time:
 	@property
@@ -695,30 +746,9 @@ class time:
 		# _log.add(f'class ( time ) -> year')
 		return __ftime__("%D").split("/")[2]
 
-try:
-	import gi
-	gi.require_version('Notify', '0.7')
-	from gi.repository import Notify
-	class notify:
-		def __init__(this,title:str="",body:str="",instant:bool=False,name:str="GNOME-notify-class util.py"):
-			# _log.add(f'class ( notify ) -> {title , body , instant , name}')
-			Notify.init(name)
-			if title or body:
-				this.notf=Notify.Notification.new(str(title),str(body))
-				if instant:
-					this.notf.show()
-			else:
-				this.notf=Notify.Notification.new("","")
-		def new(this,title,body,instant=False):
-			this.notf=Notify.Notification.new(str(title),str(body))
-			return this
-		def __call__(this):this.notf.show()
-		def __repr__(this):return f'{this.notf}'
-		def show(this):this()
-
-except ImportError:
-	if '--debug' in argv:
-		NotifyError = f'{color["red"]}[{color["yellow"]}WARNING{color["red"]}]{color["nc"]} notify won\'t work without python 3.8'
+def notify(title="",body=""):
+	Notify.init("util.py/func/notify/init")
+	Notify.Notification.new(str(title),str(body)).show()
 
 def exit(num:int=1) -> None:
 	# _log.add(f'class ( exit ) = ({num}) => act')
@@ -822,6 +852,7 @@ class code:
 			msg = f"{this.code[0]}"
 		return msg
 
+
 class var(object):
 	'''
 	this class should NOT be used for items in iterables! (like lists)
@@ -830,7 +861,7 @@ class var(object):
 	so you can stop worring about doing this foo=DoShit(foo,args)
 	and start doing this foo.DoShit(args)
 	and facilitating your life when using dicts
-	
+
 	for i in {'a':1,'b':2,'c':3} = 	ERROR
 	for i in var({'a':1,'b':2,'c':3}) = dict.keys()
 
@@ -850,7 +881,7 @@ class var(object):
 		this.Type = Type
 		this.Value = Value
 		this.PrintMutipleLines=bool(PrintMutipleLines)
-		
+
 		Types = {
 			(float,int):"IsNumber",
 			(list,set,str):"IsIterable",
@@ -980,7 +1011,7 @@ class var(object):
 		else:
 			ret = [this.Value]
 			ret[index] = obj
-		
+
 		this.Value = ret
 
 
@@ -1039,8 +1070,6 @@ class var(object):
 		if type(bracket) == var:bracket = bracket.Value
 		if type(ClosingBracket) == var:ClosingBracket = ClosingBracket.Value
 
-		# AssureType(this.Value,str)
-
 		if ClosingBracket == "default":
 			ret = SplitBracket(this.Value,bracket)
 		else:
@@ -1078,6 +1107,7 @@ class var(object):
 
 
 	# complex methods done
+
 
 class BDP:
 	def __init__(this,name,IgnoreDataSize=False):
@@ -1120,7 +1150,7 @@ class BDP:
 			return f"name: {this.name}\n{color['yellow']}data too big to display\nBDP(IgnoreDataSize=True) to ignore size{color['nc']}"
 
 	def __call__(this,data=None):
-		
+
 		if data == None and this.data == None:
 			return this.load()
 
@@ -1171,16 +1201,16 @@ def DecryptS(var:str,key:int or float):
 	# return "".join(ret)
 
 def AdvEncryptS(var,key,deep):
-	if deep < 0:
-		deep*=1
+	if deep <= 0:
+		deep=1
 	elif deep == 1 or deep == 0:
 		return EncryptS(var, key)
 	else:
 		return AdvEncryptS(var, key*deep, deep-1)
 
 def AdvDecryptS(var,key,deep):
-	if deep < 0:
-		deep*=1
+	if deep <= 0:
+		deep=1
 	elif deep == 1 or deep == 0:
 		return DecryptS(var, key)
 	else:
@@ -1198,3 +1228,105 @@ def odd(var:int) -> bool:
 
 def numbers(times,nums=0):
 	return eval(f'[{nums}'+f",{nums}"*(times-1)+']')
+
+def ShowTextGif(sprites,SleepTime=0.35,times=-1):#if times is negative the loop won't stop || if times = 0, it will be len(sprites)*2
+	if times == 0:
+		times = len(sprites)
+	if times < 0:
+		while True:
+			for sprite in sprites:
+				clear()
+				sout.write(sprite)
+				sleep(SleepTime)
+	else:
+		for tick in r(times):
+			for sprite in sprites:
+				clear()
+				sout.write(sprite)
+				sleep(SleepTime)
+
+def GetCh():
+	fd = sin.fileno()
+	old_settings = tcgetattr(fd)
+	try:
+		setraw(sin.fileno())
+		ch = sin.read(1)
+	finally:
+		tcsetattr(fd, TCSADRAIN, old_settings)
+	return ch
+
+def GetTerminalSize():
+	h, w, *_ = unpack('HHHH',ioctl(0, TIOCGWINSZ,pack('HHHH', 0, 0, 0, 0)))
+	return w, h
+
+# funcs/classes [OUT DATED]
+'''
+	type = FuncType
+	type = NoneType
+	list = iterables
+	class NumberTooBigError
+	class log
+	func( AssureType)
+	func( r)
+	class timer
+	func( make_dict)
+	func( sleep)
+	func( pc)
+	func( even)
+	func( odd)
+	func( rng_n_rep)
+	func( use_file)
+	func( js)
+	func( is_prime)
+	func( case)
+	func( fib)
+	class rng
+	func( print)
+	func( muid)
+	func( encpt)
+	func( decpt)
+	func( index)
+	class color
+	func( split_bracket)
+	func( any_str_in_list)
+	func( remove_all)
+	func( adv_encpt_file)
+	func( adv_decpt_file)
+	func( adv_encpt_str)
+	func( adv_decpt_str)
+	func( bhask)
+	func( near)
+	func( lst1)
+	class const
+	func( adv_encpt2)
+	func( adv_decpt2)
+	func( rsymb)
+	func( rchar)
+	func( ritem)
+	func( get_w_len)
+	func( call_w_except)
+	func( mmc)
+	func( lcm)
+	func( fact)
+	func( argv_assing)
+	class time
+	func( notify)
+	func( exit)
+	func( between)
+	func( ls)
+	func( rstr)
+	func( clear)
+	func( ln)
+	func( inrange)
+	func( ANDGroups)
+	func( ORGroups)
+	func( XORGroups)
+	class code
+	class var
+	class BDP
+	func( mid)
+	func( MessageMid)
+	func( NumberToExponent)
+	func( rbool)
+	func( rcase)
+'''
