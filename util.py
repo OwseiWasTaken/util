@@ -23,6 +23,7 @@ FuncType:type = type(lambda a:a )
 NoneType:type = type(None)
 iterables:list = [type(list),type(set),type(frozenset)]
 class NumberTooBigError(BaseException):pass
+infinity = float("inf")
 
 class log:
 	def __init__(this,sep=', ',tm=True,file="log"):
@@ -46,7 +47,9 @@ class log:
 		else:
 			this.LOG.index(index_or_content)
 			return this.LOG.pop(index_or_content)
-		raise ValueError
+		print("no such value sa index or content")
+		exit(1)
+		# raise ValueError
 	def __repr__(this) -> str:
 		return f'{this.LOG}'
 
@@ -659,7 +662,10 @@ def mmc(a:int,b:int) -> int:
 	for i in count(0):
 		G = greater+i
 		if not G % a and not G % b:break
-		if tm()-s>len(f"{greater}")*2:raise Exception('timed out')
+		if tm()-s>len(f"{greater}")*2:
+			print(f"{color['red']}timed out{color['normal']}")
+			return None
+			# rai/se Exception('timed out')
 	return G
 
 lcm = mmc
