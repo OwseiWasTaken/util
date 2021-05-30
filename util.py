@@ -21,9 +21,9 @@ from struct import pack, unpack
 USER:str = getenv("USER")
 FuncType:type = type(lambda a:a )
 NoneType:type = type(None)
-iterables:list = [type(list),type(set),type(frozenset)]
+iterables:list = [type(list()),type(set()),type(frozenset())]
 class NumberTooBigError(BaseException):pass
-infinity = float("inf")
+infinity:float = float("inf")
 
 class log:
 	def __init__(this,sep=', ',tm=True,file="log"):
@@ -654,17 +654,19 @@ def count(end:object,start:int=0,jmp:int=1):
 			if i >= end:break
 
 def mmc(a:int,b:int) -> int:
+	if a-1<b or b<a+1:
+		return a*b
 	AssureType(int,a,ErrorMsg=f"a : {a} != int")
 	AssureType(int,b,ErrorMsg=f"b : {b} != int")
 	# _log.add(f'func ( mmc/lcm ) with {a , b}')
 	greater = max(a,b)
-	s = tm()
+	# s = tm()
 	for i in count(0):
 		G = greater+i
 		if not G % a and not G % b:break
-		if tm()-s>len(f"{greater}")*2:
-			print(f"{color['red']}timed out{color['normal']}")
-			return None
+		# if tm()-s>len(f"{greater}")*2:
+			# print(f"{color['red']}timed out{color['normal']}")
+			# return None
 			# rai/se Exception('timed out')
 	return G
 
@@ -1103,13 +1105,24 @@ class var(object):
 		return ret
 
 	def pop(this,index):
-		return this.Value.pop(index)
+		if this.IsString:
+			char = this.Value[index]
+			if index == -1:
+				this.Value = this.Value[:-1]
+			else:
+				this.Value = this.Value[index+1:]+this.Value[:index]
+			return char
+		else:
+			return this.Value.pop(index)
 
 	def remove(this,content):
 		this.Value.remove(this)
 
 	def copy(this):
 		return var(this.Value,PrintMutipleLines=this.PrintMutipleLines)
+	
+	def find(this,string:str)-> int:
+		return this.Value.find(string)
 
 
 	# complex methods done
@@ -1231,7 +1244,6 @@ def PosOrNeg(num):
 def odd(var:int) -> bool:
 	return var%2
 
-
 def numbers(times,nums=0):
 	return eval(f'[{nums}'+f",{nums}"*(times-1)+']')
 
@@ -1265,7 +1277,15 @@ def GetTerminalSize():
 	h, w, *_ = unpack('HHHH',ioctl(0, TIOCGWINSZ,pack('HHHH', 0, 0, 0, 0)))
 	return w, h
 
-# funcs/classes [OUT DATED]
+def JustDecimal(number):
+	return number-int(number)
+
+def number(num:str)->int or float:
+	return eval(num)
+
+
+
+# funcs/classes [OUT DATED ?]
 '''
 	type = FuncType
 	type = NoneType
@@ -1335,4 +1355,17 @@ def GetTerminalSize():
 	func( NumberToExponent)
 	func( rbool)
 	func( rcase)
+	func( invert)
+	func( EncryptS)
+	func( DecryptS)
+	func( AdvEncryptS)
+	func( AdvDecryptS)
+	func( PosOrNeg)
+	func( odd)
+	func( numbers)
+	func( ShowTextGif)
+	func( GetCh)
+	func( GetTerminalSize)
+	func( JustDecimal)
+	func( number)
 '''
