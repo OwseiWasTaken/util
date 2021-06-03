@@ -1283,14 +1283,27 @@ def JustDecimal(number):
 def number(num:str)->int or float:
 	return eval(num)
 
+def TimesInNumber(TimesIn,NumberTo) -> bool:
+	return bool(sum([rbool(TimesIn) for x in r(NumberTo)]))
 
+def NumSum(numbers:int or float) -> int:
+	numbers = str(numbers).replace('.', "")
+	numbers = sum([int(num) for num in numbers])
+	if len(str(numbers)) != 1:
+		return NumSum(numbers)
+	else:
+		return numbers
 
 # funcs/classes [OUT DATED ?]
 '''
-	type = FuncType
-	type = NoneType
-	list = iterables
+	# VARS
+	USER
+	FuncType
+	NoneType
+	iterables
 	class NumberTooBigError
+	infinity
+	# CLASSES / FUNCS
 	class log
 	func( AssureType)
 	func( r)
