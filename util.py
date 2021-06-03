@@ -1280,6 +1280,9 @@ def GetTerminalSize():
 def JustDecimal(number):
 	return number-int(number)
 
+def NoDecimal(number):
+	retunr int(number)
+
 def number(num:str)->int or float:
 	return eval(num)
 
