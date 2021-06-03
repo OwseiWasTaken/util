@@ -4,18 +4,20 @@ from util import *
 
 
 #main
-class program:
-	def __init__(this,argv,argk):
-		# declare vars
-		this.argv = argv
-		this.argk = argk
+def Main(argv):
+	argk = list(argv.keys())
+	def	get(indicators):
+		nonlocal argv,argk
+		other = []
+		for indicator in indicators:
+			if indicator in argk:
+				other.append(argv[indicator])
+		return other
 
 
-	def Main(this):
 
 
-
-		return 0
+	return 0
 
 
 
@@ -24,17 +26,12 @@ class program:
 
 #start
 if __name__ == '__main__':
-	argv = argv_assing(argv[1:])
-	argk = list(argv.keys())
-	code = program(argv,argk).Main
+	argv = ArgvAssing(argv[1:])
+	start = tm()
+	ExitCode = Main(argv)
 
-	if '--debug' in argk:
-		start = tm()
-		ExitCode = code()
-
+	if '--debug' in argv.keys():
 		if not ExitCode:print(f'{color["green"]}code successfully exited in',end='')
-		else:print(f'{color["red"]}code exited with error {exit_code} in',end='')
+		else:print(f'{color["red"]}code exited with error {ExitCode} in',end='')
 		print(f' {round(tm()-start,5)} seconds{color["nc"]}')
-	else:
-		ExitCode = code()
 	exit(ExitCode)
