@@ -764,7 +764,7 @@ def exit(num:int=1) -> None:
 	if num < 256:
 		exi(num)
 	else:
-		raise NumberTooBigError(f'exit num : {num} > 255')
+		raise NumberTooBigError("exit num : %d > 255" % num)
 
 def between(x:float or int,min:float or int,max:float or int) -> bool:
 	return min < x < max
