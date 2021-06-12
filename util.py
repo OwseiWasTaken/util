@@ -1297,6 +1297,72 @@ def NumSum(numbers:int or float) -> int:
 	else:
 		return numbers
 
+def FindAll(StringToSearchIn:str,StringToFind:str) -> list[str]:
+	StringToFindL = len(StringToFind)
+	NotStringToFind = '0'*StringToFindL
+	if NotStringToFind == StringToFind:
+		NotStringToFind = '1'*StringToFindL
+	# StringToFind can't be 000... and 111... at the same time!
+
+	# how many times {StringToFind} appears in {StringToSearchIn}
+	times:int = int((len(StringToSearchIn) - len(StringToSearchIn.replace(StringToFind,"")))/StringToFindL)
+	# how? | gets len of StringASText - len of StringASText without {StringToFind} devides the result to the len os {StringToFind}
+
+	ret = []
+	for i in r(times):
+		ret.append(StringToSearchIn.find(StringToFind))
+		StringToSearchIn = StringToSearchIn.replace(StringToFind, NotStringToFind,1)
+	return ret
+
+def timeit(func):
+	def wrapper(*args,**kwargs):
+		timer = tm()
+		ret=func(*args,**kwargs)
+		return ret,round(tm()-timer,6)
+	return wrapper
+
+
+def DeepSum(args,ParseStringWith=eval,ParseString=False,ReturnDeeph=False):
+	"""
+	this function will add everything in the iterable in {args}, even strings
+	may return deeph of the iterable in {ReturnDeeph} is True (will calculate deeph any way tho)
+	this ReturnDeeph thing adds one for every item but iterables (but will count the deeph in side those iterables)
+	"""
+	ret = 0
+	deeph = 0
+	for thing in args:
+		deeph+=1
+		if type(thing) in (float,int):
+			# add number
+			ret+=thing
+		elif type(thing) == str:
+			if ParseString:
+				# parse and add string
+				ret+=ParseStringWith(thing)
+			else:
+				# breaks because found string
+				raise TypeError("\n%sERROR IN \"DeepSum\" function%s\n\
+value %s is of type string (and ParseString = False)" %  (color['br red'],color["nc"],repr(thing)))
+		else:
+			# recourciveness (it that a word?)
+			deeph-=1
+			RetA,DeephA=DeepSum(thing,ParseString=ParseString,ParseStringWith=ParseStringWith,ReturnDeeph=True)
+			# adds the nums and deeph of recourcive run
+			ret += RetA
+			deeph += DeephA
+
+	if ReturnDeeph:
+		return ret,deeph
+	else:
+		return ret
+	# DUDE DOING THIS MADE ME WANT TO KILL SOMEONE
+
+
+def average(args,SumString=False,SumFunc=DeepSum):
+	sum,deeph = SumFunc(args,ParseString=SumString,ReturnDeeph=True)
+	return sum/deeph
+
+
 # funcs/classes [OUT DATED ?]
 '''
 	# VARS
