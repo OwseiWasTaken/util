@@ -1481,19 +1481,13 @@ def StringMan(string:str) -> str:
 def pos(x,y):
 	return "\x1B[%i;%iH" % (y,x)
 
-def	get(*indicators:object) -> list:
-	nonlocal argv,argk
-	other = []
-	for indicator in indicators:
-		if indicator in argk:
-			other.append(argv[indicator])
-	return other
 
 
 if __name__=="__main__":
 	argv = ArgvAssing(argv)
-	for i in get("-c","-C"):
-		print(eval(i))
+	if "-c" in argv.keys():
+		for i in argv["-c"]:
+			print(eval(i))
 # funcs/classes [OUT DATED ?]
 '''
 	# VARS
