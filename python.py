@@ -11,7 +11,8 @@ def Main(argv) -> int:
 		other = []
 		for indicator in indicators:
 			if indicator in argk:
-				other.append(argv[indicator])
+				for item in argv.get(indicator):
+					other.append(item)
 		return other
 
 	#CODE HERE#
