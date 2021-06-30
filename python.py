@@ -4,9 +4,9 @@ from util import *
 
 
 #main
-def Main(argv):
+def Main(argv) -> int:
 	argk = list(argv.keys())
-	def	get(indicators):
+	def get(*indicators:object) -> list:
 		nonlocal argv,argk
 		other = []
 		for indicator in indicators:
@@ -14,8 +14,7 @@ def Main(argv):
 				other.append(argv[indicator])
 		return other
 
-
-
+	#CODE HERE#
 
 	return 0
 
@@ -31,7 +30,7 @@ if __name__ == '__main__':
 	ExitCode = Main(argv)
 
 	if '--debug' in argv.keys():
-		if not ExitCode:print(f'{color["green"]}code successfully exited in',end='')
-		else:print(f'{color["red"]}code exited with error {ExitCode} in',end='')
-		print(f' {round(tm()-start,5)} seconds{color["nc"]}')
+		if not ExitCode:printl("%scode successfully exited in " % color["green"])
+		else:printl("%scode exited with error %d in " % (color["red"],ExitCode))
+		print("%.3f seconds%s" % (round(tm()-start,5),color["nc"]))
 	exit(ExitCode)
