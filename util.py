@@ -12,7 +12,7 @@ from gi.repository import Notify
 # general imports
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp , strftime as __ftime__
-from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin
+from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as serr
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
 from os.path import isfile,exists
 from fcntl import ioctl
@@ -47,9 +47,7 @@ class log:
 		else:
 			this.LOG.index(index_or_content)
 			return this.LOG.pop(index_or_content)
-		print("no such value sa index or content")
-		exit(1)
-		# raise ValueError
+
 	def __repr__(this) -> str:
 		return f'{this.LOG}'
 
@@ -315,10 +313,14 @@ class rng:
 	def __call__(this):
 		return this.get()
 
-def print(*msg,end='\n'):
-	try:
-		msg = lst1(msg)
-	except TypeError:pass
+def print(*msg,end='\n',sep=", "):
+	msg = sep.join([str(m) for m in msg])
+	# try:
+		# if len(msg) > 1:
+			# msg = sep.join([str(m) for m in msg])
+		# else:
+			# msg = lst1(msg)
+	# except TypeError:pass
 
 	sout.write(f'{msg}{end}')
 	sout.flush()
@@ -339,7 +341,7 @@ def prints(*msg):
 	sout.write(f'{msg}')
 
 def input(*msg,joiner=", "):
-	print(joiner.join(msg),end="")
+	printl(joiner.join(msg))
 	for line in sin:
 		return line[0:-1]
 
@@ -377,11 +379,12 @@ def index(ls:list,var,many=False) -> list:
 #bash colors
 #\/ \/ \/ \/
 
-color={
+color = {
 # formating: '{name}' : '\003[{mode};{ColorCode}m'
-# modes: 0:normal 1:bold? 2:dark 3:italics 4:underline 5:blinking 6:blinking2? 7:bkground
+# modes: 0:normal 1:bold? 2:dark 3:italics 4:underline 5:blinking 7:bkground 8:hidden
+	'':'',
 	'nc':'\033[0m',
-	'white':'\033[0m',
+	'white':'\033[0;37m',
 	'black' : '\033[0;30m',
 	'red' : '\033[0;31m',
 	'green' : '\033[0;32m',
@@ -410,9 +413,28 @@ color={
 	'br blue' : '\033[0;94m',
 	'br magenta' : '\033[0;95m',
 	'br cyan' : '\033[0;96m',
-	
+
+	# for some reason these kinda don't work
+	# "bk nc" : "\033[0;49m",
+	# "bk black" : "\033[0;40m",
+	# "bk red" : "\033[0;41m",
+	# "bk green" : "\033[0;42m",
+	# "bk yellow" : "\033[0;43m",
+	# "bk blue" : "\033[0;44m",
+	# "bk magenta" : "\033[0;45m",
+	# "bk cyan" : "\033[0;46m",
+	# "bk light gray" : "\033[0;47m",
+	# "bk white" : "\033[0;107m",
+	# "bk dark gray" : "\033[0;100m",
+	# "bk light red" : "\033[0;101m",
+	# "bk light green" : "\033[0;102m",
+	# "bk light yellow" : "\033[0;103m",
+	# "bk light blue" : "\033[0;104m",
+	# "bk light magenta" : "\033[0;105m",
+	# "bk light cyan" : "\033[0;106m",
+
 	'bk nc':'\033[7;0m',
-	'bk white':'\033[7;0m',
+	'bk white':'\033[7;37m',
 	'bk black' : '\033[7;30m',
 	'bk red' : '\033[7;31m',
 	'bk green' : '\033[7;32m',
@@ -420,12 +442,10 @@ color={
 	'bk blue' : '\033[7;34m',
 	'bk magenta' : '\033[7;35m',
 	'bk cyan' : '\033[7;36m',
-	'bk light gray' : '\033[7;37m',
-	'bk light grey' : '\033[7;37m',
-	'bk dark gray' : '\033[7;90m',
-	'bk dark grey' : '\033[7;90m',
+	'bk gray' : '\033[7;90m',
+	'bk grey' : '\033[7;90m',
 	'bk light red' : '\033[7;91m',
-	'bk light green' : '\033[7;92m',
+	'bk light green' : '\033[7;92m', #it's darker light cyan!
 	'bk light yellow' : '\033[7;93m',
 	'bk light blue' : '\033[7;94m',
 	'bk light magenta' : '\033[7;95m',
@@ -1261,12 +1281,12 @@ def ShowTextGif(sprites,SleepTime=0.35,times=-1):#if times is negative the loop 
 
 def GetCh():
 	fd = sin.fileno()
-	old_settings = tcgetattr(fd)
+	OldSettings = tcgetattr(fd)
 	try:
 		setraw(sin.fileno())
 		ch = sin.read(1)
 	finally:
-		tcsetattr(fd, TCSADRAIN, old_settings)
+		tcsetattr(fd, TCSADRAIN, OldSettings)
 	return ch
 	
 	#===how get arrow keys===#
@@ -1277,20 +1297,20 @@ def GetCh():
 	#while True:
 	# simple loop
 
-	#	ch = GetCh()
-	# GetCh as ch
+	# ch = GetCh()
+	# GetCh as and set result in ch
 	
-	#	if ch == 'q':break
+	# if ch == 'q':break
 	# exit w/ q
 	
-	#	if Chs[-1] == '[' and Chs[-2] == '\x1b':
-	# \x1b[ is the arrow key prefix
+	# if ''.join(Chs) == '\xab[':
+	# \x1b[ is the the escape seq start
 
 	#		ch = {
-	#		'A':"UP",
-	#		'B':"DOWN",
-	#		'C':"RIGHT",
-	#		'D':"LEFT",
+	#			'A':"UP",
+	#			'B':"DOWN",
+	#			'C':"RIGHT",
+	#			'D':"LEFT",
 	#		}.get(ch)
 	# translate ABCD (arrow keys) to the arrow position
 
@@ -1387,7 +1407,7 @@ def average(args,SumString=False,SumFunc=DeepSum):
 	sum,deeph = SumFunc(args,ParseString=SumString,ReturnDeeph=True)
 	return sum/deeph
 
-def mid(msg,LenToBe,CanDeleteEnd=True,AddFront=' ',AddAfter=' ',DoToFront="flip"):
+def mid(msg,LenToBe,CanDeleteEnd=True,AddFront=' ',AddAfter=' ',DoToFront="not front"):
 	iterate = LenToBe - len(msg)
 	if iterate < 0:
 		if type(msg) in [float,int]:
@@ -1396,17 +1416,13 @@ def mid(msg,LenToBe,CanDeleteEnd=True,AddFront=' ',AddAfter=' ',DoToFront="flip"
 
 	front = 1
 	while iterate > 0:
-		if DoToFront == 'flip':
-			front = not front
-		else:
-			front = eval(DoToFront)
+		front = eval(DoToFront)
 		iterate -= 1
 		if front:
 			msg = AddFront+msg
 		else:
 			msg+= AddAfter
 	return msg
-
 
 def compare(times,StrSize=15):
 	avg = average(times)
@@ -1429,9 +1445,8 @@ def compare(times,StrSize=15):
 			PoM, #diff from avg ([0] = +/-)
 			color["nc"]) # no color
 		
-		# prt = f"{index} | {str(time).rjust(StrSize)} | "
 
-		print(prt)
+		return prt
 
 def StringMan(string:str) -> str:
 	# FakeCurses stuff (expect shit)
@@ -1447,9 +1462,8 @@ def StringMan(string:str) -> str:
 	pointer = 0
 
 	while True:
-		clear()
-		char = GetCh()
 		# convert char
+		char = GetCh()
 		if Chs[-1] == '[' and Chs[-2] == '\x1b':
 			# convert left or right arrow
 			ch = {
@@ -1461,13 +1475,11 @@ def StringMan(string:str) -> str:
 			char = ch
 		Chs.append(char)
 
-
-
-
+		clear()
 		for index in r(string):
 			ch = string[index]
 			if index == pointer:
-				printl("%s%c%s" % (color["bk light cyan"],ch,color["bk white"]))
+				printl("%s%c%s" % (color["bk light cyan"],ch,color["bk nc"]))
 			else:
 				printl(ch)
 
@@ -1478,8 +1490,93 @@ def StringMan(string:str) -> str:
 		elif char == "Quit":
 			break
 
-def pos(x,y):
-	return "\x1B[%i;%iH" % (y,x)
+def CharConverter(Chars:list[str]):
+	ch = Chars.pop(0)
+
+	# return None in in esc seq
+	if ch == '\x1b':return None
+	elif ch == '[' and Chars[0] == '\x1b':return None
+
+	Chars = ''.join(Chars)
+	if Chars == '\x1b[':
+		ch = {
+			'A':"UP",
+			'B':"DOWN",
+			'C':"RIGHT",
+			'D':"LEFT",
+		}.get(ch)
+	elif Chars == '\x1b[1;5':
+		ch = {
+			'A':"CTRL,UP",
+			'B':"CTRL,DOWN",
+			'C':"RIGHT",
+			'D':"LEFT",
+
+		}.get(ch)
+	elif Chars == '\x1b[1;2':
+		ch = {
+			'A':"SHIFT,UP",
+			'B':"SHIFT,DOWN",
+			'C':"RIGHT",
+			'D':"LEFT",
+		}.get(ch)
+	return ch
+
+
+
+def pos(collum,line):
+	return "\x1B[%i;%iH" % (line,collum)
+
+def ClearLine(y,GetTerminalY="default",char=' ',start=color["nc"]):
+	if GetTerminalY == "default":
+		x,_ = GetTerminalSize()
+	sout.write("%s%s%s%s%s" % (start,pos(0,y),char*x,pos(0,y),color["nc"]))
+	sout.flush()
+
+def ClearCollum(x,GetTerminalX="default",char=' ',start=color["nc"],end=color["nc"]):
+	if GetTerminalX == "default":
+		_,y = GetTerminalSize()
+	for i in r(y):
+		sout.write("%s" % (start + pos(x,i) + char + end ))
+	sout.flush()
+
+def DrawHLine(x,XTo,y,colo,char = ' '):
+	ps = pos(x,y)
+	_x,_y = GetTerminalSize()
+	len = (XTo-x)+1
+	sout.write(ps + colo + char * len + color["nc"] + char*(_x-len))  # if optmizing change XTO -> msg lenght
+	sout.flush()
+
+def DrawVLine(y,YTO,x,colo,char = ' '):
+	for i in range(0,YTO+1)[y:]:
+		sout.write("%s" % pos(x,i) + colo + char + color["nc"])
+	sout.flush()
+
+def HideCursor():
+	sout.write("\x1b[?25l")
+	sout.flush()
+
+def ShowCursor():
+	sout.write("\x1b[?25h")
+	sout.flush()
+
+def DrawRectangle(UpLeft,DownRight,BkColor,DoubleWidthVerticalLine=False):
+	x1,y1 = UpLeft
+	x2,y2 = DownRight
+	# |x1,-y1
+	# 
+	# 	 |x2,-y2
+
+	# DrawVLine(y, YTO, x, colo)
+	DrawVLine(y1, y2, x1, BkColor)
+	DrawVLine(y1, y2, x2, BkColor)
+	if DoubleWidthVerticalLine:
+		DrawVLine(y1, y2, x1+1, BkColor)
+		DrawVLine(y1, y2, x2-1, BkColor)
+
+	# DrawHLine(x, XTo, y, colo)
+	DrawHLine(x1, x2, y1, BkColor)
+	DrawHLine(x1, x2, y2, BkColor)
 
 
 
