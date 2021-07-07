@@ -5,9 +5,6 @@ from pickle import dump as _PickleDump, load as _PickleLoad, dumps as PickleStri
 from json import dump as _JsonDump, load as _JsonLoad
 from tty import setraw
 from termios import tcgetattr , tcsetattr , TCSADRAIN , TIOCGWINSZ
-import gi
-gi.require_version('Notify', '0.7')
-from gi.repository import Notify
 
 # general imports
 from random import randint as rint, choice as ritem
@@ -17,6 +14,13 @@ from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv,
 from os.path import isfile,exists
 from fcntl import ioctl
 from struct import pack, unpack
+
+if OS == "posix":
+	# it MAY work in windows, not sure tho
+	import gi
+	gi.require_version('Notify', '0.7')
+	from gi.repository import Notify
+
 
 USER:str = getlogin()
 FuncType:type = type(lambda a:a )
