@@ -13,12 +13,12 @@ from gi.repository import Notify
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp , strftime as __ftime__
 from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as serr
-from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls,getenv
+from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, name as OS, getlogin
 from os.path import isfile,exists
 from fcntl import ioctl
 from struct import pack, unpack
 
-USER:str = getenv("USER")
+USER:str = getlogin()
 FuncType:type = type(lambda a:a )
 NoneType:type = type(None)
 iterables:list = [type(list()),type(set()),type(frozenset())]
@@ -1148,26 +1148,43 @@ class var(object):
 
 	# complex methods done
 
-
 class BDP:
 	def __init__(this,name,IgnoreDataSize=False):
 		# for unix like system
 		# c:/users/{USER}/bdp
 		this.IgnoreDataSize = IgnoreDataSize
 
-		if not exists(f"/home/{USER}/BDP"):
-			ss("mkdir /BDP/")
 
-		if not name.startswith("~/BDP/"):
-			name = f"~/BDP/{name}"
-		if not name.endswith(".pog"):
-			name = f"{name}.pog"
+		if OS == "posix":
+			if not exists(f"/home/{USER}/BDP"):
+				ss("mkdir /BDP/")
 
-		name = name.replace("//",'/')
-		name = name.replace('~',f"/home/{USER}")
+			if not name.startswith("~/BDP/"):
+				name = f"~/BDP/{name}"
+			if not name.endswith(".pog"):
+				name = f"{name}.pog"
+
+			name = name.replace("//",'/')
+			name = name.replace('~',f"/home/{USER}")
+
+		elif OS == "windows":
+			if not exists(f"C:/users/{USER}/BDP/"):
+				ss(f"mkdir C:/users/{USER}/BDP/")
+			
+			if not name.startswith(f"C:/users/{USER}/BDP/"):
+				name = f"C:/users/{USER}/BDP/{name}"
+			
+			if not name.endswith(".pog"):
+				name += ".pog"
+
+			name = name.replace("/",'\\')
+			name = name.replace('~',f"C:\\\\users\\{USER}")
+
 
 		this.name = name
 		this.data = None
+
+
 
 
 	def save(this,data=None):
@@ -1403,8 +1420,8 @@ value %s is of type string (and ParseString = False)" %  (color['br red'],color[
 	# DUDE DOING THIS MADE ME WANT TO KILL SOMEONE
 
 
-def average(args,SumString=False,SumFunc=DeepSum):
-	sum,deeph = SumFunc(args,ParseString=SumString,ReturnDeeph=True)
+def average(args,ParseString=False,SumFunc=DeepSum):
+	sum,deeph = SumFunc(args,ParseString=ParseString,ReturnDeeph=True)
 	return sum/deeph
 
 def mid(msg,LenToBe,CanDeleteEnd=True,AddFront=' ',AddAfter=' ',DoToFront="not front"):
