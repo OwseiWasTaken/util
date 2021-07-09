@@ -5,17 +5,19 @@ from pickle import dump as _PickleDump, load as _PickleLoad, dumps as PickleStri
 from json import dump as _JsonDump, load as _JsonLoad
 from tty import setraw
 from termios import tcgetattr , tcsetattr , TCSADRAIN , TIOCGWINSZ
+from fcntl import ioctl
 
-# general imports
+# general imports + util used
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp , strftime as __ftime__
 from sys import argv,exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as serr
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, name as OS, getlogin
 from os.path import isfile,exists
-from fcntl import ioctl
 from struct import pack, unpack
 
-if OS == "posix":
+OS = OS.replace("posix", "linux").replace("nt","windows")
+
+if OS == "linux":
 	# it MAY work in windows, not sure tho
 	import gi
 	gi.require_version('Notify', '0.7')
@@ -318,36 +320,49 @@ class rng:
 		return this.get()
 
 def print(*msg,end='\n',sep=", "):
+	# make msg
+	# sep.join(...) então os argumentos são "juntados" com o sep
+	# [str(m) for m in msg] para transformar todo valor em string
 	msg = sep.join([str(m) for m in msg])
-	# try:
-		# if len(msg) > 1:
-			# msg = sep.join([str(m) for m in msg])
-		# else:
-			# msg = lst1(msg)
-	# except TypeError:pass
 
+	# write msg
+	# escrever a msg no terminal
 	sout.write(f'{msg}{end}')
+
+	# flush msg
+	# escrever o conteúdo do terminal no cmd
 	sout.flush()
 
-def printl(*msg):
-	try:
-		msg = lst1(msg)
-	except TypeError:pass
+def printl(*msg,sep=", "):
+	# make msg
+	msg = sep.join([str(m) for m in msg])
 
+	# write msg
 	sout.write(f'{msg}')
+
+	# flush msg
 	sout.flush()
 
-def prints(*msg):
-	try:
-		msg = lst1(msg)
-	except TypeError:pass
+def prints(*msg,sep=", "):
+	# make msg
+	msg = sep.join([str(m) for m in msg])
 
+	# write msg
 	sout.write(f'{msg}')
 
-def input(*msg,joiner=", "):
+
+def input(*msg,joiner=", ",CallWhenEscape=None):
 	printl(joiner.join(msg))
 	for line in sin:
-		return line[0:-1]
+		msg = line[:-1]
+		break
+
+	if '\x1b' in msg:
+		NewMsg = CallWhenEscape(msg)
+		if NewMsg != None:
+			return NewMsg
+			
+	return msg
 
 # start of chaos
 
@@ -380,7 +395,7 @@ def index(ls:list,var,many=False) -> list:
 		return None
 	return ret
 
-#bash colors
+#terminal colors
 #\/ \/ \/ \/
 
 color = {
@@ -455,30 +470,8 @@ color = {
 	'bk light magenta' : '\033[7;95m',
 	'bk light cyan' : '\033[7;96m',
 }
-	
 
-#fish basic color list
-#\/ \/ \/ \/
-#black
-#red
-#green
-#yellow
-#blue
-#magenta
-#cyan
-#white
-#brblack
-#brred
-#brgreen
-#bryellow
-#brblue
-#brmagenta
-#brcyan
-#brwhite
-#normal
-
-
-def SplitBracket(string:str,bracket:str,closing_bracket=''):
+def SplitBracket(string:str,bracket:str,closing_bracket='') -> str:
 	# _log.add(f'func (split_bracket) with {string , bracket , closing_bracket}')
 
 	if closing_bracket == '':
@@ -488,22 +481,30 @@ def SplitBracket(string:str,bracket:str,closing_bracket=''):
 		'{' : '}',
 		}
 		closing_bracket = r[bracket]
-	# "[](){}" bracket = '(' => ["[]","){}"] => "[])){}" => ["[]","{}"]
-	# don't touch it! (i don't know HOW it works, but it works)
 	return closing_bracket.join(str(string).split( bracket )).split(closing_bracket)
+	
+	# e.g.
+	# bracket = '('
+	# specific openning and closing "brackets" can be set
+
+	# FEnd
+	# SplitBracket(r"[a](b){c}",'(') => ["[a]", 'b', "{c}"]
+
+	# BEnd
+	# SplitBracket("[a](b){c}",'(')) => ["[a]", "b){c}"] => "[a])b){c}" => ["[a]", 'b', "{c}"]
 
 def StrToMs(ipt):
 	# _log.add(f'func (str_to_ms) with ({ipt})')
 	ipt=ipt.split()
 	n,ipt = float(ipt[0]),ipt[1]
 	TypesToStr = {
-	tuple(["years","year","yrs","yr","ys",'y']):220903200000,
-	tuple(["weeks","week","w"]):604800000,
-	tuple(["days","day",'d']):86400000,
-	tuple(['hours','hour','hrs','hr','h']):3600000,
-	tuple(['minutes','minute','mins','min','m']):60000,
-	tuple(['seconds','second','secs','sec','s']):1000,
-	tuple(['milliseconds','millisecond','msecs','msec','ms']):1
+	("years","year","yrs","yr","ys",'y'):220903200000,
+	("weeks","week","w"):604800000,
+	("days","day",'d'):86400000,
+	('hours','hour','hrs','hr','h'):3600000,
+	('minutes','minute','mins','min','m'):60000,
+	('seconds','second','secs','sec','s'):1000,
+	('milliseconds','millisecond','msecs','msec','ms'):1
 	}
 	for i in TypesToStr.keys():
 		if ipt in i:
@@ -1159,7 +1160,7 @@ class BDP:
 		this.IgnoreDataSize = IgnoreDataSize
 
 
-		if OS == "posix":
+		if OS == "linux":
 			if not exists(f"/home/{USER}/BDP"):
 				ss("mkdir /BDP/")
 
@@ -1170,6 +1171,7 @@ class BDP:
 
 			name = name.replace("//",'/')
 			name = name.replace('~',f"/home/{USER}")
+			
 
 		elif OS == "windows":
 			if not exists(f"C:/users/{USER}/BDP/"):
