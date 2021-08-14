@@ -86,7 +86,7 @@ class log:
 	def save(this) -> None:
 		with open(this.file,'w') as save_file_log:
 			for i in this.LOG:
-			        save_file_log.write(f'{i}\n')
+					save_file_log.write(f'{i}\n')
 
 
 # _log = log()
@@ -120,9 +120,9 @@ def AssureType(value:object,types:type,err:bool=True,ErrorMsg=None) -> TypeError
 	if f'{type(value)}' != f'{types}':
 		if err:
 			if ErrorMsg == None:
-			        raise TypeError(f"\n\ntype : {type(value)} of {repr(value)} != {types}")
+					raise TypeError(f"\n\ntype : {type(value)} of {repr(value)} != {types}")
 			else:
-			        raise TypeError(ErrorMsg)
+					raise TypeError(ErrorMsg)
 		else:
 			return False
 	return True
@@ -233,8 +233,8 @@ def json(file:str,obj:object=None) -> dict or None:
 	else:_JsonDump(obj, file)
 
 def GetInt(msg:str, excepts = [], default = None) -> int:
-        '''
-        will return an integer by inputing a string with {msg , end}
+	'''
+	will return an integer by inputing a string with {msg , end}
 	and converting it to int
 	if the user enters an invalid input the function will restart
 	'''
@@ -242,8 +242,8 @@ def GetInt(msg:str, excepts = [], default = None) -> int:
 	x=input(f'{msg}')
 	try:
 		if x in excepts:
-		    return default
-                y = int(x)
+			return default
+		y = int(x)
 		return int(x)
 	except ValueError:
 		return GetInt(msg)
@@ -258,8 +258,8 @@ def GetFloat(msg:str, excepts = [], default = None) -> float:
 	x=input(f'{msg}')
 	try:
 		if x in excepts:
-		    return default
-                y = float(x)
+			return default
+		y = float(x)
 		return int(x)
 	except ValueError:
 		return GetFloat(msg)
@@ -270,8 +270,8 @@ def IsPrime(ask:int) -> bool:
 	if ask > 1:
 		for i in r(ask, start=2):
 			if (ask % i) == 0:
-			        msg = False
-			        break
+					msg = False
+					break
 		else:
 			msg = True
 	else:
@@ -385,10 +385,10 @@ def index(ls:list,var,many=False) -> list:
 		ret =[]
 		for i in r(ls):
 			if var == ls[i]:
-			        if many:
-			                ret.append(i)
-			        else:
-			                return [i]
+					if many:
+							ret.append(i)
+					else:
+							return [i]
 
 	else:
 		return None
@@ -445,8 +445,9 @@ color = {
 	'bk blue' : '\033[7;34m',
 	'bk magenta' : '\033[7;35m',
 	'bk cyan' : '\033[7;36m',
-	'bk gray' : '\033[7;37m',
-	'bk grey' : '\033[7;37m',
+	'bk gray' : '\033[7;90m',
+	'bk grey' : '\033[7;90m',
+
 
 
 	# for some reason these kinda don't work
@@ -476,11 +477,11 @@ color = {
 }
 
 def SetColorMode(color:str, mode:str):
-    index = color.find('[')+1
-    color = list(color)
-    color[index] = mode
-    color = ''.join(color)
-    return color
+	index = color.find('[')+1
+	color = list(color)
+	color[index] = mode
+	color = ''.join(color)
+	return color
 
 def PascalCase(string,remove=' '):
 	if remove in string:
@@ -533,14 +534,6 @@ def StrToMs(ipt):
 		if ipt in i:
 			return n*TypesToStr[i]
 	return None
-
-def FindAll(string:str,char:str) -> str:
-	# _log.add(f'func (remove_all) with {string,char}')
-	ret = []
-	for i in r(string):
-		if char == string[i]:
-			ret.append(i)
-	return ret
 
 
 def bhask(a,b,c):
@@ -684,12 +677,12 @@ def ArgvAssing(argvs:iter) -> dict:
 			dif = indcn[i+1]-indcn[i]
 			add = argvs[indcn[i]:indcn[i]+dif][1:]
 			# for AddIndex in r(add):
-			        # add[AddIndex] = add[AddIndex].replace("/-",'-')
+					# add[AddIndex] = add[AddIndex].replace("/-",'-')
 			ret[argvs[indcn[i]:indcn[i]+dif][0]] = add#argvs[indcn[i]:indcn[i]+dif][1:]
 		except IndexError:
 			add = argvs[indcn[i]+1:]
 			# for AddIndex in r(add):
-			        # add[AddIndex] = add[AddIndex].replace("/-",'-')
+					# add[AddIndex] = add[AddIndex].replace("/-",'-')
 			ret[argvs[indcn[i]]] = add#argvs[indcn[i]+1:]
 	return ret
 
@@ -815,7 +808,7 @@ class code:
 		if type(this.code) == str:this.code=this.code.split('\n')
 		if len(this.code) > 1:
 			for line in this.code:
-			        msg+=f"{line}\n"
+					msg+=f"{line}\n"
 		else:
 			msg = f"{this.code[0]}"
 		return msg
@@ -880,15 +873,15 @@ class var(object):
 		# var != dict
 		if not this.IsDict:
 			if this.IsIterable:
-			        ReturnVar = this.Type(ORGroups(this.Value,add))
+					ReturnVar = this.Type(ORGroups(this.Value,add))
 			else:
-			        ReturnVar = this.Value+add
+					ReturnVar = this.Value+add
 
 		# var = dict
 		elif this.IsDict:
 			ret = this.Value
 			for i in add.keys():
-			        ret[i] = add[i]
+					ret[i] = add[i]
 		return ReturnVar
 
 	def __sub__(this,add):
@@ -899,20 +892,20 @@ class var(object):
 		# var != dict
 		if not this.IsDict:
 			if this.IsIterable:
-			        ReturnVar = this.Type(NOTGroups(this.Value,add))
+					ReturnVar = this.Type(NOTGroups(this.Value,add))
 			else:
-			        ReturnVar = this.Value-add
+					ReturnVar = this.Value-add
 
 		# var == dict
 		else:
 			ret = this.Value
 			retK = ret.keys()
 			if type(add) == dict:
-			        for i in add.keys():
-			                del ret[i]
+					for i in add.keys():
+							del ret[i]
 			else:
-			        for i in add:
-			                del ret[i]
+					for i in add:
+							del ret[i]
 			ReturnVar = ret
 
 		# return var obj of same type and (probably) different value
@@ -987,25 +980,25 @@ class var(object):
 		msg = ''
 		if this.IsIterable and not this.IsString:
 			for thingIndex in r(this.Value):
-			        thing = this.Value[thingIndex].__repr__()
-			        # if type(thing).find("__main__.") != -1:
-			                # TypeMsg = f"{type(thing)}".split("__main__.")[1]
-			        # else:
-			        TypeMsg = f'{type(thing)}'.split('\'')[1]
-			        if this.PrintMutipleLines:
-			                msg += f"{thingIndex} : {TypeMsg} : {thing}\n"
-			        else:
-			                msg += f"{TypeMsg}: {thing}, "
+					thing = this.Value[thingIndex].__repr__()
+					# if type(thing).find("__main__.") != -1:
+							# TypeMsg = f"{type(thing)}".split("__main__.")[1]
+					# else:
+					TypeMsg = f'{type(thing)}'.split('\'')[1]
+					if this.PrintMutipleLines:
+							msg += f"{thingIndex} : {TypeMsg} : {thing}\n"
+					else:
+							msg += f"{TypeMsg}: {thing}, "
 			msg = msg[:-1]
 		else:
 			# if f"{type(this.Value)}".find("__main__.") != -1:
-			        # TypeMsg = f"{type(this.Value)}".split("__main__.")[1][:-2]
+					# TypeMsg = f"{type(this.Value)}".split("__main__.")[1][:-2]
 			# else:
 			TypeMsg = f'{this.Type}'.split('\'')[1]
 			if this.IsString:
-			        msg+=f"{TypeMsg} : {''.join(this.Value)}"
+					msg+=f"{TypeMsg} : {''.join(this.Value)}"
 			else:
-			        msg += f"{TypeMsg} : {this.Value}"
+					msg += f"{TypeMsg} : {this.Value}"
 
 		return msg
 
@@ -1025,10 +1018,10 @@ class var(object):
 		ret = ""
 		if this.IsIterable:
 			for thing in this.Value:
-			        if type(thing) == var:
-			                ret+=f"{string}{thing.Value}"
-			        else:
-			                ret+=f"{string}{thing}"
+					if type(thing) == var:
+							ret+=f"{string}{thing.Value}"
+					else:
+							ret+=f"{string}{thing}"
 
 			return ret[1:]
 		else:
@@ -1057,7 +1050,7 @@ class var(object):
 		elif this.IsDict:
 			mkdict = {}
 			for i in this.keys():
-			        mkdict[this[i]] = i
+					mkdict[this[i]] = i
 			ret = mkdict[content]
 
 		else:
@@ -1068,9 +1061,9 @@ class var(object):
 		if this.IsString:
 			char = this.Value[index]
 			if index == -1:
-			        this.Value = this.Value[:-1]
+					this.Value = this.Value[:-1]
 			else:
-			        this.Value = this.Value[index+1:]+this.Value[:index]
+					this.Value = this.Value[index+1:]+this.Value[:index]
 			return char
 		else:
 			return this.Value.pop(index)
@@ -1096,13 +1089,13 @@ class BDP:
 
 		if OS == "linux":
 			if not exists(f"/home/{USER}/BDP"):
-			        ss("mkdir /BDP/")
+					ss("mkdir /BDP/")
 
 			if not name.startswith("~/BDP/"):
-			        name = f"~/BDP/{name}"
+					name = f"~/BDP/{name}"
 
 			if not name.endswith(".pog"):
-			        name += ".pog"
+					name += ".pog"
 
 			name = name.replace("//",'/')
 			name = name.replace('~',f"/home/{USER}")
@@ -1110,15 +1103,15 @@ class BDP:
 
 		elif OS == "windows":
 			if not exists(f"C:/users/{USER}/BDP/"):
-			        ss(f"mkdir C:/users/{USER}/BDP/")
+					ss(f"mkdir C:/users/{USER}/BDP/")
 
 			if not name.startswith(f"~/BDP/"):
-			        name = f"~/BDP/{name}"
+					name = f"~/BDP/{name}"
 
 			if not name.endswith(".pog"):
-			        name += ".pog"
+					name += ".pog"
 
-                        # / -> \ && ~ -> C:\...
+						# / -> \ && ~ -> C:\...
 			name = name.replace("/",'\\').replace('~',f"C:\\\\users\\{USER}")
 
 
@@ -1134,7 +1127,7 @@ class BDP:
 
 		if not exists(f"{this.name}"):
 			ss(f"echo '' > {this.name}")
-                        #ss(f"touch {this.name}")#only for linux
+						#ss(f"touch {this.name}")#only for linux
 
 
 		UseFile(this.name,'w',data)
@@ -1147,7 +1140,8 @@ class BDP:
 		if len(f"{this.data}") < 100 or this.IgnoreDataSize:
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
-			return f"name: {this.name}\n{COLOR.yellow}data too big to display\nBDP(IgnoreDataSize=True) to ignore size{color.nc}"
+			return f"name: {this.name}\n{COLOR.yellow}data too big to display\n\
+BDP(IgnoreDataSize=True) to ignore size{color.nc}"
 
 	def __call__(this,data=None):
 
@@ -1223,21 +1217,22 @@ def odd(var:int) -> bool:
 def numbers(times,nums=0):
 	return eval(f'[{nums}'+f",{nums}"*(times-1)+']')
 
-def ShowTextGif(sprites,SleepTime=0.35,times=-1):#if times is negative the loop won't stop || if times = 0, it will be len(sprites)
+def ShowTextGif(sprites,SleepTime=0.35,times=-1):
+#if times is negative the loop won't stop || if times = 0, it will be len(sprites)
 	if times == 0:
 		times = len(sprites)
 	if times < 0:
 		while True:
 			for sprite in sprites:
-			        clear()
-			        sout.write(sprite)
-			        sleep(SleepTime)
+					clear()
+					sout.write(sprite)
+					sleep(SleepTime)
 	else:
 		for tick in r(times):
 			for sprite in sprites:
-			        clear()
-			        sout.write(sprite)
-			        sleep(SleepTime)
+					clear()
+					sout.write(sprite)
+					sleep(SleepTime)
 
 def GetCh():
 	fd = sin.fileno()
@@ -1304,21 +1299,25 @@ def NumSum(numbers:int or float) -> int:
 		return numbers
 
 def FindAll(StringToSearchIn:str,StringToFind:str) -> list[str]:
+	# get replacable string
 	StringToFindL = len(StringToFind)
 	NotStringToFind = '0'*StringToFindL
 	if NotStringToFind == StringToFind:
 		NotStringToFind = '1'*StringToFindL
 	# StringToFind can't be 000... and 111... at the same time!
 
-	# how many times {StringToFind} appears in {StringToSearchIn}
-	times:int = int((len(StringToSearchIn) - len(StringToSearchIn.replace(StringToFind,"")))/StringToFindL)
-	# how? | gets len of StringASText - len of StringASText without {StringToFind} devides the result to the len os {StringToFind}
+	WLen = len(StringToFind)
+	TLen = len(StringToSearchIn)
+	TLenSmall = len(StringToSearchIn.replace(StringToFind,""))
+	times = (TLen-TLenSmall)/WLen
 
 	ret = []
 	for i in r(times):
 		ret.append(StringToSearchIn.find(StringToFind))
 		StringToSearchIn = StringToSearchIn.replace(StringToFind, NotStringToFind,1)
 	return ret
+
+
 
 def DeepSum(args,ParseStringWith=eval,ParseString=False,ReturnDeeph=False):
 	"""
@@ -1335,11 +1334,11 @@ def DeepSum(args,ParseStringWith=eval,ParseString=False,ReturnDeeph=False):
 			ret+=thing
 		elif type(thing) == str:
 			if ParseString:
-			        # parse and add string
-			        ret+=ParseStringWith(thing)
+					# parse and add string
+					ret+=ParseStringWith(thing)
 			else:
-			        # breaks because found string
-			        raise TypeError("\n%sERROR IN \"DeepSum\" function%s\n\
+					# breaks because found string
+					raise TypeError("\n%sERROR IN \"DeepSum\" function%s\n\
 value %s is of type string (and ParseString = False)" %  (color['br red'],color["nc"],repr(thing)))
 		else:
 			# recourciveness (it that a word?)
@@ -1357,10 +1356,10 @@ value %s is of type string (and ParseString = False)" %  (color['br red'],color[
 
 
 def average(args,ParseDeepSumString=False,SumFunc=DeepSum):
-        if SumFunc == DeepSum:
-            sum,deeph = SumFunc(args,ParseString=ParseDeepSumString,ReturnDeeph=True)
-        else:
-            sum,deeph = SumFunc(args)
+	if SumFunc == DeepSum:
+		sum,deeph = SumFunc(args,ParseString=ParseDeepSumString,ReturnDeeph=True)
+	else:
+		sum,deeph = SumFunc(args)
 	return sum/deeph
 
 def mid(msg,LenToBe,CanDeleteEnd=True,AddFront=' ',AddAfter=' ',DoToFront="not front"):
@@ -1453,22 +1452,6 @@ def graphics(*ints, UnderAvg = color["red"], OverAvg = color["green"]):
 
 	return ManysGraph
 
-
-
-def StringMan(string:str) -> str:
-	# FakeCurses stuff (expect shit)
-	# if done update todo2.py
-	string = list(string)
-
-	ConvertChar = {
-		"\r":"Enter",
-		"\x7f":"Backspace",
-		"\x11":"Quit",
-	}
-
-
-
-
 def CharConverter(Chars:list[str]):
 	ch = Chars.pop(0)
 
@@ -1486,19 +1469,20 @@ def CharConverter(Chars:list[str]):
 		}.get(ch)
 	elif Chars == '\x1b[1;5':
 		ch = {
-			'A':"CTRL,UP",
-			'B':"CTRL,DOWN",
-			'C':"RIGHT",
-			'D':"LEFT",
+			'A':"CTRL UP",
+			'B':"CTRL DOWN",
+			'C':"CTRL RIGHT",
+			'D':"CTRL LEFT",
 		}.get(ch)
 	elif Chars == '\x1b[1;2':
 		ch = {
-			'A':"SHIFT,UP",
-			'B':"SHIFT,DOWN",
-			'C':"RIGHT",
-			'D':"LEFT",
+			'A':"SHIFT UP",
+			'B':"SHIFT DOWN",
+			'C':"SHIFT RIGHT",
+			'D':"SHIFT LEFT",
 		}.get(ch)
 	return ch
+
 
 def pos(y,x):
 	return "\x1B[%i;%iH" % (y+1,x+1)
@@ -1508,8 +1492,6 @@ def ClearLine(y,GetTerminalY="default",char=' ',start=color["nc"],end=color["nc"
 		x,_ = GetTerminalSize()
 	sout.write("%s%s%s%s%s" % (start,pos(y,0),char*x,pos(y,0),end))
 	sout.flush()
-
-# FCurses shit
 
 def ClearCollum(x,GetTerminalX="default",char=' ',start=color["nc"],end=color["nc"]):
 	if GetTerminalX == "default":
@@ -1556,6 +1538,83 @@ def DrawRectangle(UpLeft,DownRight,BkColor,DoubleWidthVerticalLine=False):
 	DrawHLine(x1, x2, y1, BkColor)
 	DrawHLine(x1, x2, y2, BkColor)
 
+def ReplaceStringByIndex(string:str, index:int, result:str):
+	return string[:index] + result + string[index+1:]
+
+class TextBox:
+
+	def __init__(this,StartString="",DrawRect=True,DoClear=True):
+		this.DrawRect = DrawRect
+		this.DoClear = DoClear
+		this.PrintableChars = " áàéç!\"#$%&'()*+,-./0123456789:;<\
+=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+		this.HSize, this.VSize = GetTerminalSize()
+		this.TextSixe = this.HSize-2
+		this.STRING = StartString
+		this.CURSOR = len(this.STRING)-1
+		this.STRING += " "*(this.TextSixe - len(this.STRING))
+
+	def IsPrintableChar(this,char) -> bool:
+		return char in this.PrintableChars
+
+	def SetChar(this,char):
+		if char in "\r\x7f\x08":
+			if char == '\r':
+				if this.CURSOR < len(this.STRING)-2:
+					this.CURSOR+=1
+
+			elif char == '\x08' and this.CURSOR > -1:
+				this.CURSOR-=1
+
+			elif char == '\x7f' and this.CURSOR > -1:
+				this.CURSOR-=1
+				this.SetChar(' ')
+				this.CURSOR-=1
+
+		else:
+
+			if this.IsPrintableChar(char):
+				if this.CURSOR < len(this.STRING)-2:
+					this.CURSOR+=1
+				if this.CURSOR >= len(this.STRING):
+					this.CURSOR-=1
+				this.STRING = ReplaceStringByIndex(this.STRING,this.CURSOR,char)
+
+
+	def loop(this):
+		if this.DoClear:
+			clear()
+		if this.DrawRect:
+			DrawRectangle((0,this.VSize-3), (this.HSize-1, this.VSize),BkColor=color['bk grey'])
+		char=''
+
+		while True:
+			sout.write(pos(this.VSize-1,this.HSize))
+
+			
+
+
+			if char == '\x13': # ^S to save
+				return this.STRING.strip()
+
+			this.SetChar(char)
+
+			if this.DrawRect:
+				sout.write(f"{pos(this.VSize-2,1)}{this.STRING}")
+				sout.write(pos(this.VSize-2, this.CURSOR+2))
+			else:
+				sout.write(f"{pos(this.VSize-1,1)}{this.STRING}")
+				sout.write(pos(this.VSize-1, this.CURSOR+2))
+
+
+			sout.flush()
+
+			char = GetCh()
+
+
+
+
+
 def GetPrimeFactors(number):
 	factor = 2
 	ret = []
@@ -1569,34 +1628,13 @@ def GetPrimeFactors(number):
 	return ret
 
 class FancyIOStream:
-	def __ilshift__(this,msg:str):
-		sep=', '
-		msg = sep.join([str(m) for m in msg])
+	def __lshift__(this,msg:str):
 		sout.write(msg)
 
 		if '\n' in msg:
 			sout.flush()
 		return this
 
-	def __irshift__(this,msg:str):
-		global IOIN
-		IOIN = input(msg)
-		return this
-
-
-# kinda useless but huh...
-class slice:
-	def __init__(this, start=0, end=-1, jump = 1):
-		this.start, this.end, this.jump = start, end, jump
-
-	def get(this, msg):
-		try:
-			return msg[this.start:this.end:this.jump]
-		except TypeError:
-			raise TypeError(f"\n\n{color['br red']}var {msg} is not iterable{color['nc']}")
-
-def ReplaceStringByIndex(string:str, index:int, result:str):
-	return string[:index] + result + string[index+1:]
 
 
 if __name__=="__main__":
@@ -1604,6 +1642,7 @@ if __name__=="__main__":
 	if "-c" in argv.keys():
 		for i in argv["-c"]:
 			print(eval(i))
+
 # funcs/classes updated?
 f'''
 	# VARS
@@ -1694,7 +1733,7 @@ f'''
 	fct BiggestLen
 	fct compare
 	fct graphics
-	fct StringMan
+	cls TextBox
 	fct CharConverter
 	fct pos
 	fct ClearCollum
@@ -1705,6 +1744,5 @@ f'''
 	fct DrawRectangle
 	fct GetPrimeFactors
 	cls FancyIOStream
-	cls slice
 	fct ReplaceStringByIndex
 '''
