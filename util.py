@@ -260,7 +260,7 @@ def GetFloat(msg:str, excepts = [], default = None) -> float:
 		if x in excepts:
 			return default
 		y = float(x)
-		return int(x)
+		return float(x)
 	except ValueError:
 		return GetFloat(msg)
 
@@ -1582,6 +1582,7 @@ class TextBox:
 
 
 	def loop(this):
+		ShowCursor()
 		if this.DoClear:
 			clear()
 		if this.DrawRect:
@@ -1611,10 +1612,6 @@ class TextBox:
 
 			char = GetCh()
 
-
-
-
-
 def GetPrimeFactors(number):
 	factor = 2
 	ret = []
@@ -1635,6 +1632,50 @@ class FancyIOStream:
 			sout.flush()
 		return this
 
+ARGV = ArgvAssing(argv[1:])
+
+class get:
+	def __init__(this, *gets, argvs=None):
+		global ARGV
+		if argvs == None:
+			argvs = ARGV
+		this.argvs = argvs
+		this.gets = gets
+
+
+		stuff = this._get()
+		this.list = stuff[0]
+		if len(this.list):
+			this.first = this.list[0]
+			this.last = this.list[-1]
+		this.bool = stuff[1]
+		this.exists = stuff[2]
+
+
+	def _get(this) -> list:
+		ret = []
+		other = []
+		this.argvs
+
+
+		for indicator in SingleList(this.gets): # list
+			ret.append( other := [*other, *this.argvs.get(indicator,[])] )
+
+		if other: # MakeBool
+			if other[0].isnumeric():
+				ret.append( bool(eval(other[0])) )
+			else:
+				ret.append( bool(other[0]) )
+		else:
+			ret.append(False)
+
+		ret.append( any( [x for x in this.gets if x in this.argvs.keys()]) ) # exists
+
+		return ret
+
+
+		
+		
 
 
 if __name__=="__main__":
@@ -1745,4 +1786,6 @@ f'''
 	fct GetPrimeFactors
 	cls FancyIOStream
 	fct ReplaceStringByIndex
+	var ARGV
+	cls get
 '''
