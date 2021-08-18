@@ -4,19 +4,10 @@ from util import *
 
 
 #main
-def Main(argv) -> int:
-	argk = list(argv.keys())
-	def get(*indicators:object) -> list:
-		nonlocal argv,argk
-		other = []
-		for indicator in indicators:
-			if indicator in argk:
-				for item in argv.get(indicator):
-					other.append(item)
-		return other
+def Main() -> int:
 
 	try:
-		CopyFile,ResultFile = get(None)[0:2]
+		CopyFile,ResultFile = get(None).list[0:2]
 	except ValueError:
 		help()
 		exit(2)
@@ -54,10 +45,10 @@ def help():
 	print("""
 this program will search for template files in ~/Templates, and copy them to the [Result File Name]
 
-$ mkf [File Template name (not complete name)] [Result File Name]
+$mkf [File Template name (not complete name)] [Result File Name]
 
-e.g. (create a file called mkf.py)
-$ mkf py mkf
+e.g. (create a file called program.py)
+$mkf py program
 """[1:-1])
 	return 0
 
@@ -69,17 +60,15 @@ if __name__ == '__main__':
 	start = tm()
 	if "help" in argv:
 		ExitCode = help()
-		argv = ArgvAssing(argv[1:])
 	else:
-		argv = ArgvAssing(argv[1:])
 		try:
-			ExitCode = Main(argv)
+			ExitCode = Main()
 		except KeyboardInterrupt:
 			pass
 
 
 
-	if '--debug' in argv.keys():
+	if get('--debug').exists:
 		if not ExitCode:printl("%scode successfully exited in " % color["green"])
 		else:printl("%scode exited with error %d in " % (color["red"],ExitCode))
 		print("%.3f seconds%s" % (tm()-start,color["nc"]))
