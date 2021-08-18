@@ -1541,45 +1541,152 @@ def DrawRectangle(UpLeft,DownRight,BkColor,DoubleWidthVerticalLine=False):
 def ReplaceStringByIndex(string:str, index:int, result:str):
 	return string[:index] + result + string[index+1:]
 
+# class TextBox: # old text box, no arrow keys
+
+# 	def __init__(this,StartString="",DrawRect=True,DoClear=True):
+# 		this.DrawRect = DrawRect
+# 		this.DoClear = DoClear
+# 		this.PrintableChars = " áàéç!\"#$%&'()*+,-./0123456789:;<\
+# =>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+# 		this.HSize, this.VSize = GetTerminalSize()
+# 		this.TextSixe = this.HSize-2
+# 		this.STRING = StartString
+# 		this.CURSOR = len(this.STRING)-1
+# 		this.STRING += " "*(this.TextSixe - len(this.STRING))
+
+# 	def IsPrintableChar(this,char) -> bool:
+# 		return char in this.PrintableChars
+
+# 	def SetChar(this,char):
+# 		if char in "\r\x7f\x08":
+# 			if char == '\r':
+# 				if this.CURSOR < len(this.STRING)-2:
+# 					this.CURSOR+=1
+
+# 			elif char == '\x08' and this.CURSOR > -1:
+# 				this.CURSOR-=1
+
+# 			elif char == '\x7f' and this.CURSOR > -1:
+# 				this.CURSOR-=1
+# 				this.SetChar(' ')
+# 				this.CURSOR-=1
+
+# 		else:
+
+# 			if this.IsPrintableChar(char):
+# 				if this.CURSOR < len(this.STRING)-2:
+# 					this.CURSOR+=1
+# 				if this.CURSOR >= len(this.STRING):
+# 					this.CURSOR-=1
+# 				this.STRING = ReplaceStringByIndex(this.STRING,this.CURSOR,char)
+
+
+# 	def loop(this):
+# 		ShowCursor()
+# 		if this.DoClear:
+# 			clear()
+# 		if this.DrawRect:
+# 			DrawRectangle((0,this.VSize-3), (this.HSize-1, this.VSize),BkColor=color['bk grey'])
+# 		char=''
+
+# 		while True:
+# 			sout.write(pos(this.VSize-1,this.HSize))
+
+			
+
+
+# 			if char == '\x13': # ^S to save
+# 				return this.STRING.strip()
+
+# 			this.SetChar(char)
+
+# 			if this.DrawRect:
+# 				sout.write(f"{pos(this.VSize-2,1)}{this.STRING}")
+# 				sout.write(pos(this.VSize-2, this.CURSOR+2))
+# 			else:
+# 				sout.write(f"{pos(this.VSize-1,1)}{this.STRING}")
+# 				sout.write(pos(this.VSize-1, this.CURSOR+2))
+
+
+# 			sout.flush()
+
+# 			char = GetCh()
+
 class TextBox:
 
 	def __init__(this,StartString="",DrawRect=True,DoClear=True):
 		this.DrawRect = DrawRect
 		this.DoClear = DoClear
 		this.PrintableChars = " áàéç!\"#$%&'()*+,-./0123456789:;<\
-=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
 		this.HSize, this.VSize = GetTerminalSize()
 		this.TextSixe = this.HSize-2
 		this.STRING = StartString
 		this.CURSOR = len(this.STRING)-1
 		this.STRING += " "*(this.TextSixe - len(this.STRING))
 
+
 	def IsPrintableChar(this,char) -> bool:
 		return char in this.PrintableChars
 
 	def SetChar(this,char):
-		if char in "\r\x7f\x08":
-			if char == '\r':
-				if this.CURSOR < len(this.STRING)-2:
+		if char == "\x1b": # espace key
+			if GetCh() == '[': # escape code
+				ch = GetCh()
+
+				if ch == 'C' and this.CURSOR < len(this.STRING)-2: # go right
 					this.CURSOR+=1
+				elif ch == 'D' and this.CURSOR > -1: # go left
+					this.CURSOR-=1
 
-			elif char == '\x08' and this.CURSOR > -1:
-				this.CURSOR-=1
+				elif ch == '3': # may be del
+					ch = GetCh()
+					if ch == '~': # delete key
+						this.STRING = list(this.STRING)
+						this.STRING.pop(this.CURSOR+1)
+						this.STRING = ''.join(this.STRING)+ ' '
 
-			elif char == '\x7f' and this.CURSOR > -1:
+				# elif ch == '2': # may be insert
+					# ch = GetCh()
+					# if ch == '~': # insert key
+						# pass
+
+
+		elif char == '\x7f' and this.CURSOR > -1: # backspace
+			if (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar): # "normal" delete
+				this.STRING = list(this.STRING)
+				this.STRING.pop(this.CURSOR)
+				this.STRING = ''.join(this.STRING)+' '
 				this.CURSOR-=1
-				this.SetChar(' ')
-				this.CURSOR-=1
+			else: # if @ $ of line del not backspace
+				this.STRING = list(this.STRING)
+				this.STRING[this.CURSOR+1] = ' '
+				this.STRING = ''.join(this.STRING)
+				
 
 		else:
-
 			if this.IsPrintableChar(char):
-				if this.CURSOR < len(this.STRING)-2:
+				if this.CURSOR < len(this.STRING)-2: # if char is going to be added move cursor right
 					this.CURSOR+=1
-				if this.CURSOR >= len(this.STRING):
+				if this.CURSOR >= len(this.STRING): # if cursor if off screen get it back
 					this.CURSOR-=1
-				this.STRING = ReplaceStringByIndex(this.STRING,this.CURSOR,char)
 
+				# strg = this.STRING.strip()
+				# if len(strg)-1 <= this.CURSOR:
+					# strg = this.STRING[:this.CURSOR]
+				# ClearLine(1)
+				# sout.write(f"{pos(1,1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
+				# if not len(strg)-1 == this.CURSOR: # place not replace
+
+				if this.STRING[-1] == ' ': # move string right to add char to CURSOR's spot
+					this.STRING = list(this.STRING)[:-1]
+					this.STRING.insert(this.CURSOR, char)
+					this.STRING = ''.join(this.STRING)
+				else:
+					this.STRING = ReplaceStringByIndex(this.STRING,this.CURSOR,char) # create or replace
+	@property
+	def IsOverChar(this) -> bool:
+		return this.STRING[this.CURSOR+1] != ' '
 
 	def loop(this):
 		ShowCursor()
@@ -1589,22 +1696,30 @@ class TextBox:
 			DrawRectangle((0,this.VSize-3), (this.HSize-1, this.VSize),BkColor=color['bk grey'])
 		char=''
 
+		# chars = []
+
 		while True:
 			sout.write(pos(this.VSize-1,this.HSize))
-
 			
+			# chars.append(repr(char))
 
-
-			if char == '\x13': # ^S to save
+			if char == '\r': # <Enter> to send
 				return this.STRING.strip()
 
 			this.SetChar(char)
 
+			# sout.write(f"{pos(1,1)}{chars}") # debug line
+			# ClearLine(4)
+			# sout.write(f"{pos(4,4)} \
+# {this.CURSOR == len(this.STRING)-2} { this.IsOverChar}|\
+# {this.CURSOR == len(this.STRING)-2 or this.IsOverChar}|\
+# {not (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar)}")
+
 			if this.DrawRect:
-				sout.write(f"{pos(this.VSize-2,1)}{this.STRING}")
+				sout.write(f"{pos(this.VSize-2,1)}{color['nc']}{this.STRING}")
 				sout.write(pos(this.VSize-2, this.CURSOR+2))
 			else:
-				sout.write(f"{pos(this.VSize-1,1)}{this.STRING}")
+				sout.write(f"{pos(this.VSize-1,1)}{color['nc']}{this.STRING}")
 				sout.write(pos(this.VSize-1, this.CURSOR+2))
 
 
@@ -1645,7 +1760,7 @@ class get:
 
 		stuff = this._get()
 		this.list = stuff[0]
-		if len(this.list):
+		if not this.list == None and len(this.list):
 			this.first = this.list[0]
 			this.last = this.list[-1]
 		this.bool = stuff[1]
@@ -1659,7 +1774,12 @@ class get:
 
 
 		for indicator in SingleList(this.gets): # list
-			ret.append( other := [*other, *this.argvs.get(indicator,[])] )
+
+			other = [*other, *this.argvs.get(indicator,[])]
+		if other:
+			ret.append(other)
+		else:
+			ret.append(None)
 
 		if other: # MakeBool
 			if other[0].isnumeric():
@@ -1691,7 +1811,7 @@ f'''
 	FuncType
 	NoneType
 	iterables
-	class NumberTooBigError
+	cls NumberTooBigError
 	infinity
 	# CLASSES / FUNCS
 	fnc nop
