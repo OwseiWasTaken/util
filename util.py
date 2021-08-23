@@ -647,13 +647,12 @@ def factorial(n:int) -> int:
 
 def ArgvAssing(argvs:iter) -> dict:
 	'''
-	this function will loop through all argvs, and will define the ones starting with - as indicators
+	this function will loop through all argvs, and will define the ones starting with '-' as indicators
 	and the others just normal arguments
 	the returning value will be a dictionary like this:
 	argv = ['-i','input','input2','-o','output','output2']
 	{'-i':['input','input2],'-o':['output','output2']}
 	'''
-	# _log.add(f'func ( argv_assing ) with {argvs}')
 	indcn=[]
 	ret={}
 	for i in r(argvs):
@@ -841,7 +840,8 @@ class var(object):
 
 		this.Type = Type
 		this.Value = Value
-		this.PrintMutipleLines=bool(PrintMutipleLines)
+		# this.PrintMutipleLines=bo/ol(PrintMutipleLines)
+		this.PrintMutipleLines=not not (PrintMutipleLines)
 
 		Types = {
 			(float,int):"IsNumber",
@@ -1288,7 +1288,8 @@ def number(num:str)->int or float:
 		return eval(num)
 
 def TimesInNumber(TimesIn,NumberTo) -> bool:
-	return bool(sum([rbool(TimesIn) for x in r(NumberTo)]))
+	return not not (sum([rbool(TimesIn) for x in r(NumberTo)]))
+	# return bo/ol(sum([rbool(TimesIn) for x in r(NumberTo)]))
 
 def NumSum(numbers:int or float) -> int:
 	numbers = str(numbers).replace('.', "")
@@ -1699,7 +1700,7 @@ class TextBox:
 		# chars = []
 
 		while True:
-			sout.write(pos(this.VSize-1,this.HSize))
+			# sout.write(pos(this.VSize-1,this.HSize))
 			
 			# chars.append(repr(char))
 
@@ -1726,6 +1727,127 @@ class TextBox:
 			sout.flush()
 
 			char = GetCh()
+
+class AdvTextBox:
+
+	def __init__(this,YLINE,XLINE,StartString="",DrawRect=True,DoClear=True):
+		this.YLINE = YLINE
+		this.XLINE = XLINE
+		this.DrawRect = DrawRect
+		this.DoClear = DoClear
+		this.PrintableChars = " áàéç!\"#$%&'()*+,-./0123456789:;<\
+=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
+		this.HSize, this.VSize = GetTerminalSize()
+		this.TextSixe = this.XLINE-2
+		this.STRING = StartString
+		this.CURSOR = -1
+		this.STRING += " "*(this.TextSixe - len(this.STRING))
+
+
+	def IsPrintableChar(this,char) -> bool:
+		return char in this.PrintableChars
+
+	def SetChar(this,char):
+		if char == "\x1b": # espace key
+			if GetCh() == '[': # escape code
+				ch = GetCh()
+
+				if ch == 'C' and this.CURSOR < len(this.STRING)-2: # go right
+					this.CURSOR+=1
+				elif ch == 'D' and this.CURSOR > -1: # go left
+					this.CURSOR-=1
+
+				elif ch == '3': # may be del
+					ch = GetCh()
+					if ch == '~': # delete key
+						this.STRING = list(this.STRING)
+						this.STRING.pop(this.CURSOR+1)
+						this.STRING = ''.join(this.STRING)+ ' '
+
+				# elif ch == '2': # may be insert
+					# ch = GetCh()
+					# if ch == '~': # insert key
+						# pass
+
+
+		elif char == '\x7f' and this.CURSOR > -1: # backspace
+			if (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar): # "normal" delete
+				this.STRING = list(this.STRING)
+				this.STRING.pop(this.CURSOR)
+				this.STRING = ''.join(this.STRING)+' '
+				this.CURSOR-=1
+			else: # if @ $ of line del not backspace
+				this.STRING = list(this.STRING)
+				this.STRING[this.CURSOR+1] = ' '
+				this.STRING = ''.join(this.STRING)
+				
+
+		else:
+			if this.IsPrintableChar(char):
+				if this.CURSOR < len(this.STRING)-2: # if char is going to be added move cursor right
+					this.CURSOR+=1
+				if this.CURSOR >= len(this.STRING): # if cursor if off screen get it back
+					this.CURSOR-=1
+
+				# strg = this.STRING.strip()
+				# if len(strg)-1 <= this.CURSOR:
+					# strg = this.STRING[:this.CURSOR]
+				# ClearLine(1)
+				# sout.write(f"{pos(1,1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
+				# if not len(strg)-1 == this.CURSOR: # place not replace
+
+				if this.IsOverChar: # move string right to add char to CURSOR's spot
+					this.STRING = list(this.STRING)[:-1]
+					this.STRING.insert(this.CURSOR, char)
+					this.STRING = ''.join(this.STRING)
+				else:
+					this.STRING = ReplaceStringByIndex(this.STRING,this.CURSOR,char) # create or replace
+	@property
+	def IsOverChar(this) -> bool:
+		return this.STRING[this.CURSOR+1] != ' '
+
+	def loop(this) -> str:
+		ShowCursor()
+		if this.DoClear:
+			clear()
+		if this.DrawRect:
+			DrawRectangle((0,this.YLINE-1), (this.XLINE-1, this.YLINE+1),BkColor=color['bk grey'])
+		char=''
+
+		# chars = []
+
+		while True:
+			# sout.write(pos(this.VSize-1,this.HSize))
+			
+			# chars.append(repr(char))
+
+			if char == '\r': # <Enter> to send
+				return this.STRING.strip()
+
+			this.SetChar(char)
+
+			# sout.write(f"{pos(1,1)}{chars}") # debug line
+			# ClearLine(4)
+			# sout.write(f"{pos(4,4)} \
+# {this.CURSOR == len(this.STRING)-2} { this.IsOverChar}|\
+# {this.CURSOR == len(this.STRING)-2 or this.IsOverChar}|\
+# {not (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar)}")
+
+			# if this.DrawRect:
+				# sout.write(f"{pos(this.VSize-2,1)}{color['nc']}{this.STRING}")
+				# sout.write(pos(this.VSize-2, this.CURSOR+2)) # cursor
+			# else:
+				# sout.write(f"{pos(this.VSize-1,1)}{color['nc']}{this.STRING}")
+				# sout.write(pos(this.VSize-1, this.CURSOR+2)) # cursor
+			sout.write(f"{pos(this.YLINE,1)}{color['nc']}{this.STRING}{pos(this.YLINE, this.CURSOR+2)}")
+			# content + cursor
+
+
+			sout.flush()
+
+			char = GetCh()
+
+
 
 def GetPrimeFactors(number):
 	factor = 2
@@ -1783,9 +1905,11 @@ class get:
 
 		if other: # MakeBool
 			if other[0].isnumeric():
-				ret.append( bool(eval(other[0])) )
+				# ret.append( bo/ol(eval(other[0])) )
+				ret.append( not not (eval(other[0])) )
 			else:
-				ret.append( bool(other[0]) )
+				# ret.append( bo/ol(other[0]) )
+				ret.append( not not (other[0]) )
 		else:
 			ret.append(False)
 
@@ -1799,10 +1923,8 @@ class get:
 
 
 if __name__=="__main__":
-	argv = ArgvAssing(argv)
-	if "-c" in argv.keys():
-		for i in argv["-c"]:
-			print(eval(i))
+	for i in get('-c').list:
+		print(eval(i))
 
 # funcs/classes updated?
 f'''
