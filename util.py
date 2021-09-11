@@ -1948,13 +1948,21 @@ if __name__=="__main__":
 
 # funcs/classes
 """
+const USER
+const FuncType
+const NoneType
+const iterables
+class NumberTooBigError
+const infinity
 funct nop
-class noc
-funct time
-funct log
+class nocpass
+const ARGV
+class time
+const time
+class log
 funct r
 funct AssureType
-class timer (init done)
+class timer
 funct MakeDict
 funct sleep
 funct pc
@@ -1976,6 +1984,7 @@ funct prints
 funct input
 funct index
 funct GetCh
+funct GCH
 class COLOR
 funct SetColorMode
 funct PascalCase
@@ -1984,16 +1993,17 @@ funct SplitBracket
 funct StrToMs
 funct bhask
 funct near
-funct rsynb
+funct rsymb
 funct rchar
 funct GetWLen
 funct CallWExcept
 funct count
 funct timeit
 funct mmc
+const lcm
 funct factorial
 funct ArgvAssing
-funct notify
+const argv_assing
 funct exit
 funct between
 funct ls
@@ -2020,21 +2030,25 @@ funct numbers
 funct ShowTextGif
 funct JustDecimal
 funct NoDecimal
-funct nubmer
+funct number
 funct TimesInNumber
 funct NumSum
 funct FindAll
+funct CountSubstring
+funct DeepSum
 funct average
 funct mid
 funct IsIterable
+funct SingleList
 funct BiggestLen
 funct compare
 funct graphics
 funct pos
+funct ppos
 funct ClearLine
 funct ClearCollum
 funct DrawHLine
-fucnt DrawVLine
+funct DrawVLine
 funct HideCursor
 funct ShowCursor
 funct DrawRectangle
@@ -2042,9 +2056,12 @@ funct ReplaceStringByIndex
 class TextBox
 funct GetPrimeFactors
 class FancyIOStream
+const ARGV
 class get
 funct RmDir
 funct TrimSpaces
 funct Hamiltons
 funct ReplaceAll
+funct MakeString
+funct IsListSorted
 """
