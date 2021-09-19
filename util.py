@@ -1,7 +1,6 @@
 #! /usr/bin/python3.9
-
 # util.py imports
-from pickle import dump as _PickleDump, load as _PickleLoad, dumps as PickleString, loads as UnpickleString
+from pickle import dump as _PickleDump, load as _PickleLoad
 from json import dump as _JsonDump, load as _JsonLoad
 from tty import setraw
 from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
@@ -31,17 +30,21 @@ import re as RegEx
 
 # magic class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
-# vars
+# consts
+true = True
+false = False
 USER = getlogin()
 FuncType = type(lambda a:a )
 NoneType = type(None)
 iterables = [type(list()), type(set()), type(frozenset())]
 class NumberTooBigError(BaseException):pass
+class FakeCursesError(BaseException):pass
 infinity = float("inf")
 def nop(*a):pass
 class noc:pass
 ARGV = None# Will be defined later
 
+# OS especific func
 if OS == "linux":
 	# it MAY work in windows, not sure tho
 	import gi
@@ -55,38 +58,31 @@ else:
 		print(f"notify function not yet implemented in uti.py for {OS}\n\
 if you want to help, make yout commit at https://github.com/OwseiWasTaken/uti.py")
 
-
-class time:
+class _time:
 	@property
 	def sec(this) -> str :
-		# _log.add(f'class ( time ) -> sec')
 		return __ftime__(f"%S")
 
 	@property
 	def min(this) -> str:
-		# _log.add(f'class ( time ) -> min')
 		return __ftime__(f"%M")
 
 	@property
 	def hour(this) -> str:
-		# _log.add(f'class ( time ) -> hour')
 		return __ftime__("%H")
 
 	@property
 	def day(this) -> str:
-		# _log.add(f'class ( time ) -> day')
 		return __ftime__("%D").split('/')[1]
 
 	@property
 	def month(this) -> str:
-		# _log.add(f'class ( time ) -> month')
 		return __ftime__("%D").split('/')[0]
 
 	@property
 	def year(this) -> str:
-		# _log.add(f'class ( time ) -> year')
 		return __ftime__("%D").split("/")[2]
-time = time()
+time = _time()
 
 class log:
 	def __init__(this, sep=', ', tm=True, file="log") -> object:
@@ -98,14 +94,15 @@ class log:
 
 	def add(this, *ask) -> None:
 		tm = this.tm
-		ask=this.sep.join([str(ak) for ak in ask])
-
+		if len(ask) > 1:
+			ask = this.sep.join([str(ak) for ak in ask])
+		else:
+			ask = ask[0]
 		tme = ''
 		if tm:tme = f'at {time.day} {time.hour}:{time.min}:{time.sec} : '
 		this.LOG.append(f'{tme}{ask}')
 
 	def remove(this, index_or_content:int or str) -> None:
-
 		if type(index_or_content) == int:
 			return this.LOG.pop(index_or_content)
 		else:
@@ -121,8 +118,11 @@ class log:
 	def __getitem__(this, num:int) -> str:
 		return this.LOG[num]
 
-	def __call__(this) -> list:
-		return this.LOG
+	def __call__(this, *ask):
+		this.add(*ask)
+
+	def __add__(this, *ask):
+		thif.add(*ask)
 
 	def __iter__(this) -> None:
 		for i in this():
@@ -137,16 +137,7 @@ class log:
 			for i in this.LOG:
 					SaveFileLog.write(f'{i}\n')
 
-# _log = log()
-
-# formating:
-# _log.add(f'[func or class] ([name]) = [{, } args] => [return]')
-
-# e.g.:
-# _log.add(f'func (r) = {end, start, jmp} => range')
-
 def r(end:object, start:int=0, jmp:int=1) -> int:
-	# _log.add(f'func (r) = {end, start, jmp} => yield')
 	try:
 		try:
 			end = len(end)
@@ -161,7 +152,6 @@ def r(end:object, start:int=0, jmp:int=1) -> int:
 		index+=jmp
 
 def AssureType(value:object, types:type, err:bool=True, ErrorMsg=None) -> TypeError or bool:
-	# _log.add(f'func (AssureType) = {values, types, err} => TypeError or bool')
 	if type(types) != type and type(value) == type:
 		value, types = types, value
 
@@ -177,40 +167,32 @@ def AssureType(value:object, types:type, err:bool=True, ErrorMsg=None) -> TypeEr
 
 class timer:
 	def __init__(this, auto:bool=True) -> object:
-		# _log.add(f'class (timer.__init__) = {auto} ')
 		this.markers = []
 		if auto:this.st = tm()
 
 	def start(this) -> None:
-		# _log.add(f'class (timer.start) = None => None')
 		this.st = tm()
 
 	def mark(this) -> None:
-		# _log.add(f'class (timer.mark) = None => None')
 		this.markers.append(this.get())
 
 	def marks(this) -> list[int]:
-		# _log.add(f'class (timer.marks) = None => list')
 		return this.markers
 
 	def get(this) -> float:
-		# _log.add(f'class (timer.get) = None => float')
 		return tm() - this.st
 
 	def __call__(this) -> float:
-		# _log.add(f'class (timer()) => float')
 		if not this.st:
 			this.st = tm()
 		else:
 			return this.get()
 
 	def __iter__(this) -> iter:
-		# _log.add(f'class (for i in timer) => yield marks[i]')
 		for i in this.markers:
 			yield i
 
 	def __repr__(this) -> str:
-		# _log.add(f'class (timer) -> __repr__ ')
 		return f'{this.get}'
 
 def MakeDict(ls1:[list, tuple], ls2:[list, tuple]) -> dict:
@@ -221,7 +203,6 @@ def MakeDict(ls1:[list, tuple], ls2:[list, tuple]) -> dict:
 	return ret
 
 def sleep(seg:float=0, sec:float=0, ms:float=0, min:float=0, hour:float=0, day:float=0, IgnoreKBI = True) -> None:
-	# _log.add(f'func (sleep) with {seg, min, hour, day}')
 	if IgnoreKBI:
 		try:
 			slp(ms/1000+seg+sec+min*60+hour*3600+day*86400)
@@ -231,19 +212,15 @@ def sleep(seg:float=0, sec:float=0, ms:float=0, min:float=0, hour:float=0, day:f
 		slp(ms/1000+seg+sec+min*60+hour*3600+day*86400)
 
 def pc(x:int, y:int) -> float:
-	# _log.add(f'func (pc) with {x, y}')
 	return int(x/100*y)
 
 def even(var:int) -> bool:
-	# _log.add(f'func (even) with ({var})')
 	return not var%2
 
 def odd(var:int) -> bool:
-	# _log.add(f'func (even) with ({var})')
 	return var%2
 
 def lst1(lst:object) -> object:
-	# _log.add(f'func ( lst1 ) with ({lst})')
 	if lst.__len__() == 1:
 		return lst[0]
 	elif lst.__len__() == 0:
@@ -255,7 +232,6 @@ def RngNoRepetition(v_min:int, v_max:int, how_many:int=1) -> list:
 	if how_many is bigger or equal to v_max
 	this function will return None
 	'''
-	# _log.add(f'func (rng_n_rep) with {v_min, v_max, how_many}')
 	if how_many>=v_max:
 		return None
 	ret_list, tmp=[], [x+1 for x in range(v_min, v_max)]
@@ -265,7 +241,6 @@ def RngNoRepetition(v_min:int, v_max:int, how_many:int=1) -> list:
 
 def UseFile(file:str, obj=None) -> object or None:
 	"""pickled file btw"""
-	# _log.add(f'func ( use_file ) with {file, mode, obj}')
 	# if mode[-1] != 'b':
 		# mode+='b'
 
@@ -275,7 +250,6 @@ def UseFile(file:str, obj=None) -> object or None:
 		_PickleDump(obj, open(file, 'wb'))
 
 def json(file:str, obj:object=None) -> dict or None:
-	# _log.add(f'func (js) with {file, obj}')
 	if obj == None: return _JsonLoad(open(file))
 	else:_JsonDump(obj, file)
 
@@ -285,7 +259,6 @@ def GetInt(msg:str, excepts = [], default = None) -> int:
 	and converting it to int
 	if the user enters an invalid input the function will restart
 	'''
-	# _log.add(f'func (get_int) with {msg, end}')
 	x=input(f'{msg}')
 	try:
 		if x in excepts:
@@ -301,7 +274,6 @@ def GetFloat(msg:str, excepts = [], default = None) -> float:
 	and converting it to int
 	if the user enters an invalid input the function will restart
 	'''
-	# _log.add(f'func (get_float) with {msg, end}')
 	x=input(f'{msg}')
 	try:
 		if x in excepts:
@@ -312,7 +284,6 @@ def GetFloat(msg:str, excepts = [], default = None) -> float:
 		return GetFloat(msg)
 
 def IsPrime(ask:int) -> bool:
-	# _log.add(f'func (is_prime) with ({ask})')
 	msg = False
 	if ask > 1:
 		for i in r(ask, start=2):
@@ -329,7 +300,6 @@ def case(var:int or float, index:int) -> str:
 	return str(var)[index]
 
 def fib(n:int) -> list:
-	# _log.add(f'func (fib) with ({n})')
 	result = []
 	a, b = 0, 1
 	while a < n:
@@ -339,43 +309,36 @@ def fib(n:int) -> list:
 
 class rng:
 	def new(this) -> int:
-		# _log.add(f'class (rng) -> new prop')
 		this.var = []
 		for _ in range(this.size):
 			this.var.append(rint(this.mn, this.mx))
 		return this.var
 
 	def get(this) -> int:
-		# _log.add(f'class (rng) -> get prop')
 		this.var = []
 		for _ in range(this.size):
 			this.var.append(rint(this.mn, this.mx))
 		return this.var
 
 	def __init__(this, mn, mx, size=1) -> object:
-		# _log.add(f'class (rng) -> __init__ with {this, mn, mx, size}')
 		this.size=size
 		this.mn=mn
 		this.mx=mx
 		this.new
 
 	def __repr__(this) -> str:
-		# _log.add(f'class (rng) -> __repr__')
 		if len((var:=this.var))==1:
 			var=this.var[0]
 		this.new
 		return f'{var}'
 
 	def NewSize(this, size) -> None:
-		# _log.add(f'class (rng) -> new_size with ({size})')
 		this.size=size
 		this.new
 
 	def NewMin(this, mn) -> None:
-		# _log.add(f'class (rng) -> new_min with {this, mn}')
 		this.mn=mn
 	def NewMax(this, mx) -> None:
-		# _log.add(f'class (rng) -> new_max with {this, mx}')
 		this.mx=mx
 
 	def __call__(this) -> int:
@@ -426,7 +389,6 @@ def input(*msg, joiner=", ", CallWhenEscape=nop) -> None:
 	return msg
 
 def index(ls:list, var, many=False) -> list:
-	# _log.add(f'func (index) with {ls, var, many}')
 	if var in ls:
 		ret =[]
 		for i in r(ls):
@@ -535,15 +497,15 @@ color: dict[str] = {
 }
 
 class COLOR:
-	nc				=			"\033[0;00m"
+	nc			=			"\033[0;00m"
 
 	black			=			"\033[0;30m"
 	red			=			"\033[0;31m"
 	green			=			"\033[0;32m"
-	magenta		=			"\033[0;35m"
+	magenta			=			"\033[0;35m"
 	blue			=			"\033[0;36m"
 	white			=			"\033[0;37m"
-	GreenishCyan	=			"\033[0;96m" #kinda too complex ()
+	GreenishCyan		=			"\033[0;96m" #kinda too complex ()
 	orange			=			"\033[0;33m" #bruh
 	#orange			=			"\033[0;91m" # bruh
 	cyan			=			"\033[0;34m"
@@ -553,25 +515,25 @@ class COLOR:
 	BrOrange		=			"\033[0;93m"
 	BrMagenta		=			"\033[0;95m"
 	BrYellow		=			"\033[0;97m"
-	BrGrey2		=			"\033[0;110m"
+	BrGrey2			=			"\033[0;110m"
 
 	DarkGrey		=			"\033[0;90m"
 	DarkCyan		=			"\033[0;92m"
 	BkDarkGrey		=			"\033[0;100m"
 
-	Bkblack		=			"\033[0;40m"
+	Bkblack			=			"\033[0;40m"
 	BkOrange		=			"\033[0;43m"
 	BkOrange2		=			"\033[0;101m"
 	BkRed			=			"\033[0;43m"
-	BkGreen		=			"\033[0;42m"
+	BkGreen			=			"\033[0;42m"
 	BkCyan			=			"\033[0;44m"
 	BkMagenta		=			"\033[0;45m"
 	BkCyan			=			"\033[0;46m"
-	BkWhite		=			"\033[0;47m"
+	BkWhite			=			"\033[0;47m"
 	BkCyan			=			"\033[0;102m"
 	BkBlue			=			"\033[0;104m"
 	BkCyan			=			"\033[0;106m"
-	BkWhite		=			"\033[0;107m"
+	BkWhite			=			"\033[0;107m"
 
 	BkBrOrange		=			"\033[0;103m"
 	BkBrGrey		=			"\033[0;105m"
@@ -594,7 +556,6 @@ def attrs(thing:object) -> list[str]:
 	return [attr for attr in dir(thing) if attr[0] != '_']
 
 def SplitBracket(string:str, bracket:str, closing_bracket='', Rmdadd="") -> str:
-	# _log.add(f'func (split_bracket) with {string, bracket, closing_bracket}')
 
 	if closing_bracket == '':
 		r = {
@@ -606,7 +567,6 @@ def SplitBracket(string:str, bracket:str, closing_bracket='', Rmdadd="") -> str:
 	return closing_bracket.join(str(string).split( bracket )).split(closing_bracket)
 
 def StrToMs(ipt:str) -> int:
-	# _log.add(f'func (str_to_ms) with ({ipt})')
 	ipt=ipt.split()
 	n, ipt = float(ipt[0]), ipt[1]
 	TypesToStr = {
@@ -624,7 +584,6 @@ def StrToMs(ipt:str) -> int:
 	return None
 
 def bhask(a, b, c) -> tuple[int]:
-	# _log.add(f'func ( bhask ) with {a, b, c}')
 	delt = ((b**2) - (4*a*c))**.5
 	b*=-1
 	a*=2
@@ -633,12 +592,10 @@ def bhask(a, b, c) -> tuple[int]:
 	return x, y
 
 def near(base:float or int, num:float or int, dif_up:float or int, dif_down:float or int=None) -> bool:
-	# _log.add(f'func ( near ) with {base, num, dif_up, dif_down}')
 	if dif_down == None:dif_down = dif_up
 	return base+dif_up >= num >= base-dif_down
 
 def rsymb(size=1) -> str:
-	# _log.add(f'func ( rsymb ) with ({ size })')
 	#33-47 58-64 160-191
 	c=[]
 	for _ in r(size):
@@ -652,7 +609,6 @@ def rsymb(size=1) -> str:
 	return lst1(c)
 
 def rchar(size=1) -> str:
-	# _log.add(f' func ( rchar ) with ({ size })')
 	#65-90 97-122
 	return lst1([(chr(rint(65, 90))) if rint(0, 1) else (chr(rint(97, 122))) for char in r(size)])
 
@@ -668,7 +624,6 @@ def GetWLen(msg:str, ln:int, end:str='\n') -> int:
 	else
 		restart
 	'''
-	# _log.add(f'func (get_w_len) with {msg, end}')
 	x=input(f'{msg}{end}')
 	if len(x) == ln:
 		return x
@@ -677,7 +632,6 @@ def GetWLen(msg:str, ln:int, end:str='\n') -> int:
 
 # wtf?
 def CallWExcept(func:FuncType, excpts:BaseException, *args:object, call:bool=False, call_f:bool=None) -> object:
-	# _log.add(f'func ( call_w_except ) with {funct, excpts, *args, call, call_f }')
 	x = func(*args)
 	if x in excpts:
 		if call:
@@ -711,7 +665,6 @@ def mmc(a:int, b:int) -> int:
 		return a*b
 	AssureType(int, a, ErrorMsg=f"a : {a} != int")
 	AssureType(int, b, ErrorMsg=f"b : {b} != int")
-	# _log.add(f'func ( mmc/lcm ) with {a, b}')
 	greater = max(a, b)
 	# s = tm()
 	for i in count(0):
@@ -726,7 +679,6 @@ def mmc(a:int, b:int) -> int:
 lcm = mmc
 
 def factorial(n:int) -> int:
-	# _log.add(f'func ( fact ) with {n}')
 	Fact = 1
 	for i in range(1, n+1):
 		Fact*=i
@@ -774,7 +726,6 @@ def ArgvAssing(argvs:iter) -> dict:
 argv_assing = ArgvAssing
 
 def exit(num:int=1) -> None:
-	# _log.add(f'class ( exit ) = ({num}) => act')
 	AssureType(int, num, ErrorMsg=f'var {num} of wrong type, should be int')
 	if num < 256:
 		exi(num)
@@ -1265,9 +1216,11 @@ def AdvDecryptS(var, key, deep) -> str:
 		return AdvDecryptS(var, key*deep, deep-1)
 
 def PosOrNeg(num:int) -> int:
-	try:
-		return 1//num*2+1
-	except ZeroDivisionError:
+	if num > 0:
+		return 1
+	elif num < 0:
+		return -1
+	else:
 		return 0
 
 def odd(var:int) -> bool:
@@ -1503,8 +1456,11 @@ def graphics(*ints, UnderAvg = color["red"], OverAvg = color["green"]) -> str:
 #		}.get(ch)
 #	return ch
 
-def pos(y:int, x:int) -> str:
+def pos(y:int, x=0) -> str:
+	if type(y) == tuple:
+		y,x = y
 	return "\x1B[%i;%iH" % (y+1, x+1)
+
 
 def ppos(y, x):
 	sout.write("\x1B[%i;%iH" % (y+1, x+1))
@@ -1523,17 +1479,23 @@ def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=colo
 		sout.write("%s" % (start + pos(i, x) + char + end ))
 	sout.flush()
 
-def DrawHLine(x, XTo, y, colo, char = ' ') -> None:
+def DrawHLine(x, XTo, y, color, char = ' ') -> None:
 	ps = pos(y, x)
 	_x, _y = GetTerminalSize()
 	len = (XTo-x)+1
-	sout.write(ps + colo + char * len + color["nc"] + char*(_x-len))  # if optmizing change XTO -> msg lenght
+	sout.write(ps + color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
 	sout.flush()
 
 def DrawVLine(y, YTO, x, colo, char = ' ') -> None:
 	for i in range(0, YTO+1)[y:]:
 		sout.write("%s" % pos(i, x) + colo + char + color["nc"])
 	sout.flush()
+
+def DrawSpot(y, x, char):
+	sout.write(pos(y,x) + char)
+
+def ColorSpot(y, x, color):
+	sout.write(pos(y, x)+color+' '+COLOR.nc)
 
 def HideCursor() -> None:
 	sout.write("\x1b[?25l")
@@ -1578,7 +1540,7 @@ class TextBox:
 		this.CURSOR = len(this.STRING)-1
 		this.STRING += " "*(this.TextSixe - len(this.STRING))
 
-	def __call__(this):
+	def __call__(this) -> str:
 		return this.loop()
 
 	def IsPrintableChar(this, char) -> bool:
@@ -1661,7 +1623,7 @@ class TextBox:
 
 			this.SetChar(char)
 
-			# sout.write(f"{pos(1, 1)}{chars}") # debug line
+			# sout.write(f"{pos(1, 1)}{chars}")
 			# ClearLine(4)
 			# sout.write(f"{pos(4, 4)} \
 # {this.CURSOR == len(this.STRING)-2} { this.IsOverChar}|\
@@ -1679,120 +1641,6 @@ class TextBox:
 
 			char = GetCh()
 
-# class AdvTextBox:
-
-#	def __init__(this, YLINE, XLINE, StartString="", DrawRect=True, DoClear=True) -> object:
-#		this.YLINE = YLINE
-#		this.XLINE = XLINE
-#		this.DrawRect = DrawRect
-#		this.DoClear = DoClear
-#		this.PrintableChars = " áàéç!\"#$%&'()*+, -./0123456789:;<\
-# =>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
-#		this.HSize, this.VSize = GetTerminalSize()
-#		this.TextSixe = this.XLINE-2
-#		this.STRING = StartString
-#		this.CURSOR = -1
-#		this.STRING += " "*(this.TextSixe - len(this.STRING))
-
-#	def IsPrintableChar(this, char) -> bool:
-#		return char in this.PrintableChars
-
-#	def SetChar(this, char) -> None:
-#		if char == "\x1b": # espace key
-#			if GetCh() == '[': # escape code
-#				ch = GetCh()
-
-#				if ch == 'C' and this.CURSOR < len(this.STRING)-2: # go right
-#					this.CURSOR+=1
-#				elif ch == 'D' and this.CURSOR > -1: # go left
-#					this.CURSOR-=1
-
-#				elif ch == '3': # may be del
-#					ch = GetCh()
-#					if ch == '~': # delete key
-#						this.STRING = list(this.STRING)
-#						this.STRING.pop(this.CURSOR+1)
-#						this.STRING = ''.join(this.STRING)+ ' '
-
-#				# elif ch == '2': # may be insert
-#					# ch = GetCh()
-#					# if ch == '~': # insert key
-#						# pass
-
-#		elif char == '\x7f' and this.CURSOR > -1: # backspace
-#			if (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar): # "normal" delete
-#				this.STRING = list(this.STRING)
-#				this.STRING.pop(this.CURSOR)
-#				this.STRING = ''.join(this.STRING)+' '
-#				this.CURSOR-=1
-#			else: # if @ $ of line del not backspace
-#				this.STRING = list(this.STRING)
-#				this.STRING[this.CURSOR+1] = ' '
-#				this.STRING = ''.join(this.STRING)
-
-#		else:
-#			if this.IsPrintableChar(char):
-#				if this.CURSOR < len(this.STRING)-2: # if char is going to be added move cursor right
-#					this.CURSOR+=1
-#				if this.CURSOR >= len(this.STRING): # if cursor if off screen get it back
-#					this.CURSOR-=1
-
-#				# strg = this.STRING.strip()
-#				# if len(strg)-1 <= this.CURSOR:
-#					# strg = this.STRING[:this.CURSOR]
-#				# ClearLine(1)
-#				# sout.write(f"{pos(1, 1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
-#				# if not len(strg)-1 == this.CURSOR: # place not replace
-
-#				if this.IsOverChar: # move string right to add char to CURSOR's spot
-#					this.STRING = list(this.STRING)[:-1]
-#					this.STRING.insert(this.CURSOR, char)
-#					this.STRING = ''.join(this.STRING)
-#				else:
-#					this.STRING = ReplaceStringByIndex(this.STRING, this.CURSOR, char) # create or replace
-#	@property
-#	def IsOverChar(this) -> bool:
-#		return this.STRING[this.CURSOR+1] != ' '
-
-#	def loop(this) -> str:
-#		ShowCursor()
-#		if this.DoClear:
-#			clear()
-#		if this.DrawRect:
-#			DrawRectangle((0, this.YLINE-1), (this.XLINE-1, this.YLINE+1), BkColor=color['bk grey'])
-#		char=''
-
-#		# chars = []
-
-#		while True:
-#			# sout.write(pos(this.VSize-1, this.HSize))
-
-#			# chars.append(repr(char))
-
-#			if char == '\r': # <Enter> to send
-#				return this.STRING.strip()
-
-#			this.SetChar(char)
-
-#			# sout.write(f"{pos(1, 1)}{chars}") # debug line
-#			# ClearLine(4)
-#			# sout.write(f"{pos(4, 4)} \
-# # {this.CURSOR == len(this.STRING)-2} { this.IsOverChar}|\
-# # {this.CURSOR == len(this.STRING)-2 or this.IsOverChar}|\
-# # {not (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar)}")
-
-#			# if this.DrawRect:
-#				# sout.write(f"{pos(this.VSize-2, 1)}{color['nc']}{this.STRING}")
-#				# sout.write(pos(this.VSize-2, this.CURSOR+2)) # cursor
-#			# else:
-#				# sout.write(f"{pos(this.VSize-1, 1)}{color['nc']}{this.STRING}")
-#				# sout.write(pos(this.VSize-1, this.CURSOR+2)) # cursor
-#			sout.write(f"{pos(this.YLINE, 1)}{color['nc']}{this.STRING}{pos(this.YLINE, this.CURSOR+2)}")
-#			# content + cursor
-
-#			sout.flush()
-
-#			char = GetCh()
 
 def GetPrimeFactors(number:int) -> list[int]:
 	factor = 2
@@ -1904,48 +1752,322 @@ def ReplaceAll(StringList:list[str], FromString:str, ToString:str) -> list[str]:
 				StringList[index] = ReplaceAll(StringList[index], FromString, ToString)
 	return StringList
 
-def MakeString(line, char='"', leader="\\"):
-	pos = 0
-	string = []
-	current = ""
-	NotCurrent = ""
-	ret = []
-	InString = False
-	line += ' '
-	while pos < len(line):
-		letter = line[pos]
-		if InString:
-			if letter == char and line[pos-1] != leader:
-				InString = False
-				ret.append(char+current+char)
-				current = ""
-			else:
-				if letter != leader:
-					current += letter
-		else:
-			if len(line) == pos+1:
-				# print(line, pos, len(line))
-				ret.append(NotCurrent.strip())
-			elif line[pos] == char and line[pos-1] != leader:
-				InString = True
-				ret.append(NotCurrent.strip())
-				NotCurrent = ""
-			else:
-				NotCurrent += letter
-		pos+=1
-	nret = []
-	for rt in ret:
-		if rt:
-			nret.append(rt)
-	return nret
+def MakeString(this,line):
+	ln = RegEx.findall("(?:\".*?\"|\S)+", line)
+	return ln
 
 def IsListSorted(lst:list, reverse:bool = False):
 	return lst == sorted(lst, reverse = reverse)
 
+class window:
+	def __init__(this, MinY, MinX, MaxY, MaxX, UpdateFunc=nop,
+AvoidDrawedinBorder=true, DrawBottom=true, DrawTop=true, DrawLeft=true, DrawRight=true):
+		this.MaxX = MaxX
+		this.DrawBottom, this.DrawTop, this.DrawLeft, this.DrawRight = DrawBottom, DrawTop, DrawLeft, DrawRight
+		this.MaxY = MaxY
+		this.MinY = MinY
+		this.MinX = MinX
+		this.XDif = MaxX - MinX
+		this.YDif = MaxY - MinY
+		this.PX = this.XDif-1
+		this.PY = this.YDif-1
+		this.tl = (MinY, MinX)
+		this.tr = (MinY, MaxX-1)
+		this.br = (MaxY-1, MaxX-1)
+		this.bl = (MaxY-1, MinX)
+		this.UpdateFunc = UpdateFunc
+		this.DrawedBorder = false
+		this.AvoidDrawedinBorder = AvoidDrawedinBorder
+	def __call__(this, args=None):
+		return this.update(this, args)
+
+	def print(this, y, x, msg, relative = true):
+		if this.AvoidDrawedinBorder:
+			x+=this.DrawedBorder
+			y+=this.DrawedBorder
+		if relative:
+			y+=this.MinY
+			x+=this.MinX
+			if this.MinY < y < this.MaxY:
+				raise FakeCursesError(
+f"y {y} is {'bigger' if x > this.MaxX else 'smaller'} then window's y size {this.MaxY}")
+			elif this.MinX < x < this.MaxX:
+				raise FakeCursesError(
+f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this.MaxX}")
+		sout.write(f"{pos(y, x)}{msg}")
+		sout.flush()
+
+	def ClearLine(this, y, char=' ', start=COLOR.nc, end=COLOR.nc, relative=true):
+		if relative:
+			y+=this.MinY
+			if y > this.MaxY:
+				raise FakeCursesError(f"y {y} is bigger then window's y size {this.MaxY}")
+			elif y < this.MinY:
+				raise FakeCursesError(f"y {y} is smaller then window's y size {this.MinY}")
+		ClearLine(y,char=char, start=start,end=end)
+
+	def DrawOutline(this, color=COLOR.BkDarkGrey):
+		#def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False) -> None:
+		#DrawBottom, DrawTop, DrawLeft, DrawRigh
+		x1, y1 = this.MinX-1, this.MinY-1
+		x2, y2 = this.MaxX, this.MaxY+1 # may do -1 @ MaxX
+		if this.DrawBottom:
+			DrawHLine(x1, x2, y2, color) # bottom
+		if this.DrawTop:
+			DrawHLine(x1, x2, y1, color) # top
+		if this.DrawLeft:
+			DrawVLine(y1, y2, x1, color) # left
+		if this.DrawRight:
+			DrawVLine(y1, y2, x2, color) # right
+
+		# DtrawRectangle(
+		# (this.MinX-1, this.MinY-1),
+		# (this.MaxX+1, this.MaxY+1),
+		# COLOR.BkDarkGrey
+		# )
+
+	def DrawBorder(this, color=COLOR.BkDarkGrey):
+		this.DrawedBorder = true
+		DrawRectangle((this.MinX,this.MinY),
+		(this.XDif,this.YDif), color)
+
+	def move(this, y, x, relative = true):
+		if relative:
+			y+=this.MinY
+			x+=this.MinX
+			if y > this.MaxY:
+				raise FakeCursesError(f"y {y} is bigger then window's y size {this.MaxY}")
+			elif y < this.MinY:
+				raise FakeCursesError(f"y {y} is smaller then window's y size {this.MinY}")
+			elif x > this.MaxX:
+				raise FakeCursesError(f"x {x} is bigger then window's x size {this.MaxX}")
+			elif x < this.MinX:
+				raise FakeCursesError(f"x {x} is smaller then window's x size {this.MinX}")
+		ppos(y,x)
+
+	def update(this, *args):
+		return this.UpdateFunc(this, args)
+
+def TestAll(lst:list[any], test = lambda x: not not x):
+	WK = True
+	for item in lst:
+		if not test(item):
+			WK = False
+	return WK
+
+def TestAny(lst:list[any], test = lambda x: not not x):
+	WK = False
+	for item in lst:
+		if test(item):
+			WK = True
+	return WK
+
+def GetQuadrant(x, y):
+	x = PosOrNeg(x)
+	y = PosOrNeg(y)
+	return {
+	(1,1):1,
+	(1,-1):4,
+	(-1,1):2,
+	(-1,-1):3
+	}.get((x,y), 0)
+
+def CursorMode(mode:str):
+	sout.write("\033[" + {
+		"blinking block":'1',
+		"block":'2',
+		"blinking underline":'3',
+		"underline":'4',
+		"blinking I-beam":'5',
+		"I-beam":'6'
+	}.get(mode, '0') + " q")
+	sout.flush()
+debug = log()
+class _AdvTextBox:
+	def __init__(this, tl, br, string, DrawSides, update, UpperMode, CustomStatusBar):
+		this.update = update
+		this.win = window(*tl, *br, this.loop, *DrawSides)
+		if UpperMode:
+			this.win.YMode = this.win.MinY-2
+		else:
+			this.win.YMode = this.win.MaxY+1
+		if CustomStatusBar:
+			this.ShowMode = CustomStatusBar
+		this.string = string
+		this.AvaliableChars = " óòíìáàéèúùç!#$%&'\"(*)+-.,/0123456789:;<=>\
+?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
+		this.cursor = 0
+		this.InNormalMode = true
+		this.InReplace = false
+		CursorMode("block")
+		this.DrawRect = any(DrawSides)
+		this.CharList = []
+		this.CommandChars = " aixhlrR"
+		this.SpecialInserChars = [
+			"ESC", "DEL", "RIGHT", "LEFT","BACKSPACE"
+		]
+		ShowCursor()
+
+
+	def SpecialChar(this, default):
+		CL = ''.join(this.CharList)
+		if CL[-4:] == "\x1b[3~":
+			return "DEL"
+		elif CL[-3:] == "\x1b[D":
+			return "LEFT"
+		elif CL[-3:] == "\x1b[C":
+			return "RIGHT"
+		elif CL[-1] == '\x1b':
+			return "ESC"
+		elif CL[-1] == "\x7f":
+			return "BACKSPACE"
+		else:
+			return default
+
+	def normal(this, char):
+		if not char in this.CommandChars:
+			char = this.SpecialChar("ESC")
+		debug(char)
+		debug.save()
+		if char in ['\x1b', "ESC"]:
+			pass
+		elif char == 'i':
+			this.InNormalMode = false
+			this.UpdateCursor()
+		elif char == 'R':
+			this.InNormalMode = false
+			this.InReplace = true
+		elif char == 'a':
+			if not len(this.string) < this.cursor + 1:
+				this.cursor += 1
+			this.InNormalMode = false
+			this.UpdateCursor()
+		elif char in ['l', "RIGHT"]:
+			if not len(this.string) < this.cursor + 1:
+				this.cursor+=1
+		elif char in ['h', "LEFT"]:
+			if this.cursor:
+				this.cursor-=1
+		elif char in ['x', "DEL"]:
+			if len(this.string):
+				this.string = ReplaceStringByIndex(this.string, this.cursor, '')
+		elif char == ['\x7f', "BACKSPACE"]: # TODO debug, key not used
+			if len(this.string):
+				this.string = ReplaceStringByIndex(this.string, this.cursor, '')
+				if this.cursor >=1:
+					this.cursor-=1
+
+	def insert(this, char):
+		if char in this.AvaliableChars and len(this.string)+1 < this.win.MaxX:
+			this.cursor += this.StringInsert(char)
+			#this.cursor+=1
+		else:
+			if not char in this.SpecialInserChars:
+				char = this.SpecialChar("PASS")
+		if char == "PASS":
+			pass
+		if char == 'ESC':
+			if this.cursor:
+				this.cursor-=1
+			this.InNormalMode = true
+			this.InReplace = false
+			this.UpdateCursor()
+		elif char == 'BACKSPACE':
+			if len(this.string):
+				if this.cursor >=1:
+					this.string = ReplaceStringByIndex(this.string, this.cursor-1, '')
+					this.cursor-=1
+		elif char == "RIGHT":
+			if not len(this.string) < this.cursor + 1:
+				this.cursor+=1
+		elif char == "LEFT":
+			if this.cursor:
+				this.cursor-=1
+
+	@staticmethod # decorator for custom status bar
+	def ShowMode(this):
+		if this.InNormalMode:
+			t = SetColorMode(COLOR.green, '7')+" normal "
+		else:
+			if this.InReplace:
+				t = SetColorMode(COLOR.red, '7') + " replace "
+			else:
+				t = COLOR.BkBlue+" insert "
+		printl(pos(this.win.YMode, 0) + t + COLOR.nc)
+
+	def loop(this):
+		ch = '\x1b'
+		while true:
+			this.CharList.append(ch)
+			if ch == '\r':
+				this.InNormalMode = true
+				this.UpdateCursor()
+				return this.string
+			if this.InNormalMode:
+				this.normal(ch)
+			else:
+				this.insert(ch)
+			this.win.ClearLine(0)
+			this.win.print(0, 0, this.string)
+
+			if this.win.DrawLeft:
+				ColorSpot(this.win.MaxY-1, 0, COLOR.BkDarkGrey)
+			if this.win.DrawRight:
+				ColorSpot(this.win.MaxY-1, this.win.MaxX, COLOR.BkDarkGrey)
+			else:
+				this.win.print(0, this.win.MaxX-2, ' ')
+			if this.DrawRect:
+				this.win.DrawOutline()
+			this.ShowMode(this)
+			this.update(this)
+			this.win.move(0, this.cursor)
+			ch = GetCh()
+
+
+
+	def UpdateCursor(this):
+		if this.InNormalMode:
+			CursorMode("block")
+		else:
+			if this.InReplace:
+				CursorMode("underline")
+			else:
+				CursorMode("I-beam")
+
+	def __call__(this):
+		return this.loop()
+
+	def StringInsert(this, char) -> int:
+		ret = 0
+		string = list(this.string)
+		if this.InReplace:
+			if this.cursor >= len(string):
+				string.append(char)
+			else:
+				string[this.cursor] = char
+		else:
+			string.insert(this.cursor, char)
+		this.string =  ''.join(string)
+		ret = 1
+		return ret
+
+# drawsides = (bottom, top, left, right)
+def AdvTextBox(
+tl, br, string='', DrawSides = (true, true, true, true),
+update = nop, UpperMode = false, CustomStatusBar = false):
+	return _AdvTextBox(tl, br, string, DrawSides, update, UpperMode, CustomStatusBar)()
+
+
+clear()
+HS, VS = GetTerminalSize()
+print(pos(10,0) + repr(
+AdvTextBox( (1,1), (3, HS-1), "", (1,1,1,1), nop, 0, 0)
+))
+
+
 if __name__=="__main__":
 	for i in get('-c').list:
 		print(eval(i))
-
 # funcs/classes
 """
 const USER
@@ -1957,6 +2079,7 @@ const infinity
 funct nop
 class nocpass
 const ARGV
+funct notify
 class time
 const time
 class log
@@ -2064,4 +2187,10 @@ funct Hamiltons
 funct ReplaceAll
 funct MakeString
 funct IsListSorted
+class window
+funct TestAll
+funct TestAny
+funct Getquadrant
+class _AdvTextBox
+funct AdvTextBox
 """
