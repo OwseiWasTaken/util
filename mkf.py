@@ -7,12 +7,13 @@ from util import *
 def Main() -> int:
 
 	try:
-		CopyFile,ResultFile = get(None).list[0:2]
+		ResultFile, CopyFile = get(None).list[0:2]
+		print(f"make {ResultFile} from ~/Templates/{CopyFile}")
 	except ValueError:
 		help()
 		exit(2)
 
-	ss(f"echo /home/owsei/Templates/*{CopyFile}* > /tmp/mkf.cache")
+	ss(f"echo /home/owsei/Templates/*{CopyFile.lower()}* > /tmp/mkf.cache")
 	with open("/tmp/mkf.cache",'r') as fl:
 		FileData = fl.readline().split()
 
@@ -34,8 +35,11 @@ def Main() -> int:
 
 	if exists(f"./{ResultFile}"):
 		print(f"{ResultFile} already exists, overwrite? [y] :",end='')
-		if GetCh().lower() != 'y':
+		ch = GetCh()
+		if not ch in ['y','Y']:
 			exit(1)
+		else:
+			printl(ch)
 
 	ss(f"cp {CopyFile} {ResultFile}")
 
@@ -58,7 +62,7 @@ $mkf py program
 #start
 if __name__ == '__main__':
 	start = tm()
-	if "help" in argv:
+	if "help" in argv and len(argv) == 1:
 		ExitCode = help()
 	else:
 		try:
