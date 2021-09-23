@@ -2055,16 +2055,23 @@ tl, br, string='', DrawSides = (true, true, true, true),
 update = nop, UpperMode = false, CustomStatusBar = false):
 	return _AdvTextBox(tl, br, string, DrawSides, update, UpperMode, CustomStatusBar)()
 
-def ArgvAssing(args:list[str]): # omfg it's so much better
-         ret = {None:[]}
-         now = None
-         for arg in args:
-                 if arg[0] == '-':
-                         now = arg
-                         ret[now] = []
-                 else:
-                         ret[now].append(arg)
-         return ret
+def ArgvAssing(args:list[str]): # omfg it's so much better                    
+        # if args is [-d 4 u -4 f -d j /-3 -f]                                
+        # ret will be {                                                       
+#None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}                
+        # items that start with '-' will be a key, the rest wil be values      
+        # items that start with "/-" will be values, but the starting '/' will be rem
+        ret = {None:[]}                                                              
+        now = None                                                                   
+        for arg in args:                                                             
+                if arg[0] == '-':                                                    
+                        ret[(now:=arg)] = ret.get(arg, [])                           
+                else:                                                                
+                        if arg[0:2] == '/-':                                         
+                                arg = arg[1:]                                        
+                        ret[now].append(arg)                                         
+        return ret                                                                   
+ARGV = ArgvAssing(argv[1:])
 
 if __name__=="__main__":
 	for i in get('-c').list:
@@ -2179,7 +2186,6 @@ funct ReplaceStringByIndex
 class TextBox
 funct GetPrimeFactors
 class FancyIOStream
-const ARGV
 class get
 funct RmDir
 funct TrimSpaces
