@@ -684,7 +684,7 @@ def factorial(n:int) -> int:
 		Fact*=i
 	return Fact
 
-def ArgvAssing(argvs:iter) -> dict:
+def OldArgvAssing(argvs:iter) -> dict:
 	'''
 	this function will loop through all argvs, and will define the ones starting with '-' as indicators
 	and the others just normal arguments
@@ -723,7 +723,6 @@ def ArgvAssing(argvs:iter) -> dict:
 					# add[AddIndex] = add[AddIndex].replace("/-", '-')
 			ret[argvs[indcn[i]]] = add#argvs[indcn[i]+1:]
 	return ret
-argv_assing = ArgvAssing
 
 def exit(num:int=1) -> None:
 	AssureType(int, num, ErrorMsg=f'var {num} of wrong type, should be int')
@@ -977,7 +976,6 @@ class var(object):
 		else:
 			ret = [this.Value]
 			ret[index] = obj
-
 		this.Value = ret
 
 	def __repr__(this) -> str:
@@ -2057,13 +2055,16 @@ tl, br, string='', DrawSides = (true, true, true, true),
 update = nop, UpperMode = false, CustomStatusBar = false):
 	return _AdvTextBox(tl, br, string, DrawSides, update, UpperMode, CustomStatusBar)()
 
-
-clear()
-HS, VS = GetTerminalSize()
-print(pos(10,0) + repr(
-AdvTextBox( (1,1), (3, HS-1), "", (1,1,1,1), nop, 0, 0)
-))
-
+def ArgvAssing(args:list[str]): # omfg it's so much better
+         ret = {None:[]}
+         now = None
+         for arg in args:
+                 if arg[0] == '-':
+                         now = arg
+                         ret[now] = []
+                 else:
+                         ret[now].append(arg)
+         return ret
 
 if __name__=="__main__":
 	for i in get('-c').list:
@@ -2125,8 +2126,7 @@ funct timeit
 funct mmc
 const lcm
 funct factorial
-funct ArgvAssing
-const argv_assing
+funct OldArgvAssing
 funct exit
 funct between
 funct ls
@@ -2193,4 +2193,5 @@ funct TestAny
 funct Getquadrant
 class _AdvTextBox
 funct AdvTextBox
+funct ArgvAssing
 """
