@@ -49,10 +49,12 @@ def help():
 	print("""
 this program will search for template files in ~/Templates, and copy them to the [Result File Name]
 
-$mkf [File Template name (not complete name)] [Result File Name]
+the program will search for a template file with a wildcard before and after the file name
+
+$mkf [Result File Name] [File Template name]
 
 e.g. (create a file called program.py)
-$mkf py program
+$mkf program pyt
 """[1:-1])
 	return 0
 
