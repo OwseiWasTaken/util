@@ -20,8 +20,8 @@ if __name__ == '__main__':
 
 	if get('--debug').exists:
 		if not ExitCode:
-			printl("%scode successfully exited in " % color["green"])
+			printl("%scode successfully exited in " % COLOR.green)
 		else:
-			printl("%scode exited with error %d in " % (color["red"],ExitCode))
-		print("%.3f seconds%s" % (tm()-start,color["nc"]))
+			printl("%scode exited with error %d in " % (COLOR.red,ExitCode))
+		print("%.3f seconds%s" % (tm()-start,COLOR.nc))
 	exit(ExitCode)
