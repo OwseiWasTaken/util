@@ -10,6 +10,7 @@ from time import time as tm, sleep as slp, strftime as __ftime__
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, getlogin, rmdir as _rmdir, get_terminal_size as GetTerminalSize
 from os.path import isfile, exists, abspath
+from functools import cache
 try:
 	import js_regex as RegEx
 except ModuleNotFoundError:
@@ -106,12 +107,12 @@ class time:
 time = time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = false, autosave = false) -> object:
+	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = False, autosave = False) -> object:
 		this.tm = tm
 		this.autosave = autosave
 		this.sep = sep
 		this.LOG = []
-		if ShowCreated == true:
+		if ShowCreated == True:
 			this.add('the log was created')
 		this.file = file
 
@@ -1099,7 +1100,7 @@ class var(object):
 	# complex methods done
 
 class BDP:
-	def __init__(this, name, autoload = true, IgnoreDataSize = False) -> object:
+	def __init__(this, name, autoload = True, IgnoreDataSize = False) -> object:
 		# for unix like system
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
@@ -1700,7 +1701,7 @@ class get:
 			if other[0] in "-+0987654321":
 				ret.append( not not eval(other[0]) )
 			else:
-				ret.append( true )
+				ret.append( True )
 		else:
 			ret.append( None )
 		if other: # MakeEval
@@ -1768,7 +1769,7 @@ def IsListSorted(lst:list, reverse:bool = False):
 
 class window:
 	def __init__(this, MinY, MinX, MaxY, MaxX, UpdateFunc=nop,
-AvoidDrawedinBorder=true, DrawBottom=true, DrawTop=true, DrawLeft=true, DrawRight=true):
+AvoidDrawedinBorder=True, DrawBottom=True, DrawTop=True, DrawLeft=True, DrawRight=True):
 		this.MaxX = MaxX
 		this.DrawBottom, this.DrawTop, this.DrawLeft, this.DrawRight = DrawBottom, DrawTop, DrawLeft, DrawRight
 		this.MaxY = MaxY
@@ -1783,13 +1784,13 @@ AvoidDrawedinBorder=true, DrawBottom=true, DrawTop=true, DrawLeft=true, DrawRigh
 		this.br = (MaxY-1, MaxX-1)
 		this.bl = (MaxY-1, MinX)
 		this.UpdateFunc = UpdateFunc
-		this.DrawedBorder = false
+		this.DrawedBorder = False
 		this.AvoidDrawedinBorder = AvoidDrawedinBorder
 		this.BorderColor = '\033[7;90m'
 	def __call__(this, args=None):
 		return this.update(this, args)
 
-	def print(this, y, x, msg, relative = true):
+	def print(this, y, x, msg, relative = True):
 		if this.AvoidDrawedinBorder:
 			x+=this.DrawedBorder
 			y+=this.DrawedBorder
@@ -1805,7 +1806,7 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		sout.write(f"{pos(y, x)}{msg}")
 		sout.flush()
 
-	def ClearLine(this, y, char=' ', start=COLOR.nc, end=COLOR.nc, relative=true):
+	def ClearLine(this, y, char=' ', start=COLOR.nc, end=COLOR.nc, relative=True):
 		if relative:
 			y+=this.MinY
 			if y > this.MaxY:
@@ -1839,11 +1840,11 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 	def DrawBorder(this, color=-1):
 		if color == -1:
 			color = this.BorderColor
-		this.DrawedBorder = true
+		this.DrawedBorder = True
 		DrawRectangle((this.MinX,this.MinY),
 		(this.XDif,this.YDif), color)
 
-	def move(this, y, x, relative = true):
+	def move(this, y, x, relative = True):
 		if relative:
 			y+=this.MinY
 			x+=this.MinX
@@ -1894,7 +1895,7 @@ def CursorMode(mode:str):
 		"I-beam":'6'
 	}.get(mode, '0') + " q")
 	sout.flush()
-debug = log() # TODO remove
+
 class _AdvTextBox:
 	def __init__(this, tl, br, content, DrawSides, update, UpperMode, CustomStatusBar):
 		this.update = update
@@ -1919,8 +1920,8 @@ class _AdvTextBox:
 			this.cont = content
 			for i in r(this.ContSize - len(content)):
 				this.cont.append('')
-		this.InNormalMode = true
-		this.InReplace = false
+		this.InNormalMode = True
+		this.InReplace = False
 		CursorMode("block")
 		ShowCursor()
 		this.CtrlChar = {
@@ -1972,15 +1973,15 @@ class _AdvTextBox:
 		if char == "ESC":
 			pass
 		elif char == 'i':
-			this.InNormalMode = false
+			this.InNormalMode = False
 			this.UpdateCursor()
 		elif char == 'R':
-			this.InNormalMode = false
-			this.InReplace = true
+			this.InNormalMode = False
+			this.InReplace = True
 		elif char == 'a':
 			if not len(this.string) < this.cursor + 1:
 				this.cursor += 1
-			this.InNormalMode = false
+			this.InNormalMode = False
 			this.UpdateCursor()
 		elif char in ['l', "RIGHT"]:
 			if not len(this.string) < this.cursor + 1:
@@ -2039,8 +2040,8 @@ class _AdvTextBox:
 		elif char == 'ESC':
 			if this.cursor:
 				this.cursor-=1
-			this.InNormalMode = true
-			this.InReplace = false
+			this.InNormalMode = True
+			this.InReplace = False
 			this.UpdateCursor()
 		elif char == 'BACKSPACE':
 			if len(this.string):
@@ -2071,11 +2072,11 @@ class _AdvTextBox:
 
 	def loop(this):
 		ch = ' '
-		while true:
+		while True:
 			this.string = this.cont[this.line]
 			this.CharList.append(ch)
 			if ch == '\r':
-				this.InNormalMode = true
+				this.InNormalMode = True
 				this.UpdateCursor()
 				if len(this.cont) == 1:
 					return this.string
@@ -2090,23 +2091,23 @@ class _AdvTextBox:
 				ln = this.cont[lnn]
 				if lnn == this.line:
 					ln = this.string
-				this.win.ClearLine(lnn+this.win.MinY, relative=false)
+				this.win.ClearLine(lnn+this.win.MinY, relative=False)
 				if this.win.DrawLeft:
 					ColorSpot(lnn+this.win.MinY, 0, COLOR.BkDarkGrey)
 				if this.win.DrawRight:
 					ColorSpot(lnn+this.win.MinY, this.win.MaxX, COLOR.BkDarkGrey)
 				if ln:
 					ToPrint += pos(lnn+this.win.MinY, 1) + ln
-				#this.win.print(lnn+this.win.MinY, 1, ln, false)
+				#this.win.print(lnn+this.win.MinY, 1, ln, False)
 			else:
 				ToPrint += pos(0, this.win.XDif-2) + ' '
-				#this.win.print(0, this.win.XDif-2, ' ', false)
+				#this.win.print(0, this.win.XDif-2, ' ', False)
 			sout.write(ToPrint)
 			if this.DrawRect:
 				this.win.DrawOutline()
 			this.ShowMode(this)
 			this.update(this)
-			this.win.move(this.line+this.win.MinY, this.cursor+this.win.MinX, relative = false)
+			this.win.move(this.line+this.win.MinY, this.cursor+this.win.MinX, relative = False)
 			ch = GetCh()
 			this.cont[this.line] = this.string
 
@@ -2138,8 +2139,8 @@ class _AdvTextBox:
 
 # drawsides = (bottom, top, left, right)
 def AdvTextBox(
-tl, br, content=[''], DrawSides = (true, true, true, true),
-update = nop, UpperMode = false, CustomStatusBar = false):
+tl, br, content=[''], DrawSides = (True, True, True, True),
+update = nop, UpperMode = False, CustomStatusBar = False):
 	if type(content) == str:
 		content = [content]
 	return _AdvTextBox(tl, br, content, DrawSides, update, UpperMode, CustomStatusBar)()
@@ -2231,14 +2232,35 @@ def IsLeapYear(year=None):
 def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
 	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
 
-def Sprintf(string, *stuff):
-	for i in r(stuff):
-		string = string.replace(f"{{{i}}}", f"{stuff[i]}")
-	return string
-#TODO {i} -> int ...
-#print(
-#Sprintf("poggers! {0}", 3)
-#)
+@cache
+def sprintf(string, *stuff, HideErrors=True):
+	# different to c's sprintf the template doesn't show what the var is
+	#it shows what you want the var to be
+	tp = {
+		"i":int,
+		"f":float,
+		"s":str,
+		"b":bool,
+		"x":hex
+	}
+	ToReplace = RegEx.compile(rf"\{{[{''.join(tp.keys())}]\}}").findall(string)
+	if len(ToReplace) == len(stuff) or HideErrors:
+		for i in r(ToReplace):
+			if len(stuff) > i:
+				replace = ToReplace[i]
+				place = f"{tp[replace[1]](stuff[i])}"
+				string = string.replace(replace, place, 1)
+		return string
+	else:
+		raise TypeError(sprintf("\
+not as many replace arguments as string template arguments {i} to {i}",
+len(ToReplace), len(stuff)))
+
+def printf(string, *stuff, flush = True):
+	string = sprintf(string, *stuff)
+	sout.write(string)
+	if flush:
+		sout.flush()
 
 if __name__=="__main__":
 	for i in get('-c').list:
@@ -2370,4 +2392,6 @@ funct TestAny
 funct Getquadrant
 class _AdvTextBox
 funct AdvTextBox
+funct sprintf
+funct printf
 """
