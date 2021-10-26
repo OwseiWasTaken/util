@@ -8,7 +8,7 @@ from json import dump as _JsonDump, load as _JsonLoad
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp, strftime as __ftime__
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
-from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, getlogin, rmdir as _rmdir, get_terminal_size as GetTerminalSize
+from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, _getlogin, rmdir as _rmdir, get_terminal_size as GetTerminalSize
 from os.path import isfile, exists, abspath
 from functools import cache
 try:
@@ -33,19 +33,6 @@ except ModuleNotFoundError:
 
 # magic class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
-# consts
-true = True
-false = False
-USER = getlogin()
-def nop(*a, **b):pass
-FuncType = type(nop)
-NoneType = type(None)
-iterables = [type(list()), type(set()), type(frozenset())]
-class NumberTooBigError(BaseException):pass
-class FakeCursesError(BaseException):pass
-infinity = float("inf")
-class noc:pass
-ARGV = None# Will be defined later
 
 # OS especific func
 if OS == "linux":
@@ -2166,7 +2153,6 @@ def ArgvAssing(args:list[str]): # omfg it's so much better
 				arg = arg[1:]
 			ret[now].append(arg)
 	return ret
-ARGV = ArgvAssing(argv[1:])
 
 def eprint(*msg, end='\n', sep=", ") -> None:
 	msg = sep.join([str(m) for m in msg])
@@ -2262,21 +2248,25 @@ def printf(string, *stuff, flush = True):
 	if flush:
 		sout.flush()
 
+# consts
+true = True
+false = False
+USER = _getlogin()
+def nop(*a, **b):pass
+FuncType = type(nop)
+NoneType = type(None)
+iterables = [type(list()), type(set()), type(frozenset())]
+class NumberTooBigError(BaseException):pass
+class FakeCursesError(BaseException):pass
+infinity = float("inf")
+class noc:pass
+ARGV = ArgvAssing(argv[1:])
+
 if __name__=="__main__":
 	for i in get('-c').list:
 		print(eval(i))
 # funcs/classes
 """
-#CONSTS
-const USER
-const FuncType
-const NoneType
-const iterables
-class NumberTooBigError
-const infinity
-funct nop
-class nocpass
-const ARGV
 #OS FUNCS
 funct notify
 funct GetCh
@@ -2394,4 +2384,14 @@ class _AdvTextBox
 funct AdvTextBox
 funct sprintf
 funct printf
+#CONSTS
+const USER
+const FuncType
+const NoneType
+const iterables
+class NumberTooBigError
+const infinity
+funct nop
+class nocpass
+const ARGV
 """
