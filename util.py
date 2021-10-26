@@ -1,18 +1,20 @@
 #! /usr/bin/python3.9
+# TODO update do 3.10 (when all libs 3.10 etc)
 # util.py imports
 from pickle import dump as _PickleDump, load as _PickleLoad
 from json import dump as _JsonDump, load as _JsonLoad
-from tty import setraw
-from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
-from fcntl import ioctl
 
 # general imports + util used
 from random import randint as rint, choice as ritem
 from time import time as tm, sleep as slp, strftime as __ftime__
-from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as serr, platform as OS
+from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, getlogin, rmdir as _rmdir, get_terminal_size as GetTerminalSize
-from os.path import isfile, exists
-import re as RegEx
+from os.path import isfile, exists, abspath
+try:
+	import js_regex as RegEx
+except ModuleNotFoundError:
+	import re as RegEx
+
 
 # this file was made by owsei
 # this file has a gpl3 lincense or whatever
@@ -34,31 +36,50 @@ import re as RegEx
 true = True
 false = False
 USER = getlogin()
-FuncType = type(lambda a:a )
+def nop(*a, **b):pass
+FuncType = type(nop)
 NoneType = type(None)
 iterables = [type(list()), type(set()), type(frozenset())]
 class NumberTooBigError(BaseException):pass
 class FakeCursesError(BaseException):pass
 infinity = float("inf")
-def nop(*a):pass
 class noc:pass
 ARGV = None# Will be defined later
 
 # OS especific func
 if OS == "linux":
 	# it MAY work in windows, not sure tho
-	import gi
-	gi.require_version('Notify', '0.7')
-	from gi.repository import Notify
-	def notify(title="", body="") -> None:
-		Notify.init("util.py/func/notify/init")
-		Notify.Notification.new(str(title), str(body)).show()
+	try:
+		import gi
+		gi.require_version('Notify', '0.7')
+		from gi.repository import Notify
+		def notify(title="", body="") -> None:
+			Notify.init("util.py/func/notify/init")
+			Notify.Notification.new(str(title), str(body)).show()
+	except ModuleNotFoundError:
+		def notify(*a, **kwa):
+			print(f"the gi and notify modules where not found")
+	from tty import setraw
+	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
+	from fcntl import ioctl
+	def GetCh() -> str:
+		fd = sin.fileno()
+		OldSettings = tcgetattr(fd)
+		try:
+			setraw(sin.fileno())
+			ch = sin.read(1)
+		finally:
+			tcsetattr(fd, TCSADRAIN, OldSettings)
+		return ch
 else:
 	def notify(*a, **kwa):
-		print(f"notify function not yet implemented in uti.py for {OS}\n\
-if you want to help, make yout commit at https://github.com/OwseiWasTaken/uti.py")
+		print(f"notify function not yet implemented in util.py for {OS}\n\
+if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
+	import msvcrt
+	def GetCh() -> str:
+		return msvcrt.getch()
 
-class _time:
+class time:
 	@property
 	def sec(this) -> str :
 		return __ftime__(f"%S")
@@ -82,25 +103,30 @@ class _time:
 	@property
 	def year(this) -> str:
 		return __ftime__("%D").split("/")[2]
-time = _time()
+time = time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log") -> object:
+	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = false, autosave = false) -> object:
 		this.tm = tm
+		this.autosave = autosave
 		this.sep = sep
 		this.LOG = []
-		this.add('the log was created')
+		if ShowCreated == true:
+			this.add('the log was created')
 		this.file = file
 
+	def clear(this):
+		this.LOG = []
+
 	def add(this, *ask) -> None:
-		tm = this.tm
-		if len(ask) > 1:
-			ask = this.sep.join([str(ak) for ak in ask])
-		else:
-			ask = ask[0]
-		tme = ''
-		if tm:tme = f'at {time.day} {time.hour}:{time.min}:{time.sec} : '
-		this.LOG.append(f'{tme}{ask}')
+		ask = this.sep.join([str(ak) for ak in ask])
+		tme = ""
+		if this.tm:
+			tme = f"at {time.day} {time.hour}:{time.min}:{time.sec} : "
+
+		this.LOG.append(f'{ask}')
+		if this.autosave:
+			this.save()
 
 	def remove(this, index_or_content:int or str) -> None:
 		if type(index_or_content) == int:
@@ -118,11 +144,9 @@ class log:
 	def __getitem__(this, num:int) -> str:
 		return this.LOG[num]
 
-	def __call__(this, *ask):
-		this.add(*ask)
+	def __call__(this, *ask):this.add(*ask) # defined in __init__
 
-	def __add__(this, *ask):
-		thif.add(*ask)
+	def __add__(this, *ask):this.add(*ask)# defined in __init__
 
 	def __iter__(this) -> None:
 		for i in this():
@@ -341,7 +365,9 @@ class rng:
 	def NewMax(this, mx) -> None:
 		this.mx=mx
 
-	def __call__(this) -> int:
+	def __call__(this, size=-1) -> int:
+		if size != -1:
+			this.NewSize(size)
 		return this.get()
 
 def print(*msg, end='\n', sep=", ") -> None:
@@ -375,6 +401,9 @@ def prints(*msg, sep=", ") -> None:
 	# write msg
 	sout.write(f'{msg}')
 
+def sprint(msg) -> None: # simple print
+	sout.write(msg)
+
 def input(*msg, joiner=", ", CallWhenEscape=nop) -> None:
 	printl(*msg, sep = joiner)
 	for line in sin:
@@ -402,15 +431,6 @@ def index(ls:list, var, many=False) -> list:
 		return None
 	return ret
 
-def GetCh() -> str:
-	fd = sin.fileno()
-	OldSettings = tcgetattr(fd)
-	try:
-		setraw(sin.fileno())
-		ch = sin.read(1)
-	finally:
-		tcsetattr(fd, TCSADRAIN, OldSettings)
-	return ch
 
 def GCH(TEQ):
 	ch = GetCh()
@@ -500,12 +520,12 @@ class COLOR:
 	nc			=			"\033[0;00m"
 
 	black			=			"\033[0;30m"
-	red			=			"\033[0;31m"
+	red				=			"\033[0;31m"
 	green			=			"\033[0;32m"
 	magenta			=			"\033[0;35m"
 	blue			=			"\033[0;36m"
 	white			=			"\033[0;37m"
-	GreenishCyan		=			"\033[0;96m" #kinda too complex ()
+	GreenishCyan	=			"\033[0;96m" #kinda too complex ()
 	orange			=			"\033[0;33m" #bruh
 	#orange			=			"\033[0;91m" # bruh
 	cyan			=			"\033[0;34m"
@@ -585,7 +605,7 @@ def StrToMs(ipt:str) -> int:
 
 def bhask(a, b, c) -> tuple[int]:
 	delt = ((b**2) - (4*a*c))**.5
-	b*=-1
+	b*=-1 # can be anyware before x,y
 	a*=2
 	x = (b + delt)/a
 	y = (b - delt)/a
@@ -697,19 +717,15 @@ def OldArgvAssing(argvs:iter) -> dict:
 	for i in r(argvs):
 		if str(argvs[i])[0] == '-':
 			indcn.append(i)
-
 	if indcn == []:
 		if argv == []:
 			ret[None] = []
 		else:
 			ret[None] = argvs
-
 	elif indcn[0] > 0:
 		ret[None] = argvs[0:indcn[0]]
-
 	for index in r(argvs):
 		argvs[index] = argvs[index].replace("/-", '-')
-
 	for i in r(indcn):
 		try:
 			dif = indcn[i+1]-indcn[i]
@@ -792,13 +808,13 @@ class code:
 		this.name, this.mode, this.code = name, mode, list(code)
 
 	def __add__(this, line) -> object:
-		this.code.append(line)
+		this.code.append(compile(line, this.name, this.mode))
 		return this
 
 	def __call__(this) -> None:
 		if type(this.code) == str:this.code=this.code.split('\n')
 		for line in this.code:
-			exec(compile(line, this.name, this.mode))
+			exec(line)
 		return 0
 
 	def __repr__(this) -> str:
@@ -976,6 +992,7 @@ class var(object):
 		else:
 			ret = [this.Value]
 			ret[index] = obj
+
 		this.Value = ret
 
 	def __repr__(this) -> str:
@@ -1082,56 +1099,44 @@ class var(object):
 	# complex methods done
 
 class BDP:
-	def __init__(this, name, IgnoreDataSize=False) -> object:
+	def __init__(this, name, autoload = true, IgnoreDataSize = False) -> object:
 		# for unix like system
 		# c:/users/{USER}/BDP
+		this.autoload = autoload
 		this.IgnoreDataSize = IgnoreDataSize
-
 		if OS == "linux": # gud os
 			if not exists(f"/home/{USER}/BDP"):
 					ss("mkdir /BDP/")
-
 			if not name.startswith("~/BDP/"):
 				name = f"~/BDP/{name}"
-
-			if not name.endswith(".pog"):
-					name += ".pog"
-
-			name = name.replace("//", '/')
-			name = name.replace('~', f"/home/{USER}")
-
+			name = name.replace("//", '/').replace('~', f"/home/{USER}")
 		elif OS == "windows": # bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
 					ss(f"mkdir C:/users/{USER}/BDP/")
-
 			if not name.startswith(f"~/BDP/"):
 					name = f"~/BDP/{name}"
-
-			if not name.endswith(".pog"):
-					name += ".pog"
-
 						# / -> \ && ~ -> C:\...
 			name = name.replace("/", '\\').replace('~', f"C:\\\\users\\{USER}")
 		else:
 			print(f"Your OS \"{OS}\" is not yet suported by util.BDP\n\
 if you can help, please contribute at https://OwseiWasTaken/util.py")
-
 		this.name = name
 		this.data = None
 		this.exists = exists(name)
+		if this.autoload and this.exists:
+			this.load()
 
-	def save(this, data=None) -> str: # not that the string matters
+	def save(this, data=None) -> str:
 		if data == None:
 			data = this.data
-
+			if data == None:
+				return "no data to save"
 		if not this.exists:
 			with open(this.name, 'w'):pass
-			#ss(f"touch {this.name}")#only for linux
-
 		UseFile(this.name, data)
 		return "saved"
 
-	def load(this) -> any:
+	def load(this) -> object:
 		if exists(this.name):
 			try:
 				this.data = UseFile(this.name)
@@ -1146,7 +1151,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py")
 		if len(f"{this.data}") < 100 or this.IgnoreDataSize:
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
-			return f"name: {this.name}\n{COLOR.yellow}data too big to display\n\
+			return f"name: {this.name}\n{COLOR.orange}data too big to display\n\
 BDP(IgnoreDataSize=True) to ignore size{color.nc}"
 
 	def __call__(this, data=None) -> any: # this breaks occasionaly
@@ -1268,28 +1273,14 @@ def NumSum(numbers:int or float) -> int:
 
 def FindAll(StringToSearchIn:str, StringToFind:str) -> list[str]:
 	# get replacable string
-	StringToFindL = len(StringToFind)
-	NotStringToFind = '0'*StringToFindL
-	if NotStringToFind == StringToFind:
-		NotStringToFind = '1'*StringToFindL
-	# StringToFind can't be 000... and 111... at the same time!
-
-	WLen = len(StringToFind)
-	TLen = len(StringToSearchIn)
-	TLenSmall = len(StringToSearchIn.replace(StringToFind, ""))
-	times = (TLen-TLenSmall)/WLen
+	NotStringToFind = StringToFind[1:] + chr(ord(StringToFind[-1])+1)
+	times = StringToSearchIn.count(StringToFind)
 
 	ret = []
 	for i in r(times):
 		ret.append(StringToSearchIn.find(StringToFind))
 		StringToSearchIn = StringToSearchIn.replace(StringToFind, NotStringToFind, 1)
 	return ret
-
-def CountSubstring(string, substring):
-	SStrLen = len(substring)
-	SLen = len(string)
-	SSLen = len(string.replace(substring, ""))
-	return int((SLen-SSLen)/SStrLen)
 
 def DeepSum(args, ParseStringWith=eval, ParseString=False, ReturnDeeph=False) -> int:
 	"""
@@ -1459,7 +1450,6 @@ def pos(y:int, x=0) -> str:
 		y,x = y
 	return "\x1B[%i;%iH" % (y+1, x+1)
 
-
 def ppos(y, x):
 	sout.write("\x1B[%i;%iH" % (y+1, x+1))
 	sout.flush()
@@ -1467,12 +1457,16 @@ def ppos(y, x):
 def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color["nc"]) -> None:
 	if GetTerminalY == "default":
 		x, _ = GetTerminalSize()
+	else:
+		x = GetTerminalY()
 	sout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
 	sout.flush()
 
 def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=color["nc"]) -> None:
 	if GetTerminalX == "default":
 		_, y = GetTerminalSize()
+	else:
+		y = GetTerminalX()
 	for i in r(y):
 		sout.write("%s" % (start + pos(i, x) + char + end ))
 	sout.flush()
@@ -1545,7 +1539,7 @@ class TextBox:
 		return char in this.PrintableChars
 
 	def SetChar(this, char) -> None:
-		if char == "\x1b": # espace key
+		if char == "\x1b": # escape key
 			if GetCh() == '[': # escape code
 				ch = GetCh()
 
@@ -1639,7 +1633,6 @@ class TextBox:
 
 			char = GetCh()
 
-
 def GetPrimeFactors(number:int) -> list[int]:
 	factor = 2
 	ret = []
@@ -1660,28 +1653,35 @@ class FancyIOStream:
 			sout.flush()
 		return this
 
-ARGV = ArgvAssing(argv[1:])
 
 class get:
-	def __init__(this, *gets, argvs=None, default = None) -> object:
+	def __init__(this, *gets, argvs=None) -> object:
+		gets = list(gets)
+		if gets == [""]:
+			gets = [None]
 		for index in r(gets):
 			if type(gets[index]) != NoneType and gets[index][0] != '-':
 				gets[index] = '-'+gets[index]
-		global ARGV
 		if argvs == None:
+			global ARGV
 			argvs = ARGV
 		this.argvs = argvs
 		this.gets = gets
 
 		stuff = this._get()
 		this.list = stuff[0]
-		this.first = default
-		this.last = default
+		this.first = None
+		this.last = None
 		if not this.list == None and len(this.list):
 			this.first = this.list[0]
 			this.last = this.list[-1]
 		this.bool = stuff[1]
-		this.exists = stuff[2]
+		this.eval = stuff[2]
+		this.exists = stuff[-1]
+		this.stuff = stuff
+
+	def __getitem__(this, index):
+		return this.list[index]
 
 	def _get(this) -> list:
 		ret = []
@@ -1697,18 +1697,27 @@ class get:
 			ret.append([])
 
 		if other: # MakeBool
-			if other[0].isnumeric():
-				# ret.append( bo/ol(eval(other[0])) )
-				ret.append( not not (eval(other[0])) )
+			if other[0] in "-+0987654321":
+				ret.append( not not eval(other[0]) )
 			else:
-				# ret.append( bo/ol(other[0]) )
-				ret.append( not not (other[0]) )
+				ret.append( true )
 		else:
-			ret.append(False)
+			ret.append( None )
+		if other: # MakeEval
+			if other[0] in "-+0987654321":
+				ret.append( eval(other[0]) )
+			else:
+				ret.append( None )
+		else:
+			ret.append( None )
 
-		ret.append( any( [x for x in this.gets if x in this.argvs.keys()]) ) # exists
+		al = list(this.argvs.keys())
+		ret.append( any( [x in al for x in this.gets]) ) # exists
 
 		return ret
+
+	def __len__(this):
+		return len(this.list)
 
 def _RmDirLinux(dir:str) -> int:
 	return ss(f"rm -rf {dir}")
@@ -1750,8 +1759,8 @@ def ReplaceAll(StringList:list[str], FromString:str, ToString:str) -> list[str]:
 				StringList[index] = ReplaceAll(StringList[index], FromString, ToString)
 	return StringList
 
-def MakeString(this,line):
-	ln = RegEx.findall("(?:\".*?\"|\S)+", line)
+def MakeString(line):
+	ln = RegEx.compile("(?:\".*?\"|\S)+").findall(line)
 	return ln
 
 def IsListSorted(lst:list, reverse:bool = False):
@@ -1776,6 +1785,7 @@ AvoidDrawedinBorder=true, DrawBottom=true, DrawTop=true, DrawLeft=true, DrawRigh
 		this.UpdateFunc = UpdateFunc
 		this.DrawedBorder = false
 		this.AvoidDrawedinBorder = AvoidDrawedinBorder
+		this.BorderColor = '\033[7;90m'
 	def __call__(this, args=None):
 		return this.update(this, args)
 
@@ -1804,7 +1814,9 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 				raise FakeCursesError(f"y {y} is smaller then window's y size {this.MinY}")
 		ClearLine(y,char=char, start=start,end=end)
 
-	def DrawOutline(this, color=COLOR.BkDarkGrey):
+	def DrawOutline(this, color=-1):
+		if color == -1:
+			color = this.BorderColor
 		#def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False) -> None:
 		#DrawBottom, DrawTop, DrawLeft, DrawRigh
 		x1, y1 = this.MinX-1, this.MinY-1
@@ -1824,7 +1836,9 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		# COLOR.BkDarkGrey
 		# )
 
-	def DrawBorder(this, color=COLOR.BkDarkGrey):
+	def DrawBorder(this, color=-1):
+		if color == -1:
+			color = this.BorderColor
 		this.DrawedBorder = true
 		DrawRectangle((this.MinX,this.MinY),
 		(this.XDif,this.YDif), color)
@@ -1880,54 +1894,82 @@ def CursorMode(mode:str):
 		"I-beam":'6'
 	}.get(mode, '0') + " q")
 	sout.flush()
-debug = log()
+debug = log() # TODO remove
 class _AdvTextBox:
-	def __init__(this, tl, br, string, DrawSides, update, UpperMode, CustomStatusBar):
+	def __init__(this, tl, br, content, DrawSides, update, UpperMode, CustomStatusBar):
 		this.update = update
 		this.win = window(*tl, *br, this.loop, *DrawSides)
 		if UpperMode:
 			this.win.YMode = this.win.MinY-2
 		else:
 			this.win.YMode = this.win.MaxY+1
+		this.tadd = lambda x:''
 		if CustomStatusBar:
-			this.ShowMode = CustomStatusBar
-		this.string = string
+			if type(CustomStatusBar) == list:
+				this.tadd = CustomStatusBar[0]
+			else:
+				this.ShowMode = CustomStatusBar
 		this.AvaliableChars = " óòíìáàéèúùç!#$%&'\"(*)+-.,/0123456789:;<=>\
 ?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
 		this.cursor = 0
+		this.line = 0
+		this.ContSize = this.win.YDif+1
+		this.cont = content
+		if len(content) <= this.ContSize:
+			this.cont = content
+			for i in r(this.ContSize - len(content)):
+				this.cont.append('')
 		this.InNormalMode = true
 		this.InReplace = false
 		CursorMode("block")
+		ShowCursor()
+		this.CtrlChar = {
+'\x01':'A', '\x02':'B', '\x03':'C', '\x04':'D',
+'\x05':'E', '\x06':'F', '\x07':'G', '\x08':'H',
+'\x09':'I', '\x0A':'J', '\x0B':'K', '\x0C':'L',
+'\x0D':'M', '\x0E':'N', '\x0F':'O', '\x10':'P',
+'\x11':'Q', '\x12':'R', '\x13':'S', '\x14':'T',
+'\x15':'U', '\x16':'V', '\x17':'W', '\x18':'X',
+'\x19':'Y', '\x1A':'Z'
+		}
 		this.DrawRect = any(DrawSides)
 		this.CharList = []
-		this.CommandChars = " aixhlrR"
+		this.CommandChars = "aixhlRjkr"
 		this.SpecialInserChars = [
-			"ESC", "DEL", "RIGHT", "LEFT","BACKSPACE"
+			"ESC", "DEL", "RIGHT", "LEFT","BACKSPACE", "DOWN",
+			"UP", "TIO"
 		]
-		ShowCursor()
-
 
 	def SpecialChar(this, default):
 		CL = ''.join(this.CharList)
+		debug(this.CharList)
+		if len(this.CharList) > 6:
+			this.CharList = this.CharList[:-5]
 		if CL[-4:] == "\x1b[3~":
 			return "DEL"
 		elif CL[-3:] == "\x1b[D":
 			return "LEFT"
 		elif CL[-3:] == "\x1b[C":
 			return "RIGHT"
+		elif CL[-3:] == "\x1b[A":
+			return "UP"
+		elif CL[-3:] == "\x1b[B":
+			return "DOWN"
 		elif CL[-1] == '\x1b':
 			return "ESC"
 		elif CL[-1] == "\x7f":
 			return "BACKSPACE"
+		elif CL[-1] in this.CtrlChar.keys():
+			return "^"+this.CtrlChar[CL[-1]]
+		elif CL[-1] == '~':
+			return "TIO"
 		else:
 			return default
 
 	def normal(this, char):
 		if not char in this.CommandChars:
 			char = this.SpecialChar("ESC")
-		debug(char)
-		debug.save()
-		if char in ['\x1b', "ESC"]:
+		if char == "ESC":
 			pass
 		elif char == 'i':
 			this.InNormalMode = false
@@ -1946,14 +1988,44 @@ class _AdvTextBox:
 		elif char in ['h', "LEFT"]:
 			if this.cursor:
 				this.cursor-=1
+		elif char in ['j', "DOWN"]:
+			if this.line < this.ContSize-1:
+				this.line += 1
+			this.string = this.cont[this.line]
+			if this.cursor >= len(this.string):
+				this.cursor = len(this.string)-1
+			if this.cursor < 0:
+				this.cursor = 0
+		elif char in ['k', "UP"]:
+			if this.line:
+				this.line -= 1
+			this.string = this.cont[this.line]
+			if this.cursor >= len(this.string):
+				this.cursor = len(this.string)-1
+			if this.cursor < 0:
+				this.cursor = 0
 		elif char in ['x', "DEL"]:
 			if len(this.string):
 				this.string = ReplaceStringByIndex(this.string, this.cursor, '')
-		elif char == ['\x7f', "BACKSPACE"]: # TODO debug, key not used
+		elif char == "BACKSPACE":
 			if len(this.string):
-				this.string = ReplaceStringByIndex(this.string, this.cursor, '')
+				#this.string = ReplaceStringByIndex(this.string, this.cursor-1, '')
 				if this.cursor >=1:
 					this.cursor-=1
+		elif char == "TIO":
+			if len(this.string) > this.cursor:
+				ch = this.string[this.cursor]
+				if ch.isupper():
+					ch = ch.lower()
+				else:
+					ch = ch.upper()
+				this.string = ReplaceStringByIndex(this.string, this.cursor, ch)
+		elif char == 'r':
+			CursorMode("underline")
+			ch = GetCh()
+			if ch != '\x1b':
+				this.string = ReplaceStringByIndex(this.string, this.cursor, ch)
+			CursorMode("block")
 
 	def insert(this, char):
 		if char in this.AvaliableChars and len(this.string)+1 < this.win.MaxX:
@@ -1963,8 +2035,8 @@ class _AdvTextBox:
 			if not char in this.SpecialInserChars:
 				char = this.SpecialChar("PASS")
 		if char == "PASS":
-			pass
-		if char == 'ESC':
+			return
+		elif char == 'ESC':
 			if this.cursor:
 				this.cursor-=1
 			this.InNormalMode = true
@@ -1990,38 +2062,53 @@ class _AdvTextBox:
 			if this.InReplace:
 				t = SetColorMode(COLOR.red, '7') + " replace "
 			else:
-				t = COLOR.BkBlue+" insert "
+				t = SetColorMode(COLOR.cyan, '7')+" insert "
+		t+=COLOR.nc
+		char = this.SpecialChar(this.CharList[-1]) # "get" char
+		t+=f'{COLOR.BkDarkGrey} {char}'
+		t+=this.tadd(this)
 		printl(pos(this.win.YMode, 0) + t + COLOR.nc)
 
 	def loop(this):
-		ch = '\x1b'
+		ch = ' '
 		while true:
+			this.string = this.cont[this.line]
 			this.CharList.append(ch)
 			if ch == '\r':
 				this.InNormalMode = true
 				this.UpdateCursor()
-				return this.string
+				if len(this.cont) == 1:
+					return this.string
+				else:
+					return this.cont
 			if this.InNormalMode:
 				this.normal(ch)
 			else:
 				this.insert(ch)
-			this.win.ClearLine(0)
-			this.win.print(0, 0, this.string)
-
-			if this.win.DrawLeft:
-				ColorSpot(this.win.MaxY-1, 0, COLOR.BkDarkGrey)
-			if this.win.DrawRight:
-				ColorSpot(this.win.MaxY-1, this.win.MaxX, COLOR.BkDarkGrey)
+			ToPrint = ''
+			for lnn in r(this.cont):
+				ln = this.cont[lnn]
+				if lnn == this.line:
+					ln = this.string
+				this.win.ClearLine(lnn+this.win.MinY, relative=false)
+				if this.win.DrawLeft:
+					ColorSpot(lnn+this.win.MinY, 0, COLOR.BkDarkGrey)
+				if this.win.DrawRight:
+					ColorSpot(lnn+this.win.MinY, this.win.MaxX, COLOR.BkDarkGrey)
+				if ln:
+					ToPrint += pos(lnn+this.win.MinY, 1) + ln
+				#this.win.print(lnn+this.win.MinY, 1, ln, false)
 			else:
-				this.win.print(0, this.win.MaxX-2, ' ')
+				ToPrint += pos(0, this.win.XDif-2) + ' '
+				#this.win.print(0, this.win.XDif-2, ' ', false)
+			sout.write(ToPrint)
 			if this.DrawRect:
 				this.win.DrawOutline()
 			this.ShowMode(this)
 			this.update(this)
-			this.win.move(0, this.cursor)
+			this.win.move(this.line+this.win.MinY, this.cursor+this.win.MinX, relative = false)
 			ch = GetCh()
-
-
+			this.cont[this.line] = this.string
 
 	def UpdateCursor(this):
 		if this.InNormalMode:
@@ -2051,33 +2138,114 @@ class _AdvTextBox:
 
 # drawsides = (bottom, top, left, right)
 def AdvTextBox(
-tl, br, string='', DrawSides = (true, true, true, true),
+tl, br, content=[''], DrawSides = (true, true, true, true),
 update = nop, UpperMode = false, CustomStatusBar = false):
-	return _AdvTextBox(tl, br, string, DrawSides, update, UpperMode, CustomStatusBar)()
+	if type(content) == str:
+		content = [content]
+	return _AdvTextBox(tl, br, content, DrawSides, update, UpperMode, CustomStatusBar)()
 
-def ArgvAssing(args:list[str]): # omfg it's so much better                    
-        # if args is [-d 4 u -4 f -d j /-3 -f]                                
-        # ret will be {                                                       
-#None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}                
-        # items that start with '-' will be a key, the rest wil be values      
-        # items that start with "/-" will be values, but the starting '/' will be rem
-        ret = {None:[]}                                                              
-        now = None                                                                   
-        for arg in args:                                                             
-                if arg[0] == '-':                                                    
-                        ret[(now:=arg)] = ret.get(arg, [])                           
-                else:                                                                
-                        if arg[0:2] == '/-':                                         
-                                arg = arg[1:]                                        
-                        ret[now].append(arg)                                         
-        return ret                                                                   
+def RGB(r,g,b):
+	return "\x1b[38;2;%s;%s;%sm" % (r,g,b)
+
+def ArgvAssing(args:list[str]): # omfg it's so much better
+	# if args is [-d 4 u -4 f -d j /-3 -f]
+	# ret will be {
+#None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}
+	# items that start with '-' will be a key, the rest wil be values
+	# items that start with "/-" will be values, but the starting '/' will be removed
+	ret = {None:[]}
+	now = None
+	for arg in args:
+		if arg[0] == '-':
+			ret[(now:=arg)] = ret.get(arg, [])
+		else:
+			if arg[0:2] == '/-':
+				arg = arg[1:]
+			if arg[0:3] == '\/-':
+				arg = arg[1:]
+			ret[now].append(arg)
+	return ret
 ARGV = ArgvAssing(argv[1:])
+
+def eprint(*msg, end='\n', sep=", ") -> None:
+	msg = sep.join([str(m) for m in msg])
+	eout.write(f'{msg}{end}')
+	eout.flush()
+
+def distance(y:int, x:int) -> int:
+	# (x>y) 2x-y-x = x-y
+	return 2*max(y,x)-y-x
+
+def DoAll(lst, func):
+	return [func(l) for l in lst]
+
+class Filer: # plain text, for UseFile file check BDP (in this lib)
+	def __init__(this,name, contents=[], ReadIfExistis=True):
+		name = abspath(name) # absolute path
+		if ReadIfExistis and exists(name):
+			with open(name, 'r') as file:
+				lines = file.readlines()
+				if lines:
+					contents.append(*DoAll(lines, lambda x: x.replace('\n','')))
+		this.name = name
+		this.contents = contents
+		this.ext = name.split('.')[-1] # thing after last .
+
+	def __repr__(this):
+		return f"{this.name}\n{len(this.contents)} lines\n{len(''.join(this.contents))} chars"
+
+	def write(this):
+		with open(this.name, 'w') as file:
+			for line in this.contents:
+				file.write(line+'\n')
+
+	def get(this, linen):
+		return this.contents[linen]
+
+	def append(this, cont):
+		this.contents.append(cont)
+
+	def __add__(this, cont):
+		this.contents.append(cont)
+		return this
+
+	def __call__(this, line):
+		this.content.append(line)
+
+	def insert(this, line, place):
+		this.content.insert()
+
+def IsLeapYear(year=None):
+	if year == None:year = int(time.year)
+	if not year % 4:
+		if not year % 100:
+			if not year % 400:
+				return True
+			else:
+				return False
+		else:
+			return True
+	else:
+		return False
+
+def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
+	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
+
+def Sprintf(string, *stuff):
+	for i in r(stuff):
+		string = string.replace(f"{{{i}}}", f"{stuff[i]}")
+	return string
+#TODO {i} -> int ...
+#print(
+#Sprintf("poggers! {0}", 3)
+#)
 
 if __name__=="__main__":
 	for i in get('-c').list:
 		print(eval(i))
 # funcs/classes
 """
+#CONSTS
 const USER
 const FuncType
 const NoneType
@@ -2087,7 +2255,10 @@ const infinity
 funct nop
 class nocpass
 const ARGV
+#OS FUNCS
 funct notify
+funct GetCh
+#FUNCS/CLASSES
 class time
 const time
 class log
@@ -2114,7 +2285,6 @@ funct printl
 funct prints
 funct input
 funct index
-funct GetCh
 funct GCH
 class COLOR
 funct SetColorMode
@@ -2133,7 +2303,8 @@ funct timeit
 funct mmc
 const lcm
 funct factorial
-funct OldArgvAssing
+funct ArgvAssing
+funct argv_assing
 funct exit
 funct between
 funct ls
@@ -2164,7 +2335,6 @@ funct number
 funct TimesInNumber
 funct NumSum
 funct FindAll
-funct CountSubstring
 funct DeepSum
 funct average
 funct mid
@@ -2186,6 +2356,7 @@ funct ReplaceStringByIndex
 class TextBox
 funct GetPrimeFactors
 class FancyIOStream
+const ARGV
 class get
 funct RmDir
 funct TrimSpaces
@@ -2199,5 +2370,4 @@ funct TestAny
 funct Getquadrant
 class _AdvTextBox
 funct AdvTextBox
-funct ArgvAssing
 """
