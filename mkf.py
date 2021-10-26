@@ -5,15 +5,25 @@ from util import *
 
 #main
 def Main() -> int:
+	db = BDP('mkf')
+	verbose = db.load()
+	if verbose == None:
+		verbose = false
+	if get('-ev').exists:
+		verbose = true
+	elif get('-dv').exists:
+		verbose = false
+	db.save(verbose)
 
 	try:
 		ResultFile, CopyFile = get(None).list[0:2]
-		print(f"make {ResultFile} from ~/Templates/{CopyFile}")
 	except ValueError:
 		help()
 		exit(2)
 
 	ss(f"echo /home/owsei/Templates/*{CopyFile.lower()}* > /tmp/mkf.cache")
+	if verbose:
+		ss(f"echo make {ResultFile} from /home/owsei/Templates/*{CopyFile.lower()}*")
 	with open("/tmp/mkf.cache",'r') as fl:
 		FileData = fl.readline().split()
 
@@ -49,12 +59,10 @@ def help():
 	print("""
 this program will search for template files in ~/Templates, and copy them to the [Result File Name]
 
-the program will search for a template file with a wildcard before and after the file name
-
-$mkf [Result File Name] [File Template name]
+$mkf [File Template name (not complete name)] [Result File Name]
 
 e.g. (create a file called program.py)
-$mkf program pyt
+$mkf py program
 """[1:-1])
 	return 0
 
