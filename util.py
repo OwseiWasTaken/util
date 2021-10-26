@@ -393,16 +393,11 @@ def prints(*msg, sep=", ") -> None:
 def sprint(msg) -> None: # simple print
 	sout.write(msg)
 
-def input(*msg, joiner=", ", CallWhenEscape=nop) -> None:
-	printl(*msg, sep = joiner)
+def input(*msg, sep=", ") -> None:
+	printl(*msg, sep=sep)
 	for line in sin:
 		msg = line[:-1]
 		break
-
-	if '\x1b' in msg:
-		NewMsg = CallWhenEscape(msg)
-		if NewMsg != None:
-			return NewMsg
 
 	return msg
 
@@ -638,17 +633,6 @@ def GetWLen(msg:str, ln:int, end:str='\n') -> int:
 	else:
 		GetWLen(msg, ln, end)
 
-# wtf?
-def CallWExcept(func:FuncType, excpts:BaseException, *args:object, call:bool=False, call_f:bool=None) -> object:
-	x = func(*args)
-	if x in excpts:
-		if call:
-			call_f()
-		else:
-			CallWExcept(func, excpts, *args)
-	else:
-		return x
-
 def count(end:object, start:int=0, jmp:int=1) -> int:
 	i=start
 	if end == 0:
@@ -661,7 +645,8 @@ def count(end:object, start:int=0, jmp:int=1) -> int:
 			i+=jmp
 			if i >= end:break
 
-def timeit(func:FuncType) -> FuncType:
+# decorator
+def timeit(func):
 	def wrapper(*args, **kwargs) -> int:
 		timer = tm()
 		func(args, **kwargs)
@@ -1718,7 +1703,7 @@ def IsListSorted(lst:list, reverse:bool = False):
 	return lst == sorted(lst, reverse = reverse)
 
 class window:
-	def __init__(this, MinY, MinX, MaxY, MaxX, UpdateFunc=nop,
+	def __init__(this, MinY, MinX, MaxY, MaxX, UpdateFunc=lambda *x:x,
 AvoidDrawedinBorder=True, DrawBottom=True, DrawTop=True, DrawLeft=True, DrawRight=True):
 		this.MaxX = MaxX
 		this.DrawBottom, this.DrawTop, this.DrawLeft, this.DrawRight = DrawBottom, DrawTop, DrawLeft, DrawRight
@@ -2089,8 +2074,8 @@ class _AdvTextBox:
 
 # drawsides = (bottom, top, left, right)
 def AdvTextBox(
-tl, br, content=[''], DrawSides = (True, True, True, True),
-update = nop, UpperMode = False, CustomStatusBar = False):
+tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x, UpperMode = False, CustomStatusBar = False
+):
 	if type(content) == str:
 		content = [content]
 	return _AdvTextBox(tl, br, content, DrawSides, update, UpperMode, CustomStatusBar)()
