@@ -16,7 +16,6 @@ try:
 except ModuleNotFoundError:
 	import re as RegEx
 
-
 # this file was made by owsei
 # this file has a gpl3 lincense or whatever
 # you can use it however you want
@@ -32,7 +31,6 @@ except ModuleNotFoundError:
 # ^$\n^$
 
 # magic class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
-
 
 # OS especific func
 if OS == "linux":
@@ -61,7 +59,7 @@ if OS == "linux":
 		return ch
 else:
 	def notify(*a, **kwa):
-		print(f"notify function not yet implemented in util.py for {OS}\n\
+		eprint(f"notify function not yet implemented in util.py for {OS}\n\
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
 	import msvcrt
 	def GetCh() -> str:
@@ -419,7 +417,6 @@ def index(ls:list, var, many=False) -> list:
 		return None
 	return ret
 
-
 def GCH(TEQ):
 	ch = GetCh()
 	if type(TEQ) == list:
@@ -691,42 +688,6 @@ def factorial(n:int) -> int:
 	for i in range(1, n+1):
 		Fact*=i
 	return Fact
-
-def OldArgvAssing(argvs:iter) -> dict:
-	'''
-	this function will loop through all argvs, and will define the ones starting with '-' as indicators
-	and the others just normal arguments
-	the returning value will be a dictionary like this:
-	argv = ['-i', 'input', 'input2', '-o', 'output', 'output2']
-	{'-i':['input', 'input2], '-o':['output', 'output2']}
-	'''
-	indcn=[]
-	ret={}
-	for i in r(argvs):
-		if str(argvs[i])[0] == '-':
-			indcn.append(i)
-	if indcn == []:
-		if argv == []:
-			ret[None] = []
-		else:
-			ret[None] = argvs
-	elif indcn[0] > 0:
-		ret[None] = argvs[0:indcn[0]]
-	for index in r(argvs):
-		argvs[index] = argvs[index].replace("/-", '-')
-	for i in r(indcn):
-		try:
-			dif = indcn[i+1]-indcn[i]
-			add = argvs[indcn[i]:indcn[i]+dif][1:]
-			# for AddIndex in r(add):
-					# add[AddIndex] = add[AddIndex].replace("/-", '-')
-			ret[argvs[indcn[i]:indcn[i]+dif][0]] = add#argvs[indcn[i]:indcn[i]+dif][1:]
-		except IndexError:
-			add = argvs[indcn[i]+1:]
-			# for AddIndex in r(add):
-					# add[AddIndex] = add[AddIndex].replace("/-", '-')
-			ret[argvs[indcn[i]]] = add#argvs[indcn[i]+1:]
-	return ret
 
 def exit(num:int=1) -> None:
 	AssureType(int, num, ErrorMsg=f'var {num} of wrong type, should be int')
@@ -1640,7 +1601,6 @@ class FancyIOStream:
 		if '\n' in msg:
 			sout.flush()
 		return this
-
 
 class get:
 	def __init__(this, *gets, argvs=None) -> object:
