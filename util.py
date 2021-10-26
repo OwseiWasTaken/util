@@ -1,20 +1,23 @@
 #! /usr/bin/python3.9
 # TODO update do 3.10 (when all libs 3.10 etc)
-# util.py imports
+
+# util.py imports ^_
 from pickle import dump as _PickleDump, load as _PickleLoad
 from json import dump as _JsonDump, load as _JsonLoad
+from time import strftime as __ftime__
+from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
 
 # general imports + util used
 from random import randint as rint, choice as ritem
-from time import time as tm, sleep as slp, strftime as __ftime__
+from time import time as tm, sleep as slp
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
-from os import getcwd as pwd, system as ss, chdir as cd, listdir as _ls, getenv, _getlogin, rmdir as _rmdir, get_terminal_size as GetTerminalSize
+from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from os.path import isfile, exists, abspath
 from functools import cache
 try:
-	import js_regex as RegEx
+	import js_regex as re
 except ModuleNotFoundError:
-	import re as RegEx
+	import re
 
 # this file was made by owsei
 # this file has a gpl3 lincense or whatever
@@ -1708,7 +1711,7 @@ def ReplaceAll(StringList:list[str], FromString:str, ToString:str) -> list[str]:
 	return StringList
 
 def MakeString(line):
-	ln = RegEx.compile("(?:\".*?\"|\S)+").findall(line)
+	ln = re.compile("(?:\".*?\"|\S)+").findall(line)
 	return ln
 
 def IsListSorted(lst:list, reverse:bool = False):
@@ -2189,7 +2192,7 @@ def sprintf(string, *stuff, HideErrors=True):
 		"b":bool,
 		"x":hex
 	}
-	ToReplace = RegEx.compile(rf"\{{[{''.join(tp.keys())}]\}}").findall(string)
+	ToReplace = re.compile(rf"\{{[{''.join(tp.keys())}]\}}").findall(string)
 	if len(ToReplace) == len(stuff) or HideErrors:
 		for i in r(ToReplace):
 			if len(stuff) > i:
