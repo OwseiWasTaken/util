@@ -2196,6 +2196,12 @@ def printf(string, *stuff, flush = True):
 	if flush:
 		sout.flush()
 
+def words(string: str) -> list[str]:
+	return string.split()
+
+def unwords(lst:list[str]) -> str:
+	return ' '.join(lst)
+
 # consts
 true = True
 false = False
@@ -2332,6 +2338,8 @@ class _AdvTextBox
 funct AdvTextBox
 funct sprintf
 funct printf
+funct words
+funct unwords
 #CONSTS
 const USER
 const FuncType
