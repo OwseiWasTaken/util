@@ -9,6 +9,7 @@ from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
 
 # general imports + util used
 from random import randint as rint, choice as ritem
+from numpy import sign as signum
 from time import time as tm, sleep as slp
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
@@ -1155,13 +1156,7 @@ def AdvDecryptS(var, key, deep) -> str:
 	else:
 		return AdvDecryptS(var, key*deep, deep-1)
 
-def PosOrNeg(num:int) -> int:
-	if num > 0:
-		return 1
-	elif num < 0:
-		return -1
-	else:
-		return 0
+PosOrNeg = signum
 
 def odd(var:int) -> bool:
 	return var%2
