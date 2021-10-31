@@ -2161,23 +2161,25 @@ def IsLeapYear(year=None):
 def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
 	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
 
+__sprintf_types = {
+	"i":int,
+	"f":float,
+	"s":str,
+	"b":bool,
+	"x":hex
+}
+__sprintf_regex = re.compile(rf"\{{[{''.join(__sprintf_types.keys())}]\}}")
+
 @cache
 def sprintf(string, *stuff, HideErrors=True):
 	# different to c's sprintf the template doesn't show what the var is
 	#it shows what you want the var to be
-	tp = {
-		"i":int,
-		"f":float,
-		"s":str,
-		"b":bool,
-		"x":hex
-	}
-	ToReplace = re.compile(rf"\{{[{''.join(tp.keys())}]\}}").findall(string)
+	ToReplace = __sprintf_regex.findall(string)
 	if len(ToReplace) == len(stuff) or HideErrors:
 		for i in r(ToReplace):
 			if len(stuff) > i:
 				replace = ToReplace[i]
-				place = f"{tp[replace[1]](stuff[i])}"
+				place = __sprintf_types[replace[1]](stuff[i])
 				string = string.replace(replace, place, 1)
 		return string
 	else:
