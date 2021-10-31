@@ -2179,7 +2179,12 @@ def sprintf(string, *stuff, HideErrors=True):
 		for i in r(ToReplace):
 			if len(stuff) > i:
 				replace = ToReplace[i]
-				place = str(__sprintf_types[replace[1]](stuff[i]))
+				try:
+					place = str(__sprintf_types[replace[1]](stuff[i]))
+				except ValueError:
+					raise ValueError(sprintf("\
+can't convert \"{s}\" to {s}\
+", str(stuff[i]), str(__sprintf_types[replace[1]])))
 				string = string.replace(replace, place, 1)
 		return string
 	else:
