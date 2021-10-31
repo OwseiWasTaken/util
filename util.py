@@ -2179,7 +2179,7 @@ def sprintf(string, *stuff, HideErrors=True):
 		for i in r(ToReplace):
 			if len(stuff) > i:
 				replace = ToReplace[i]
-				place = __sprintf_types[replace[1]](stuff[i])
+				place = str(__sprintf_types[replace[1]](stuff[i]))
 				string = string.replace(replace, place, 1)
 		return string
 	else:
