@@ -1,6 +1,7 @@
 #! /usr/bin/python3.9
 # TODO update do 3.10 (when all libs 3.10 etc)
 
+
 # util.py imports ^_
 from pickle import dump as _PickleDump, load as _PickleLoad
 from json import dump as _JsonDump, load as _JsonLoad
@@ -2162,13 +2163,27 @@ def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
 	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
 
 __sprintf_types = {
-	"i":int,
-	"f":float,
-	"s":str,
-	"b":bool,
-	"x":hex
+	'i':int,
+	'f':float,
+	's':str,
+	'b':bool,
+	'x':hex,
+	'r':repr,
+	#"ll":lambda x: [list(y) for y in x],
+	#"ls":lambda x: [str(y) for y in x],
+	#"li":lambda x: [int(y) for y in x],
+	#"lf":lambda x: [float(y) for y in x],
+	#"lx":lambda x: [hex(y) for y in x],
+	#"lr":lambda x: [repr(y) for y in x],
 }
-__sprintf_regex = re.compile(rf"\{{[{''.join(__sprintf_types.keys())}]\}}")
+
+__ = __sprintf_types.copy()
+for _ in __sprintf_types.keys():
+	__['l'+_]=lambda x: [__[_](y) for y in x]
+__sprintf_types = __
+
+__sprintf_sj = '|'.join(__sprintf_types.keys())
+__sprintf_regex = re.compile(rf"\{{({__sprintf_sj})\}}")
 
 @cache
 def sprintf(string, *stuff, HideErrors=True):
@@ -2180,12 +2195,12 @@ def sprintf(string, *stuff, HideErrors=True):
 			if len(stuff) > i:
 				replace = ToReplace[i]
 				try:
-					place = str(__sprintf_types[replace[1]](stuff[i]))
+					place = str(__sprintf_types[replace](stuff[i]))
 				except ValueError:
 					raise ValueError(sprintf("\
 can't convert \"{s}\" to {s}\
-", str(stuff[i]), str(__sprintf_types[replace[1]])))
-				string = string.replace(replace, place, 1)
+", str(stuff[i]), str(__sprintf_types[replace])))
+				string = string.replace('{'+replace+'}', place, 1)
 		return string
 	else:
 		raise TypeError(sprintf("\
