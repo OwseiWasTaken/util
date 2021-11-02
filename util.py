@@ -1,12 +1,11 @@
 #! /usr/bin/python3.9
-# TODO update do 3.10 (when all libs 3.10 etc)
 
-
-# util.py imports ^_
+# util.py imports
 from pickle import dump as _PickleDump, load as _PickleLoad
 from json import dump as _JsonDump, load as _JsonLoad
 from time import strftime as __ftime__
 from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
+from typing import Union, Literal, Callable, Any
 
 # general imports + util used
 from random import randint as rint, choice as ritem
@@ -16,10 +15,8 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from os.path import isfile, exists, abspath
 from functools import cache
-try:
-	import js_regex as re
-except ModuleNotFoundError:
-	import re
+
+import re # https://regex101.com/
 
 # this file was made by owsei
 # this file has a gpl3 lincense or whatever
@@ -44,11 +41,11 @@ if OS == "linux":
 		import gi
 		gi.require_version('Notify', '0.7')
 		from gi.repository import Notify
-		def notify(title="", body="") -> None:
+		def notify(title="", body=""):
 			Notify.init("util.py/func/notify/init")
 			Notify.Notification.new(str(title), str(body)).show()
 	except ModuleNotFoundError:
-		def notify(*a, **kwa):
+		def notify(title="", body=""):
 			print(f"the gi and notify modules where not found")
 	from tty import setraw
 	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
@@ -63,14 +60,14 @@ if OS == "linux":
 			tcsetattr(fd, TCSADRAIN, OldSettings)
 		return ch
 else:
-	def notify(*a, **kwa):
+	def notify(title="", body=""):
 		eprint(f"notify function not yet implemented in util.py for {OS}\n\
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
 	import msvcrt
 	def GetCh() -> str:
-		return msvcrt.getch()
+		return msvcrt.getch() # TODO ??
 
-class time:
+class __time:
 	@property
 	def sec(this) -> str :
 		return __ftime__(f"%S")
@@ -94,14 +91,14 @@ class time:
 	@property
 	def year(this) -> str:
 		return __ftime__("%D").split("/")[2]
-time = time()
+time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = False, autosave = False) -> object:
+	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = False, autosave = False):
 		this.tm = tm
 		this.autosave = autosave
 		this.sep = sep
-		this.LOG = []
+		this.LOG:list[str] = []
 		if ShowCreated == True:
 			this.add('the log was created')
 		this.file = file
@@ -109,7 +106,7 @@ class log:
 	def clear(this):
 		this.LOG = []
 
-	def add(this, *ask) -> None:
+	def add(this, *ask):
 		ask = this.sep.join([str(ak) for ak in ask])
 		tme = ""
 		if this.tm:
@@ -119,12 +116,11 @@ class log:
 		if this.autosave:
 			this.save()
 
-	def remove(this, index_or_content:int or str) -> None:
-		if type(index_or_content) == int:
-			return this.LOG.pop(index_or_content)
-		else:
-			this.LOG.index(index_or_content)
-			return this.LOG.pop(index_or_content)
+	def PopByIndex(this, index:int):
+		return this.LOG.pop(index)
+
+	def PopByContent(this, content:str):
+		return this.LOG.pop( this.LOG.index(content) )
 
 	def __repr__(this) -> str:
 		return f'{this.LOG}'
@@ -139,25 +135,22 @@ class log:
 
 	def __add__(this, *ask):this.add(*ask)# defined in __init__
 
-	def __iter__(this) -> None:
+	def __iter__(this):
 		for i in this():
 			yield i
 
-	def show(this) -> None:
+	def show(this):
 		for i in this:
 			print(i)
 
-	def save(this) -> None:
+	def save(this):
 		with open(this.file, 'w') as SaveFileLog:
 			for i in this.LOG:
 					SaveFileLog.write(f'{i}\n')
 
-def r(end:object, start:int=0, jmp:int=1) -> int:
+def r(end, start:int=0, jmp:int=1): # TODO union?
 	try:
-		try:
-			end = len(end)
-		except TypeError:
-			end = end.keys()
+		end = len(end)
 	except AttributeError:
 		end = int(end)
 
@@ -166,32 +159,18 @@ def r(end:object, start:int=0, jmp:int=1) -> int:
 		yield index
 		index+=jmp
 
-def AssureType(value:object, types:type, err:bool=True, ErrorMsg=None) -> TypeError or bool:
-	if type(types) != type and type(value) == type:
-		value, types = types, value
-
-	if f'{type(value)}' != f'{types}':
-		if err:
-			if ErrorMsg == None:
-					raise TypeError(f"\n\ntype : {type(value)} of {repr(value)} != {types}")
-			else:
-					raise TypeError(ErrorMsg)
-		else:
-			return False
-	return True
-
 class timer:
-	def __init__(this, auto:bool=True) -> object:
-		this.markers = []
+	def __init__(this, auto:bool=True):
+		this.markers:list[float] = []
 		if auto:this.st = tm()
 
-	def start(this) -> None:
+	def start(this):
 		this.st = tm()
 
-	def mark(this) -> None:
+	def mark(this):
 		this.markers.append(this.get())
 
-	def marks(this) -> list[int]:
+	def marks(this) -> list[float]:
 		return this.markers
 
 	def get(this) -> float:
@@ -200,24 +179,24 @@ class timer:
 	def __call__(this) -> float:
 		if not this.st:
 			this.st = tm()
+			return 0.0
 		else:
 			return this.get()
 
-	def __iter__(this) -> iter:
+	def __iter__(this):
 		for i in this.markers:
 			yield i
 
 	def __repr__(this) -> str:
 		return f'{this.get}'
 
-def MakeDict(ls1:[list, tuple], ls2:[list, tuple]) -> dict:
+def MakeDict(ls1:Union[list, tuple], ls2:Union[list, tuple]) -> dict:
 	ls1=list(ls1)
 	ls2=list(ls2)
-
 	ret = {x:y for x, y in zip(list(ls1), list(ls2))}
 	return ret
 
-def sleep(seg:float=0, sec:float=0, ms:float=0, min:float=0, hour:float=0, day:float=0, IgnoreKBI = True) -> None:
+def sleep(seg:float=0, sec:float=0, ms:float=0, min:float=0, hour:float=0, day:float=0, IgnoreKBI = True):
 	if IgnoreKBI:
 		try:
 			slp(ms/1000+seg+sec+min*60+hour*3600+day*86400)
@@ -233,40 +212,40 @@ def even(var:int) -> bool:
 	return not var%2
 
 def odd(var:int) -> bool:
-	return var%2
+	return not not var%2
 
-def lst1(lst:object) -> object:
-	if lst.__len__() == 1:
+def lst1(lst:Union[list, tuple]):
+	if len(lst) == 1:
 		return lst[0]
-	elif lst.__len__() == 0:
+	elif not len(lst):
 		return None
-	return lst
-
-def RngNoRepetition(v_min:int, v_max:int, how_many:int=1) -> list:
-	'''
-	if how_many is bigger or equal to v_max
-	this function will return None
-	'''
-	if how_many>=v_max:
-		return None
-	ret_list, tmp=[], [x+1 for x in range(v_min, v_max)]
-	for _ in r(how_many):
-		ret_list.append(tmp.pop(rint(v_min, len(tmp))))
-	return ret_list
-
-def UseFile(file:str, obj=None) -> object or None:
-	"""pickled file btw"""
-	# if mode[-1] != 'b':
-		# mode+='b'
-
-	if obj == None:
-		return _PickleLoad(open(file, 'rb'))
 	else:
-		_PickleDump(obj, open(file, 'wb'))
+		return lst
 
-def json(file:str, obj:object=None) -> dict or None:
-	if obj == None: return _JsonLoad(open(file))
-	else:_JsonDump(obj, file)
+
+def RngNoRepetition(min:int, max:int, HowMany:int=1) -> list:
+	ret = []
+	all = [x+1 for x in r(min, max)]
+	if len(all) <= HowMany:
+		return all
+	else:
+		for i in r(HowMany):
+			ret.append(all.pop(rint(min, max-i)))
+		return ret
+
+def UseFile(file: str, obj = None):
+	if obj == None:
+		return _PickleLoad(open(file))
+	else:
+		_PickleDump(obj, open(file))
+		return None
+
+def json(file:str, obj:object=None) -> Union[dict, None]:
+	if obj == None:
+		return _JsonLoad(open(file, 'r'))
+	else:
+		_JsonDump(obj, file)
+		return None
 
 def GetInt(msg:str, excepts = [], default = None) -> int:
 	'''
@@ -311,7 +290,7 @@ def IsPrime(ask:int) -> bool:
 		msg = False
 	return msg
 
-def case(var:int or float, index:int) -> str:
+def case(var:Union[int, float], index:int) -> str:
 	return str(var)[index]
 
 def fib(n:int) -> list:
@@ -323,23 +302,24 @@ def fib(n:int) -> list:
 	return result
 
 class rng:
-	def new(this) -> int:
+	def new(this) -> list[int]:
 		this.var = []
 		for _ in range(this.size):
 			this.var.append(rint(this.mn, this.mx))
 		return this.var
 
-	def get(this) -> int:
+	def get(this) -> list[int]:
 		this.var = []
 		for _ in range(this.size):
 			this.var.append(rint(this.mn, this.mx))
 		return this.var
 
-	def __init__(this, mn, mx, size=1) -> object:
+	def __init__(this, mn, mx, size=1):
 		this.size=size
 		this.mn=mn
 		this.mx=mx
 		this.new
+		this.var:list[int] = []
 
 	def __repr__(this) -> str:
 		if len((var:=this.var))==1:
@@ -347,21 +327,21 @@ class rng:
 		this.new
 		return f'{var}'
 
-	def NewSize(this, size) -> None:
+	def NewSize(this, size):
 		this.size=size
 		this.new
 
-	def NewMin(this, mn) -> None:
+	def NewMin(this, mn):
 		this.mn=mn
-	def NewMax(this, mx) -> None:
+	def NewMax(this, mx):
 		this.mx=mx
 
-	def __call__(this, size=-1) -> int:
+	def __call__(this, size:int=-1) -> list[int]:
 		if size != -1:
 			this.NewSize(size)
 		return this.get()
 
-def print(*msg, end='\n', sep=", ") -> None:
+def print(*msg, end='\n', sep=", "):
 	# make msg
 	# sep.join(...) então os argumentos são "juntados" com o sep
 	# [str(m) for m in msg] para transformar todo valor em string
@@ -375,7 +355,7 @@ def print(*msg, end='\n', sep=", ") -> None:
 	# escrever o conteúdo do terminal no cmd
 	sout.flush()
 
-def printl(*msg, sep=", ") -> None:
+def printl(*msg, sep=", "):
 	# make msg
 	msg = sep.join([str(m) for m in msg])
 
@@ -385,17 +365,17 @@ def printl(*msg, sep=", ") -> None:
 	# flush msg
 	sout.flush()
 
-def prints(*msg, sep=", ") -> None:
+def prints(*msg, sep=", "):
 	# make msg
 	msg = sep.join([str(m) for m in msg])
 
 	# write msg
 	sout.write(f'{msg}')
 
-def sprint(msg) -> None: # simple print
+def sprint(msg): # simple print
 	sout.write(msg)
 
-def input(*msg, sep=", ") -> None:
+def input(*msg, sep=", "):
 	printl(*msg, sep=sep)
 	for line in sin:
 		msg = line[:-1]
@@ -403,30 +383,16 @@ def input(*msg, sep=", ") -> None:
 
 	return msg
 
-def index(ls:list, var, many=False) -> list:
-	if var in ls:
-		ret =[]
-		for i in r(ls):
-			if var == ls[i]:
-					if many:
-							ret.append(i)
-					else:
-							return [i]
-
-	else:
-		return None
-	return ret
-
 def GCH(TEQ):
 	ch = GetCh()
 	if type(TEQ) == list:
 		return ch in TEQ
 	return ch == TEQ
 
-#terminal colors -> None
+#terminal colors
 #\/ \/ \/ \/
 
-color: dict[str] = {
+color: dict[str, str] = { # TODO gonna remove color dict!
 # WARNING! color:dict is no longer in development, use the COLOR class from now on (just under)
 # formating: '{name}' : '\003[{mode};{ColorCode}m'
 # modes: 0:normal 1:bold? 2:dark 3:italics 4:underline 5:blinking 7:bkground 8:hidden
@@ -543,12 +509,16 @@ class COLOR:
 	BkBrOrange		=			"\033[0;103m"
 	BkBrGrey		=			"\033[0;105m"
 
+# modes: 0:normal, 1:bold, 2:dark, 3:italics, 4:underline, 5:blinking, 7:bkground, 8:hidden
 def SetColorMode(color:str, mode:str) -> str:
 	index = color.find('[')+1
-	color = list(color)
-	color[index] = mode
-	color = ''.join(color)
+	colorl = list(color)
+	colorl[index] = mode
+	color = ''.join(colorl)
 	return color
+
+def AddStr(color:str, mode:Union[str, int], string:str):
+	if type(mode) == int:mode = str(mode)
 
 def PascalCase(string, remove=' ') -> str:
 	if remove in string:
@@ -571,9 +541,9 @@ def SplitBracket(string:str, bracket:str, closing_bracket='', Rmdadd="") -> str:
 		closing_bracket = r[bracket]
 	return closing_bracket.join(str(string).split( bracket )).split(closing_bracket)
 
-def StrToMs(ipt:str) -> int:
-	ipt=ipt.split()
-	n, ipt = float(ipt[0]), ipt[1]
+def StrToMs(ipts:str) -> int:
+	ipt=ipts.split()
+	n, ipts = float(ipt[0]), ipt[1]
 	TypesToStr = {
 	("years", "year", "yrs", "yr", "ys", 'y'):220903200000,
 	("weeks", "week", "w"):604800000,
@@ -584,9 +554,9 @@ def StrToMs(ipt:str) -> int:
 	('milliseconds', 'millisecond', 'msecs', 'msec', 'ms'):1
 	}
 	for i in TypesToStr.keys():
-		if ipt in i:
-			return n*TypesToStr[i]
-	return None
+		if ipts in i:
+			return int(n*TypesToStr[i])
+	return -1
 
 def bhask(a, b, c) -> tuple[int]:
 	delt = ((b**2) - (4*a*c))**.5
@@ -596,9 +566,18 @@ def bhask(a, b, c) -> tuple[int]:
 	y = (b - delt)/a
 	return x, y
 
-def near(base:float or int, num:float or int, dif_up:float or int, dif_down:float or int=None) -> bool:
-	if dif_down == None:dif_down = dif_up
-	return base+dif_up >= num >= base-dif_down
+def near(base:Union[
+		float, int],
+		num:Union[
+		float, int],
+		DifUp:Union[
+		float, int],
+		DifDown:Union[
+		float, int
+		]=0) -> bool:
+	if not DifDown:
+		DifDown = DifUp
+	return (base+DifUp) >= num >= (base-DifDown)
 
 def rsymb(size=1) -> str:
 	#33-47 58-64 160-191
@@ -618,7 +597,7 @@ def rchar(size=1) -> str:
 	return lst1([(chr(rint(65, 90))) if rint(0, 1) else (chr(rint(97, 122))) for char in r(size)])
 
 def GetWLen(msg:str, ln:int, end:str='\n') -> int:
-	AssureType(int, ln, ErrorMsg=f"lengh type != int \n {ln} of type {type(ln)} != int")
+	assert type(ln) == int, f"lengh type != int \n {ln} of type {type(ln)} != int"
 	'''
 	will return an str by inputing a string with {msg, end}
 	if the user enters an invalid input the function will restart
@@ -656,10 +635,10 @@ def timeit(func):
 	return wrapper
 
 def mmc(a:int, b:int) -> int:
+	assert type(a)==int, f"a : {a} != int"
+	assert type(b)==int, f"b : {b} != int"
 	if a-1<b or b<a+1:
 		return a*b
-	AssureType(int, a, ErrorMsg=f"a : {a} != int")
-	AssureType(int, b, ErrorMsg=f"b : {b} != int")
 	greater = max(a, b)
 	# s = tm()
 	for i in count(0):
@@ -679,12 +658,12 @@ def factorial(n:int) -> int:
 		Fact*=i
 	return Fact
 
-def exit(num:int=1) -> None:
-	AssureType(int, num, ErrorMsg=f'var {num} of wrong type, should be int')
+def exit(num:int=1):
+	assert type(num)==int, f'var {num} of wrong type, should be int'
 	if num < 256:
 		exi(num)
 	else:
-		raise NumberTooBigError("exit num : %d > 255" % num)
+		raise ValueError("exit num : %d > 255" % num)
 
 def between(x:float or int, min:float or int, max:float or int) -> bool:
 	return min < x < max
@@ -706,7 +685,7 @@ def rstr(ln:int, chars:bool=True, symbs:bool=True, ints:bool=True, intmin:int=0,
 			ret.append(f())
 	return ''.join([str(a) for a in ret])
 
-def clear() -> None:
+def clear():
 	ss("clear")
 
 def ANDGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set or list or frozenset:
@@ -719,11 +698,15 @@ def ANDGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set o
 			Gret.add(i)
 	return Gret
 
-def ORGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set or list or frozenset:
+def ORGroups( g1:Union[
+		list, tuple, set, frozenset], g2:Union[
+		list, tuple, set, frozenset]) -> set:
 	Gret = set((*g1, *g2))
 	return Gret
 
-def XORGroups(g1:[set, list, frozenset], g2:[set, list, frozenset])-> set or list or frozenset:
+def XORGroups( g1:Union[
+		list, tuple, set, frozenset], g2:Union[
+			list, tuple, set, frozenset]) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gall = *g1, *g2
@@ -733,7 +716,9 @@ def XORGroups(g1:[set, list, frozenset], g2:[set, list, frozenset])-> set or lis
 			Gret.add(i)
 	return Gret
 
-def NOTGroups(g1:[set, list, frozenset], g2:[set, list, frozenset])-> set or list or frozenset:
+def NOTGroups( g1:Union[
+		list, tuple, set, frozenset], g2:Union[
+		list, tuple, set, frozenset]) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gret = set()
@@ -743,14 +728,14 @@ def NOTGroups(g1:[set, list, frozenset], g2:[set, list, frozenset])-> set or lis
 	return Gret
 
 class code:
-	def __init__(this, *code, name="test", mode="exec") -> object:
+	def __init__(this, *code, name="test", mode="exec"):
 		this.name, this.mode, this.code = name, mode, list(code)
 
-	def __add__(this, line) -> object:
+	def __add__(this, line):
 		this.code.append(compile(line, this.name, this.mode))
 		return this
 
-	def __call__(this) -> None:
+	def __call__(this):
 		if type(this.code) == str:this.code=this.code.split('\n')
 		for line in this.code:
 			exec(line)
@@ -770,7 +755,7 @@ class code:
 			msg = ""
 		return msg
 
-class var(object):
+class var:
 	'''
 	this class should NOT be used for items in iterables! (like lists)
 
@@ -793,7 +778,7 @@ class var(object):
 	# this is bad (like, not well made)
 	# should i try this again?
 
-	def __init__(this, Value:object, Type:type=None, PrintMutipleLines=True) -> object:
+	def __init__(this, Value:Any, Type:type=None, PrintMutipleLines=True):
 		if type(Value) == type and type(Type) != type:
 			Value, Type = Type, Value
 
@@ -817,7 +802,7 @@ class var(object):
 
 	# math shit start
 
-	def __add__(this, add) -> object:
+	def __add__(this, add):
 		try:
 			return this.Value.__add__(add)
 		except Exception:pass
@@ -843,7 +828,7 @@ class var(object):
 					ret[i] = add[i]
 		return ReturnVar
 
-	def __sub__(this, add) -> object:
+	def __sub__(this, add):
 		# var - var
 		ReturnVar, ReturnType = None, this.Type
 		if type(add) == var:add=add.Value
@@ -870,7 +855,7 @@ class var(object):
 		# return var obj of same type and (probably) different value
 		return ReturnVar
 
-	def __mul__(this, add) -> object:
+	def __mul__(this, add):
 		if type(add) == var:add=add.Value
 
 		if this.IsNumber:
@@ -878,7 +863,7 @@ class var(object):
 		else:
 			raise WrongType(f"var class can't multiply {this.Value} with {add}")
 
-	def __truediv__(this, add) -> object:
+	def __truediv__(this, add):
 		if type(add) == var:add=add.Value
 
 		if this.IsNumber:
@@ -886,7 +871,7 @@ class var(object):
 		else:
 			raise WrongType(f"var class can't divide {this.Value} with {add}")
 
-	def __floordiv__(this, add) -> object:
+	def __floordiv__(this, add):
 		if type(add) == var:add=add.Value
 
 		if this.IsNumber:
@@ -897,12 +882,12 @@ class var(object):
 	# math shit done
 	# list/dict stuff start
 
-	def __iter__(this) -> object:
+	def __iter__(this):
 		for i in this.Value:
 			yield i
 
 	# calling method
-	def __getitem__(this, index_or_content) -> object:
+	def __getitem__(this, index_or_content):
 		if type(index_or_content) == var:index_or_content = index_or_content.Value
 		ret = this.Value[index_or_content]
 
@@ -922,7 +907,7 @@ class var(object):
 			return len(this.Value.Keys())
 		return len(this.Value)
 
-	def __setitem__(this, index, obj) -> None:
+	def __setitem__(this, index, obj):
 		if this.IsFrozenSet:
 			raise TypeError(f"can't set value of FrozenSet\nvalue:{this.Value}")
 		if this.IsString:
@@ -1025,7 +1010,7 @@ class var(object):
 		else:
 			return this.Value.pop(index)
 
-	def remove(this, content) -> None:
+	def remove(this, content):
 		this.Value.remove(this)
 
 	# that's not how u do it right?
@@ -1038,7 +1023,7 @@ class var(object):
 	# complex methods done
 
 class BDP:
-	def __init__(this, name, autoload = True, IgnoreDataSize = False) -> object:
+	def __init__(this, name, autoload = True, IgnoreDataSize = False):
 		# for unix like system
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
@@ -1075,7 +1060,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py")
 		UseFile(this.name, data)
 		return "saved"
 
-	def load(this) -> object:
+	def load(this):
 		if exists(this.name):
 			try:
 				this.data = UseFile(this.name)
@@ -1159,13 +1144,10 @@ def AdvDecryptS(var, key, deep) -> str:
 
 PosOrNeg = signum
 
-def odd(var:int) -> bool:
-	return var%2
-
 def numbers(times, nums=0) -> int:
 	return eval(f'[{nums}'+f", {nums}"*(times-1)+']')
 
-def ShowTextGif(sprites, SleepTime=0.35, times=-1) -> None:
+def ShowTextGif(sprites, SleepTime=0.35, times=-1):
 #if times is negative the loop won't stop || if times = 0, it will be len(sprites)
 	if times == 0:
 		times = len(sprites)
@@ -1204,7 +1186,7 @@ def NumSum(numbers:int or float) -> int:
 	else:
 		return numbers
 
-def FindAll(StringToSearchIn:str, StringToFind:str) -> list[str]:
+def FindAll(StringToSearchIn:str, StringToFind:str) -> list[int]:
 	# get replacable string
 	NotStringToFind = StringToFind[1:] + chr(ord(StringToFind[-1])+1)
 	times = StringToSearchIn.count(StringToFind)
@@ -1292,8 +1274,8 @@ def SingleList(args:list[...]) -> list[float or int or str or object]:
 def BiggestLen(lst:list[any]) -> int: #biggest by len
 	return max([len(str(thing)) for thing in lst])
 
-def compare(*times:list[int]) -> str:
-	times = SingleList(times)
+def compare(*timest:tuple[list[int]]) -> str:
+	times:list[int] = SingleList(list(times))
 
 	avg = average(times)
 	ret = f"average : {avg:.3f}\n"
@@ -1302,18 +1284,19 @@ def compare(*times:list[int]) -> str:
 	sep = BiggestLen(times)
 	# sep = max([len(str(time)) for time in times])
 
-	for time in times:
+	for i in r(times):
+		time = times[i]
 		ThisColor = color["red"] if time-avg > 0 else color["green"]
 
 		PoM = ('' if (time-avg) < 0 else '+') + str(round(time-avg, sep-1))
 
-		prt = f"{times.index(time)} : {color['magenta']}{' '*(sep-len(str(time)))}{time}{color['nc']} | {ThisColor}{PoM}"
+		prt = f"{i} : {color['magenta']}{' '*(sep-len(str(time)))}{time}{color['nc']} | {ThisColor}{PoM}"
 
 		ret+=prt+color["nc"]+"\n"
 	return ret
 
-def graphics(*ints, UnderAvg = color["red"], OverAvg = color["green"]) -> str:
-	ints = SingleList(ints)
+def graphics(*intst:list[int], UnderAvg = color["red"], OverAvg = color["green"]) -> list[str]:
+	ints:list[int] = SingleList(list(intst))
 
 	avg = average(ints)
 
@@ -1379,15 +1362,13 @@ def graphics(*ints, UnderAvg = color["red"], OverAvg = color["green"]) -> str:
 #	return ch
 
 def pos(y:int, x=0) -> str:
-	if type(y) == tuple:
-		y,x = y
 	return "\x1B[%i;%iH" % (y+1, x+1)
 
 def ppos(y, x):
 	sout.write("\x1B[%i;%iH" % (y+1, x+1))
 	sout.flush()
 
-def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color["nc"]) -> None:
+def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color["nc"]):
 	if GetTerminalY == "default":
 		x, _ = GetTerminalSize()
 	else:
@@ -1395,7 +1376,7 @@ def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color[
 	sout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
 	sout.flush()
 
-def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=color["nc"]) -> None:
+def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=color["nc"]):
 	if GetTerminalX == "default":
 		_, y = GetTerminalSize()
 	else:
@@ -1404,14 +1385,14 @@ def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=colo
 		sout.write("%s" % (start + pos(i, x) + char + end ))
 	sout.flush()
 
-def DrawHLine(x, XTo, y, color, char = ' ') -> None:
+def DrawHLine(x, XTo, y, color, char = ' '):
 	ps = pos(y, x)
 	_x, _y = GetTerminalSize()
 	len = (XTo-x)+1
 	sout.write(ps + color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
 	sout.flush()
 
-def DrawVLine(y, YTO, x, colo, char = ' ') -> None:
+def DrawVLine(y, YTO, x, colo, char = ' '):
 	for i in range(0, YTO+1)[y:]:
 		sout.write("%s" % pos(i, x) + colo + char + color["nc"])
 	sout.flush()
@@ -1422,15 +1403,15 @@ def DrawSpot(y, x, char):
 def ColorSpot(y, x, color):
 	sout.write(pos(y, x)+color+' '+COLOR.nc)
 
-def HideCursor() -> None:
+def HideCursor():
 	sout.write("\x1b[?25l")
 	sout.flush()
 
-def ShowCursor() -> None:
+def ShowCursor():
 	sout.write("\x1b[?25h")
 	sout.flush()
 
-def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False) -> None:
+def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 	x1, y1 = UpLeft
 	x2, y2 = DownRight
 	# |x1, -y1
@@ -1454,7 +1435,7 @@ def ReplaceStringByIndex(string:str, index:int, result:str) -> str:
 
 class TextBox:
 
-	def __init__(this, StartString="", DrawRect=True, DoClear=True) -> object:
+	def __init__(this, StartString="", DrawRect=True, DoClear=True):
 		this.DrawRect = DrawRect
 		this.DoClear = DoClear
 		this.PrintableChars = " óíáàéç!\"#$%&'()*+, -./0123456789:;<=>\
@@ -1471,7 +1452,7 @@ class TextBox:
 	def IsPrintableChar(this, char) -> bool:
 		return char in this.PrintableChars
 
-	def SetChar(this, char) -> None:
+	def SetChar(this, char):
 		if char == "\x1b": # escape key
 			if GetCh() == '[': # escape code
 				ch = GetCh()
@@ -1572,14 +1553,14 @@ def GetPrimeFactors(number:int) -> list[int]:
 	while factor <= number:
 		if not number % factor:
 			ret.append(factor)
-			number /= factor
+			number //= factor
 			factor += 1
 		else:
 			factor+=1
 	return ret
 
 class FancyIOStream:
-	def __lshift__(this, msg:str) -> object:
+	def __lshift__(this, msg:str):
 		sout.write(msg)
 
 		if '\n' in msg:
@@ -1587,7 +1568,7 @@ class FancyIOStream:
 		return this
 
 class get:
-	def __init__(this, *gets, argvs=None) -> object:
+	def __init__(this, *gets, argvs=None):
 		gets = list(gets)
 		if gets == [""]:
 			gets = [None]
@@ -1616,8 +1597,8 @@ class get:
 		return this.list[index]
 
 	def _get(this) -> list:
-		ret = []
-		other = []
+		ret:list[Union[list[str], str, bool, None]] = []
+		other:list[str] = []
 		this.argvs
 
 		for indicator in SingleList(this.gets): # list
@@ -1635,11 +1616,9 @@ class get:
 				ret.append( True )
 		else:
 			ret.append( None )
-		if other: # MakeEval
-			if other[0] in "-+0987654321":
-				ret.append( eval(other[0]) )
-			else:
-				ret.append( None )
+
+		if other and other[0] in "-+987654321": # MakeEval
+			ret.append( eval(other[0]) )
 		else:
 			ret.append( None )
 
@@ -1665,7 +1644,7 @@ def _RmDirWindows(dir:str) -> int: # not sure if works
 
 	return 0
 
-def RmDir(dir:str) -> None:
+def RmDir(dir:str):
 	if OS == "linux":
 		_RmDirLinux(dir)
 	elif OS == "windows":
@@ -1687,13 +1666,28 @@ def ReplaceAll(StringList:list[str], FromString:str, ToString:str) -> list[str]:
 		for index in r(StringList):
 			if type(StringList[index]) == str:
 				StringList[index] = StringList[index].replace(FromString, ToString)
-			elif type(String[index]) in [list, set, tuple]:
+			elif type(StringList[index]) in [list, set, tuple]:
 				StringList[index] = ReplaceAll(StringList[index], FromString, ToString)
 	return StringList
 
-def MakeString(line):
-	ln = re.compile("(?:\".*?\"|\S)+").findall(line)
-	return ln
+def MakeString(line:str, sep:str = " ", quote:str = '"', escape ='\\', MaintainQuotes:bool = True) -> list[str]:
+	InString = False
+	ret:list[str] = []
+	now = ""
+	for pos in r(line):
+		char = line[pos]
+		if char == quote and pos > 0 and line[pos-1] != escape:
+			if MaintainQuotes:now+='"'
+			InString = not InString
+		else:
+			# " start or end string
+			if char == sep and not InString:
+				ret.append(now)
+				now = ""
+			else:
+				now += line[pos]
+	if now:ret.append(now)
+	return ret
 
 def IsListSorted(lst:list, reverse:bool = False):
 	return lst == sorted(lst, reverse = reverse)
@@ -1729,10 +1723,10 @@ AvoidDrawedinBorder=True, DrawBottom=True, DrawTop=True, DrawLeft=True, DrawRigh
 			y+=this.MinY
 			x+=this.MinX
 			if this.MinY < y < this.MaxY:
-				raise FakeCursesError(
+				raise ValueError(
 f"y {y} is {'bigger' if x > this.MaxX else 'smaller'} then window's y size {this.MaxY}")
 			elif this.MinX < x < this.MaxX:
-				raise FakeCursesError(
+				raise ValueError(
 f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this.MaxX}")
 		sout.write(f"{pos(y, x)}{msg}")
 		sout.flush()
@@ -1741,15 +1735,15 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		if relative:
 			y+=this.MinY
 			if y > this.MaxY:
-				raise FakeCursesError(f"y {y} is bigger then window's y size {this.MaxY}")
+				raise ValueError(f"y {y} is bigger then window's y size {this.MaxY}")
 			elif y < this.MinY:
-				raise FakeCursesError(f"y {y} is smaller then window's y size {this.MinY}")
+				raise ValueError(f"y {y} is smaller then window's y size {this.MinY}")
 		ClearLine(y,char=char, start=start,end=end)
 
 	def DrawOutline(this, color=-1):
 		if color == -1:
 			color = this.BorderColor
-		#def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False) -> None:
+		#def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 		#DrawBottom, DrawTop, DrawLeft, DrawRigh
 		x1, y1 = this.MinX-1, this.MinY-1
 		x2, y2 = this.MaxX, this.MaxY+1 # may do -1 @ MaxX
@@ -1780,26 +1774,26 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 			y+=this.MinY
 			x+=this.MinX
 			if y > this.MaxY:
-				raise FakeCursesError(f"y {y} is bigger then window's y size {this.MaxY}")
+				raise ValueError(f"y {y} is bigger then window's y size {this.MaxY}")
 			elif y < this.MinY:
-				raise FakeCursesError(f"y {y} is smaller then window's y size {this.MinY}")
+				raise ValueError(f"y {y} is smaller then window's y size {this.MinY}")
 			elif x > this.MaxX:
-				raise FakeCursesError(f"x {x} is bigger then window's x size {this.MaxX}")
+				raise ValueError(f"x {x} is bigger then window's x size {this.MaxX}")
 			elif x < this.MinX:
-				raise FakeCursesError(f"x {x} is smaller then window's x size {this.MinX}")
+				raise ValueError(f"x {x} is smaller then window's x size {this.MinX}")
 		ppos(y,x)
 
 	def update(this, *args):
 		return this.UpdateFunc(this, args)
 
-def TestAll(lst:list[any], test = lambda x: not not x):
+def TestAll(lst:list[Any], test = lambda x: not not x):
 	WK = True
 	for item in lst:
 		if not test(item):
 			WK = False
 	return WK
 
-def TestAny(lst:list[any], test = lambda x: not not x):
+def TestAny(lst:list[Any], test = lambda x: not not x):
 	WK = False
 	for item in lst:
 		if test(item):
@@ -2079,13 +2073,13 @@ tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x
 def RGB(r,g,b):
 	return "\x1b[38;2;%s;%s;%sm" % (r,g,b)
 
-def ArgvAssing(args:list[str]): # omfg it's so much better
+def ArgvAssing(args:list[str]) -> dict[Union[None, str], list[str]]: # omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
 #None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}
 	# items that start with '-' will be a key, the rest wil be values
 	# items that start with "/-" will be values, but the starting '/' will be removed
-	ret = {None:[]}
+	ret:dict[Union[None, str], list[str]] = {None:[]}
 	now = None
 	for arg in args:
 		if arg[0] == '-':
@@ -2098,7 +2092,7 @@ def ArgvAssing(args:list[str]): # omfg it's so much better
 			ret[now].append(arg)
 	return ret
 
-def eprint(*msg, end='\n', sep=", ") -> None:
+def eprint(*msg, end='\n', sep=", "):
 	msg = sep.join([str(m) for m in msg])
 	eout.write(f'{msg}{end}')
 	eout.flush()
@@ -2162,22 +2156,16 @@ def IsLeapYear(year=None):
 def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
 	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
 
-__sprintf_types = {
+__sprintf_types:dict[str, Callable[[Any], Any]] = {
 	'i':int,
 	'f':float,
 	's':str,
 	'b':bool,
 	'x':hex,
 	'r':repr,
-	#"ll":lambda x: [list(y) for y in x],
-	#"ls":lambda x: [str(y) for y in x],
-	#"li":lambda x: [int(y) for y in x],
-	#"lf":lambda x: [float(y) for y in x],
-	#"lx":lambda x: [hex(y) for y in x],
-	#"lr":lambda x: [repr(y) for y in x],
 }
 
-__ = __sprintf_types.copy()
+__:dict[str, Callable[[Any], Any]] = __sprintf_types.copy()
 for _ in __sprintf_types.keys():
 	__['l'+_]=lambda x: [__[_](y) for y in x]
 __sprintf_types = __
@@ -2226,9 +2214,8 @@ USER = _getlogin()
 def nop(*a, **b):pass
 FuncType = type(nop)
 NoneType = type(None)
-iterables = [type(list()), type(set()), type(frozenset())]
-class NumberTooBigError(BaseException):pass
-class FakeCursesError(BaseException):pass
+ModuleType = type(re)
+iterables = [list, set(), frozenset()]
 infinity = float("inf")
 class noc:pass
 ARGV = ArgvAssing(argv[1:])
@@ -2246,7 +2233,6 @@ class time
 const time
 class log
 funct r
-funct AssureType
 class timer
 funct MakeDict
 funct sleep
@@ -2362,7 +2348,6 @@ const USER
 const FuncType
 const NoneType
 const iterables
-class NumberTooBigError
 const infinity
 funct nop
 class nocpass
