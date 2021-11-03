@@ -10,9 +10,6 @@ def Main() -> int:
 	return 0
 
 
-
-
-
 #start
 if __name__ == '__main__':
 	start = tm()

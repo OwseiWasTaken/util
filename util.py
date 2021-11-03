@@ -1,4 +1,20 @@
 #! /usr/local/bin/python3.10
+# _ prefixed imports
+from time import strftime as __ftime__
+from json import dump as _JsonDump, load as _JsonLoad
+from pickle import dump as _PickleDump, load as _PickleLoad
+from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
+
+import re
+# https://regex101.com/
+from functools import cache
+from numpy import sign as signum
+from time import time as tm, sleep as slp
+from os.path import isfile, exists, abspath
+from typing import Union, Literal, Callable, Any
+from random import randint as rint, choice as ritem
+from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
+from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 
 # this is a general python lib that aims to make fast (fast as in python)
 # functions and usefull constants
@@ -15,33 +31,10 @@
 # You should have received a copy of the GNU General Public License (the LICENSE.txt file)
 # along with this program; if not get it here
 
-
-# util.py imports
-from pickle import dump as _PickleDump, load as _PickleLoad
-from json import dump as _JsonDump, load as _JsonLoad
-from time import strftime as __ftime__
-from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
-from typing import Union, Literal, Callable, Any
-
-# general imports + util used
-from random import randint as rint, choice as ritem
-from numpy import sign as signum
-from time import time as tm, sleep as slp
-from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
-from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
-from os.path import isfile, exists, abspath
-from functools import cache
-
-import re # https://regex101.com/
-
-# this file was made by owsei
-# this file has a GPL3 lincense or whatever
-# you can use it however you want
-
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
 # OS especific func
-if OS == "linux":
+if OS in ["linux", "macos"]: # TODO is it "macos"?
 	# it MAY work in windows, not sure tho
 	try:
 		import gi
@@ -71,7 +64,10 @@ else:
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
 	import msvcrt
 	def GetCh() -> str:
-		return msvcrt.getch() # TODO need to test
+		char = ""
+		while msvcrt.kbhit():
+			char+=msvcrt.getch()
+		return char
 
 class __time:
 	@property
