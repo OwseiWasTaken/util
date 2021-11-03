@@ -1,4 +1,20 @@
-#! /usr/bin/python3.9
+#! /usr/local/bin/python3.10
+
+# this is a general python lib that aims to make fast (fast as in python)
+# functions and usefull constants
+# 2021, by Pedro "owsei" Romero Manse
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 3
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License (the LICENSE.txt file)
+# along with this program; if not get it here
+
 
 # util.py imports
 from pickle import dump as _PickleDump, load as _PickleLoad
@@ -19,20 +35,10 @@ from functools import cache
 import re # https://regex101.com/
 
 # this file was made by owsei
-# this file has a gpl3 lincense or whatever
+# this file has a GPL3 lincense or whatever
 # you can use it however you want
 
-# REGEXes
-# find funcs
-# def [a-zA-Z]*
-# find typeless funcs
-# def .*\(.*\):$
-# func class or func
-# ^(class|def)
-# find double line div
-# ^$\n^$
-
-# magic class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
+# __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
 # OS especific func
 if OS == "linux":
@@ -65,7 +71,7 @@ else:
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
 	import msvcrt
 	def GetCh() -> str:
-		return msvcrt.getch() # TODO ??
+		return msvcrt.getch() # TODO need to test
 
 class __time:
 	@property
@@ -120,7 +126,7 @@ class log:
 		return this.LOG.pop(index)
 
 	def PopByContent(this, content:str):
-		return this.LOG.pop( this.LOG.index(content) )
+		return this.LOG.pop( this.LOG.index(content))
 
 	def __repr__(this) -> str:
 		return f'{this.LOG}'
@@ -148,7 +154,7 @@ class log:
 			for i in this.LOG:
 					SaveFileLog.write(f'{i}\n')
 
-def r(end, start:int=0, jmp:int=1): # TODO union?
+def r(end, start:int=0, jmp:int=1):
 	try:
 		end = len(end)
 	except AttributeError:
@@ -222,7 +228,6 @@ def lst1(lst:Union[list, tuple]):
 	else:
 		return lst
 
-
 def RngNoRepetition(min:int, max:int, HowMany:int=1) -> list:
 	ret = []
 	all = [x+1 for x in r(min, max)]
@@ -290,11 +295,8 @@ def IsPrime(ask:int) -> bool:
 		msg = False
 	return msg
 
-def case(var:Union[int, float], index:int) -> str:
-	return str(var)[index]
-
-def fib(n:int) -> list:
-	result = []
+def fib(n:int) -> list[int]:
+	result:list[int] = []
 	a, b = 0, 1
 	while a < n:
 		result.append(a)
@@ -309,16 +311,20 @@ class rng:
 		return this.var
 
 	def get(this) -> list[int]:
-		this.var = []
-		for _ in range(this.size):
-			this.var.append(rint(this.mn, this.mx))
-		return this.var
+		if this.norep:
+			return RngNoRepetition(this.mn, this.mx, this.size)
+		else:
+			this.var = []
+			for _ in range(this.size):
+				this.var.append(rint(this.mn, this.mx))
+			return this.var
 
-	def __init__(this, mn, mx, size=1):
+	def __init__(this, mn, mx, size = 1, norep = False):
 		this.size=size
 		this.mn=mn
 		this.mx=mx
 		this.new
+		this.norep = norep
 		this.var:list[int] = []
 
 	def __repr__(this) -> str:
@@ -539,7 +545,7 @@ def SplitBracket(string:str, bracket:str, closing_bracket='', Rmdadd="") -> str:
 		'{' : '}',
 		}
 		closing_bracket = r[bracket]
-	return closing_bracket.join(str(string).split( bracket )).split(closing_bracket)
+	return closing_bracket.join(str(string).split( bracket)).split(closing_bracket)
 
 def StrToMs(ipts:str) -> int:
 	ipt=ipts.split()
@@ -660,10 +666,8 @@ def factorial(n:int) -> int:
 
 def exit(num:int=1):
 	assert type(num)==int, f'var {num} of wrong type, should be int'
-	if num < 256:
-		exi(num)
-	else:
-		raise ValueError("exit num : %d > 255" % num)
+	assert num < 256, f'var {num} too big, should be smaller then 256'
+	exi(num)
 
 def between(x:float or int, min:float or int, max:float or int) -> bool:
 	return min < x < max
@@ -706,7 +710,7 @@ def ORGroups( g1:Union[
 
 def XORGroups( g1:Union[
 		list, tuple, set, frozenset], g2:Union[
-			list, tuple, set, frozenset]) -> set:
+		list, tuple, set, frozenset]) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gall = *g1, *g2
@@ -755,7 +759,7 @@ class code:
 			msg = ""
 		return msg
 
-class var:
+class var: # TODO gonna remove this var!
 	'''
 	this class should NOT be used for items in iterables! (like lists)
 
@@ -775,8 +779,8 @@ class var:
 	var([1, 2, 3])+var([2, 3, 4]) = [1, 2, 3, 2, 3, 4]
 	'''
 
-	# this is bad (like, not well made)
-	# should i try this again?
+	# this is bad (like, not well made and there are some things i didn't
+	# testd, so use this on your own)
 
 	def __init__(this, Value:Any, Type:type=None, PrintMutipleLines=True):
 		if type(Value) == type and type(Type) != type:
@@ -792,9 +796,9 @@ class var:
 		Types = {
 			(float, int):"IsNumber",
 			(list, set, str):"IsIterable",
-			(str, ):"IsString",
-			(frozenset, ):"IsFrozenset",
-			(dict, ):"IsDict"
+			(str,):"IsString",
+			(frozenset,):"IsFrozenset",
+			(dict,):"IsDict"
 		}
 
 		for i in Types.keys():
@@ -861,7 +865,7 @@ class var:
 		if this.IsNumber:
 			return this.Value * add
 		else:
-			raise WrongType(f"var class can't multiply {this.Value} with {add}")
+			raise TypeError(f"var class can't multiply {this.Value} with {add}")
 
 	def __truediv__(this, add):
 		if type(add) == var:add=add.Value
@@ -869,7 +873,7 @@ class var:
 		if this.IsNumber:
 			return this.Value / add
 		else:
-			raise WrongType(f"var class can't divide {this.Value} with {add}")
+			raise TypeError(f"var class can't divide {this.Value} with {add}")
 
 	def __floordiv__(this, add):
 		if type(add) == var:add=add.Value
@@ -877,7 +881,7 @@ class var:
 		if this.IsNumber:
 			return this.Value // add
 		else:
-			raise WrongType(f"var class can't (floor) divide {this.Value} with {add}")
+			raise TypeError(f"var class can't (floor) divide {this.Value} with {add}")
 
 	# math shit done
 	# list/dict stuff start
@@ -1097,16 +1101,16 @@ def NumberToExponent(number:list[str]) -> str:
 def rbool(OneIn=2) -> int:
 	return not rint(0, OneIn-1)
 
-def rcase(word:str, chance=0.5) -> str:
+def rcase(word:str, chance:float=0.5) -> str:
 	if chance == None:chance = 0.5
 	chance *= 100
 	wd = ''
-	for case in word:
+	for char in word:
 		if chance >= rint(0, 100):
-			case = case.upper()
+			char = char.upper()
 		else:
-			case = case.lower()
-		wd+=case
+			char = char.lower()
+		wd+=char
 	return wd
 
 def invert(var:list or tuple or str) -> list or tuple or str:
@@ -1382,7 +1386,7 @@ def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=colo
 	else:
 		y = GetTerminalX()
 	for i in r(y):
-		sout.write("%s" % (start + pos(i, x) + char + end ))
+		sout.write("%s" % (start + pos(i, x) + char + end))
 	sout.flush()
 
 def DrawHLine(x, XTo, y, color, char = ' '):
@@ -1611,19 +1615,19 @@ class get:
 
 		if other: # MakeBool
 			if other[0] in "-+0987654321":
-				ret.append( not not eval(other[0]) )
+				ret.append( not not eval(other[0]))
 			else:
-				ret.append( True )
+				ret.append( True)
 		else:
-			ret.append( None )
+			ret.append( None)
 
 		if other and other[0] in "-+987654321": # MakeEval
-			ret.append( eval(other[0]) )
+			ret.append( eval(other[0]))
 		else:
-			ret.append( None )
+			ret.append( None)
 
 		al = list(this.argvs.keys())
-		ret.append( any( [x in al for x in this.gets]) ) # exists
+		ret.append( any( [x in al for x in this.gets])) # exists
 
 		return ret
 
@@ -1756,11 +1760,11 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		if this.DrawRight:
 			DrawVLine(y1, y2, x2, color) # right
 
-		# DtrawRectangle(
-		# (this.MinX-1, this.MinY-1),
-		# (this.MaxX+1, this.MaxY+1),
-		# COLOR.BkDarkGrey
-		# )
+		#DtrawRectangle(
+		#	(this.MinX-1, this.MinY-1),
+		#	(this.MaxX+1, this.MaxY+1),
+		#	COLOR.BkDarkGrey
+		#)
 
 	def DrawBorder(this, color=-1):
 		if color == -1:
@@ -2215,14 +2219,18 @@ def nop(*a, **b):pass
 FuncType = type(nop)
 NoneType = type(None)
 ModuleType = type(re)
-iterables = [list, set(), frozenset()]
+iterables = [list, set, frozenset]
 infinity = float("inf")
 class noc:pass
 ARGV = ArgvAssing(argv[1:])
 
 if __name__=="__main__":
-	for i in get('-c').list:
+	for i in get('-r').list:
+		exec(i)
+	for i in get('-e', '-c').list:
 		print(eval(i))
+
+#TODO update EOF list
 # funcs/classes
 """
 #OS FUNCS
@@ -2345,11 +2353,12 @@ funct words
 funct unwords
 #CONSTS
 const USER
+funct nop
 const FuncType
 const NoneType
+const ModuleType
 const iterables
 const infinity
-funct nop
-class nocpass
+class noc
 const ARGV
 """

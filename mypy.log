@@ -1,57 +1,57 @@
-util.py:41: error: Skipping analyzing 'gi': found module but no type hints or library stubs
-util.py:41: note: See https://mypy.readthedocs.io/en/latest/running_mypy.html#missing-imports
-util.py:43: error: Skipping analyzing 'gi.repository': found module but no type hints or library stubs
-util.py:68: error: Module has no attribute "getch"
-util.py:238: error: Argument 1 to "load" has incompatible type "TextIO"; expected "IO[bytes]"
-util.py:240: error: Argument 2 to "dump" has incompatible type "TextIO"; expected "IO[bytes]"
-util.py:247: error: Argument 2 to "dump" has incompatible type "str"; expected "IO[str]"
-util.py:567: error: Incompatible return value type (got "Tuple[Any, Any]", expected "Tuple[int]")
-util.py:599: error: Missing return statement
-util.py:617: error: The return type of a generator function should be "Generator" or one of its supertypes
-util.py:627: error: Unsupported operand types for >= ("int" and "object")
-util.py:634: error: Incompatible return value type (got "float", expected "int")
-util.py:644: error: "int" has no attribute "__iter__"; maybe "__str__", "__int__", or "__invert__"? (not iterable)
-util.py:668: error: Invalid type comment or annotation
-util.py:680: error: Argument 1 to "append" of "list" has incompatible type "Callable[[int, int], int]"; expected "Callable[[Any], str]"
-util.py:683: error: Too many arguments
-util.py:691: error: Invalid type comment or annotation
-util.py:900: error: Missing positional argument "lst" in call to "__dict__" of "var"
-util.py:902: error: Signature of "__dict__" incompatible with supertype "object"
-util.py:902: error: Function "util.var.dict" is not valid as a type
-util.py:902: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:906: error: "var" has no attribute "IsDict"
-util.py:924: error: "var" has no attribute "IsIterable"
-util.py:924: error: "var" has no attribute "IsString"
-util.py:941: error: "var" has no attribute "IsString"
-util.py:951: error: Function "builtins.any" is not valid as a type
-util.py:951: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:952: error: Item "str" of "Optional[str]" has no attribute "Value"
-util.py:952: error: Item "None" of "Optional[str]" has no attribute "Value"
-util.py:959: error: Invalid type comment or annotation
-util.py:962: error: "var" has no attribute "IsIterable"
-util.py:983: error: Incompatible return value type (got "str", expected "List[str]")
-util.py:990: error: "var" has no attribute "IsIterable"
-util.py:992: error: "var" has no attribute "IsDict"
-util.py:1002: error: Function "builtins.any" is not valid as a type
-util.py:1002: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:1003: error: "var" has no attribute "IsString"
-util.py:1078: error: "Dict[str, str]" has no attribute "nc"
-util.py:1081: error: Function "builtins.any" is not valid as a type
-util.py:1081: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:1112: error: Invalid type comment or annotation
-util.py:1115: error: Invalid type comment or annotation
-util.py:1122: error: Invalid type comment or annotation
+util.py:35: error: Skipping analyzing 'gi': found module but no type hints or library stubs
+util.py:35: note: See https://mypy.readthedocs.io/en/latest/running_mypy.html#missing-imports
+util.py:37: error: Skipping analyzing 'gi.repository': found module but no type hints or library stubs
+util.py:62: error: Module has no attribute "getch"
+util.py:231: error: Argument 1 to "load" has incompatible type "TextIO"; expected "IO[bytes]"
+util.py:233: error: Argument 2 to "dump" has incompatible type "TextIO"; expected "IO[bytes]"
+util.py:240: error: Argument 2 to "dump" has incompatible type "str"; expected "IO[str]"
+util.py:561: error: Incompatible return value type (got "Tuple[Any, Any]", expected "Tuple[int]")
+util.py:593: error: Missing return statement
+util.py:611: error: The return type of a generator function should be "Generator" or one of its supertypes
+util.py:621: error: Unsupported operand types for >= ("int" and "object")
+util.py:628: error: Incompatible return value type (got "float", expected "int")
+util.py:638: error: "int" has no attribute "__iter__"; maybe "__str__", "__int__", or "__invert__"? (not iterable)
+util.py:660: error: Invalid type comment or annotation
+util.py:672: error: Argument 1 to "append" of "list" has incompatible type "Callable[[int, int], int]"; expected "Callable[[Any], str]"
+util.py:675: error: Too many arguments
+util.py:683: error: Invalid type comment or annotation
+util.py:892: error: Missing positional argument "lst" in call to "__dict__" of "var"
+util.py:894: error: Signature of "__dict__" incompatible with supertype "object"
+util.py:894: error: Function "util.var.dict" is not valid as a type
+util.py:894: note: Perhaps you need "Callable[...]" or a callback protocol?
+util.py:898: error: "var" has no attribute "IsDict"
+util.py:916: error: "var" has no attribute "IsIterable"
+util.py:916: error: "var" has no attribute "IsString"
+util.py:933: error: "var" has no attribute "IsString"
+util.py:943: error: Function "builtins.any" is not valid as a type
+util.py:943: note: Perhaps you need "Callable[...]" or a callback protocol?
+util.py:944: error: Item "str" of "Optional[str]" has no attribute "Value"
+util.py:944: error: Item "None" of "Optional[str]" has no attribute "Value"
+util.py:951: error: Invalid type comment or annotation
+util.py:954: error: "var" has no attribute "IsIterable"
+util.py:975: error: Incompatible return value type (got "str", expected "List[str]")
+util.py:982: error: "var" has no attribute "IsIterable"
+util.py:984: error: "var" has no attribute "IsDict"
+util.py:994: error: Function "builtins.any" is not valid as a type
+util.py:994: note: Perhaps you need "Callable[...]" or a callback protocol?
+util.py:995: error: "var" has no attribute "IsString"
+util.py:1070: error: "Dict[str, str]" has no attribute "nc"
+util.py:1073: error: Function "builtins.any" is not valid as a type
+util.py:1073: note: Perhaps you need "Callable[...]" or a callback protocol?
+util.py:1104: error: Invalid type comment or annotation
+util.py:1107: error: Invalid type comment or annotation
+util.py:1114: error: Invalid type comment or annotation
+util.py:1121: error: Missing return statement
 util.py:1129: error: Missing return statement
-util.py:1137: error: Missing return statement
+util.py:1165: error: Invalid type comment or annotation
 util.py:1173: error: Invalid type comment or annotation
-util.py:1181: error: Invalid type comment or annotation
-util.py:1224: error: 'builtins.int' object is not iterable
-util.py:1226: error: Cannot determine type of 'RetA'
-util.py:1227: error: Cannot determine type of 'DeephA'
-util.py:1230: error: Incompatible return value type (got "Tuple[int, int]", expected "int")
-util.py:1262: error: Unexpected '...'
-util.py:1262: error: Invalid type comment or annotation
-util.py:1263: error: Need type annotation for 'ret' (hint: "ret: List[<type>] = ...")
-util.py:1274: error: Function "builtins.any" is not valid as a type
-util.py:1274: note: Perhaps you need "Callable[...]" or a callback protocol?
+util.py:1216: error: 'builtins.int' object is not iterable
+util.py:1218: error: Cannot determine type of 'RetA'
+util.py:1219: error: Cannot determine type of 'DeephA'
+util.py:1222: error: Incompatible return value type (got "Tuple[int, int]", expected "int")
+util.py:1254: error: Unexpected '...'
+util.py:1254: error: Invalid type comment or annotation
+util.py:1255: error: Need type annotation for 'ret' (hint: "ret: List[<type>] = ...")
+util.py:1266: error: Function "builtins.any" is not valid as a type
+util.py:1266: note: Perhaps you need "Callable[...]" or a callback protocol?
 Found 50 errors in 1 file (checked 1 source file)
