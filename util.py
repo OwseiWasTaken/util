@@ -236,9 +236,9 @@ def RngNoRepetition(min:int, max:int, HowMany:int=1) -> list:
 
 def UseFile(file: str, obj = None):
 	if obj == None:
-		return _PickleLoad(open(file))
+		return _PickleLoad(open(file, 'rb'))
 	else:
-		_PickleDump(obj, open(file))
+		_PickleDump(obj, open(file, 'wb'))
 		return None
 
 def json(file:str, obj:object=None) -> Union[dict, None]:
@@ -2168,6 +2168,7 @@ __sprintf_types:dict[str, Callable[[Any], Any]] = {
 __:dict[str, Callable[[Any], Any]] = __sprintf_types.copy()
 for _ in __sprintf_types.keys():
 	__['l'+_]=lambda x: [__[_](y) for y in x]
+	__['t'+_]=lambda x: tuple([__[_](y) for y in x])
 __sprintf_types = __
 
 __sprintf_sj = '|'.join(__sprintf_types.keys())
@@ -2176,14 +2177,14 @@ __sprintf_regex = re.compile(rf"\{{({__sprintf_sj})\}}")
 @cache
 def sprintf(string, *stuff, HideErrors=True):
 	# different to c's sprintf the template doesn't show what the var is
-	#it shows what you want the var to be
+	# it shows what you want the var to be and sprintf will try to convert it
 	ToReplace = __sprintf_regex.findall(string)
 	if len(ToReplace) == len(stuff) or HideErrors:
 		for i in r(ToReplace):
 			if len(stuff) > i:
 				replace = ToReplace[i]
 				try:
-					place = str(__sprintf_types[replace](stuff[i]))
+					place = f"{(__sprintf_types[replace](stuff[i]))}"
 				except ValueError:
 					raise ValueError(sprintf("\
 can't convert \"{s}\" to {s}\
@@ -2206,6 +2207,15 @@ def words(string: str) -> list[str]:
 
 def unwords(lst:list[str]) -> str:
 	return ' '.join(lst)
+
+def IsBitSet(num, index):
+	return num & 1 << index != 0
+
+def NewOdd(num):
+	return IsBitSet(num, 0)
+
+def NewEven(num):
+	return not IsBitSet(num, 0)
 
 # consts
 true = True
