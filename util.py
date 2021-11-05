@@ -153,7 +153,7 @@ class log:
 def r(end, start:int=0, jmp:int=1):
 	try:
 		end = len(end)
-	except AttributeError:
+	except TypeError:
 		end = int(end)
 
 	index = start
