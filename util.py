@@ -2217,6 +2217,23 @@ def NewOdd(num):
 def NewEven(num):
 	return not IsBitSet(num, 0)
 
+def BinarySearch(lst:list[int], item:list[int]) -> int:
+	"""
+	Returns the position of item in the list if found, -1 otherwise.
+	List must be sorted.
+	""" # is returing -1 a good idea?, it doesn't seem like one
+	left = 0
+	right = len(lst) - 1
+	while left <= right:
+		mid = (left + right) // 2
+		if lst[mid] == item:
+			return mid
+		if lst[mid] > item:
+			right = mid - 1
+		if lst[mid] < item:
+			left = mid + 1
+	return -1
+
 # consts
 true = True
 false = False
