@@ -11,7 +11,7 @@ from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
-from typing import Union, Literal, Callable, Any
+from typing import Callable, Any
 from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
@@ -192,7 +192,7 @@ class timer:
 	def __repr__(this) -> str:
 		return f'{this.get}'
 
-def MakeDict(ls1:Union[list, tuple], ls2:Union[list, tuple]) -> dict:
+def MakeDict(ls1:list | tuple, ls2:list | tuple) -> dict:
 	ls1=list(ls1)
 	ls2=list(ls2)
 	ret = {x:y for x, y in zip(list(ls1), list(ls2))}
@@ -216,7 +216,7 @@ def even(var:int) -> bool:
 def odd(var:int) -> bool:
 	return not not var%2
 
-def lst1(lst:Union[list, tuple]):
+def lst1(lst:list | tuple):
 	if len(lst) == 1:
 		return lst[0]
 	elif not len(lst):
@@ -241,7 +241,7 @@ def UseFile(file: str, obj = None):
 		_PickleDump(obj, open(file, 'wb'))
 		return None
 
-def json(file:str, obj:object=None) -> Union[dict, None]:
+def json(file:str, obj:object=None) -> dict | None:
 	if obj == None:
 		return _JsonLoad(open(file, 'r'))
 	else:
@@ -441,7 +441,7 @@ def SetColorMode(Color:str, mode:str) -> str:
 	Color = ''.join(Colorl)
 	return Color
 
-def AddStr(Color:str, mode:Union[str, int], string:str):
+def AddStr(Color:str, mode:str | int, string:str):
 	if type(mode) == int:mode = str(mode)
 
 def PascalCase(string, remove=' ') -> str:
@@ -490,15 +490,15 @@ def bhask(a, b, c) -> tuple[int]:
 	y = (b - delt)/a
 	return x, y
 
-def near(base:Union[
-		float, int],
-		num:Union[
-		float, int],
-		DifUp:Union[
-		float, int],
-		DifDown:Union[
-		float, int
-		]=0) -> bool:
+def near(base:
+		float | int,
+		num:
+		float | int,
+		DifUp:
+		float | int,
+		DifDown:
+		float | int
+		=0) -> bool:
 	if not DifDown:
 		DifDown = DifUp
 	return (base+DifUp) >= num >= (base-DifDown)
@@ -620,15 +620,15 @@ def ANDGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set o
 			Gret.add(i)
 	return Gret
 
-def ORGroups( g1:Union[
-		list, tuple, set, frozenset], g2:Union[
-		list, tuple, set, frozenset]) -> set:
+def ORGroups( g1:
+		list | tuple | set | frozenset, g2:
+		list | tuple | set | frozenset) -> set:
 	Gret = set((*g1, *g2))
 	return Gret
 
-def XORGroups( g1:Union[
-		list, tuple, set, frozenset], g2:Union[
-		list, tuple, set, frozenset]) -> set:
+def XORGroups( g1:
+		list | tuple | set | frozenset, g2:
+		list | tuple | set | frozenset) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gall = *g1, *g2
@@ -638,9 +638,9 @@ def XORGroups( g1:Union[
 			Gret.add(i)
 	return Gret
 
-def NOTGroups( g1:Union[
-		list, tuple, set, frozenset], g2:Union[
-		list, tuple, set, frozenset]) -> set:
+def NOTGroups( g1:
+		list | tuple | set | frozenset, g2:
+		list | tuple | set | frozenset) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gret = set()
@@ -1252,7 +1252,7 @@ class get:
 		return this.list[index]
 
 	def _get(this) -> list:
-		ret:list[Union[list[str], str, bool, None]] = []
+		ret:list[list[str] | str | bool | None] = []
 		other:list[str] = []
 		this.argvs
 
@@ -1728,13 +1728,13 @@ tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x
 def RGB(r,g,b):
 	return "\x1b[38;2;%s;%s;%sm" % (r,g,b)
 
-def ArgvAssing(args:list[str]) -> dict[Union[None, str], list[str]]: # omfg it's so much better
+def ArgvAssing(args:list[str]) -> dict[None | str, list[str]]: # omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
 #None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}
 	# items that start with '-' will be a key, the rest wil be values
 	# items that start with "/-" will be values, but the starting '/' will be removed
-	ret:dict[Union[None, str], list[str]] = {None:[]}
+	ret:dict[None | str, list[str]] = {None:[]}
 	now = None
 	for arg in args:
 		if arg[0] == '-':
@@ -1856,6 +1856,9 @@ def printf(string, *stuff, flush = True):
 	sout.write(string)
 	if flush:
 		sout.flush()
+
+def fprintf(FileHandler, string, *stuff):
+	FileHandler.write(sprintf(string, *stuff))
 
 def words(string: str) -> list[str]:
 	return string.split()
