@@ -391,86 +391,8 @@ def GCH(TEQ):
 		return ch in TEQ
 	return ch == TEQ
 
-#terminal colors
-#\/ \/ \/ \/
-
-color: dict[str, str] = { # TODO gonna remove color dict!
-# WARNING! color:dict is no longer in development, use the COLOR class from now on (just under)
-# formating: '{name}' : '\003[{mode};{ColorCode}m'
-# modes: 0:normal 1:bold? 2:dark 3:italics 4:underline 5:blinking 7:bkground 8:hidden
-	'':'',
-	'nc':'\033[0m',
-	'white':'\033[0;37m',
-	'black' : '\033[0;30m',
-	'red' : '\033[0;31m',
-	'green' : '\033[0;32m',
-	'yellow' : '\033[0;33m',
-	'blue' : '\033[0;34m',
-	'magenta' : '\033[0;35m',
-	'cyan' : '\033[0;36m',
-
-	'dark gray' : '\033[0;90m',
-	'dark grey' : '\033[0;90m',
-	'dark blue' : '\033[0;117m',
-
-	'light gray' : '\033[0;37m',
-	'light grey' : '\033[0;37m',
-	'light red' : '\033[0;91m',
-	'light green' : '\033[0;92m',
-	'light yellow' : '\033[0;93m',
-	'light blue' : '\033[0;94m',
-	'light magenta' : '\033[0;95m',
-	'light cyan' : '\033[0;96m',
-
-	'br gray' : '\033[0;37m',
-	'br grey' : '\033[0;37m',
-	'br red' : '\033[0;91m',
-	'br green' : '\033[0;92m',
-	'br yellow' : '\033[0;93m',
-	'br blue' : '\033[0;94m',
-	'br magenta' : '\033[0;95m',
-	'br cyan' : '\033[0;96m',
-
-	'bk nc':'\033[7;0m',
-	'bk white':'\033[7;37m',
-	'bk black' : '\033[7;30m',
-	'bk red' : '\033[7;31m',
-	'bk green' : '\033[7;32m',
-	'bk yellow' : '\033[7;33m',
-	'bk blue' : '\033[7;34m',
-	'bk magenta' : '\033[7;35m',
-	'bk cyan' : '\033[7;36m',
-	'bk gray' : '\033[7;90m',
-	'bk grey' : '\033[7;90m',
-
-	# for some reason these kinda don't work
-	# 'bk light red' : '\033[7;91m',
-	# 'bk light green' : '\033[7;92m', #it's darker light cyan!
-	# 'bk light yellow' : '\033[7;93m',
-	# 'bk light blue' : '\033[7;94m',
-	# 'bk light magenta' : '\033[7;95m',
-	# 'bk light cyan' : '\033[7;96m',
-	# "bk nc" : "\033[0;49m",
-	# "bk black" : "\033[0;40m",
-	# "bk red" : "\033[0;41m",
-	# "bk green" : "\033[0;42m",
-	# "bk yellow" : "\033[0;43m",
-	# "bk blue" : "\033[0;44m",
-	# "bk magenta" : "\033[0;45m",
-	# "bk cyan" : "\033[0;46m",
-	# "bk light gray" : "\033[0;47m",
-	# "bk white" : "\033[0;107m",
-	# "bk dark gray" : "\033[0;100m",
-	# "bk light red" : "\033[0;101m",
-	# "bk light green" : "\033[0;102m",
-	# "bk light yellow" : "\033[0;103m",
-	# "bk light blue" : "\033[0;104m",
-	# "bk light magenta" : "\033[0;105m",
-	# "bk light cyan" : "\033[0;106m",
-}
-
 class COLOR:
-	nc			=			"\033[0;00m"
+	nc				=			"\033[0;00m"
 
 	black			=			"\033[0;30m"
 	red				=			"\033[0;31m"
@@ -512,14 +434,14 @@ class COLOR:
 	BkBrGrey		=			"\033[0;105m"
 
 # modes: 0:normal, 1:bold, 2:dark, 3:italics, 4:underline, 5:blinking, 7:bkground, 8:hidden
-def SetColorMode(color:str, mode:str) -> str:
-	index = color.find('[')+1
-	colorl = list(color)
-	colorl[index] = mode
-	color = ''.join(colorl)
-	return color
+def SetColorMode(Color:str, mode:str) -> str:
+	index = Color.find('[')+1
+	Colorl = list(Color)
+	Colorl[index] = mode
+	Color = ''.join(Colorl)
+	return Color
 
-def AddStr(color:str, mode:Union[str, int], string:str):
+def AddStr(Color:str, mode:Union[str, int], string:str):
 	if type(mode) == int:mode = str(mode)
 
 def PascalCase(string, remove=' ') -> str:
@@ -647,7 +569,7 @@ def mmc(a:int, b:int) -> int:
 		G = greater+i
 		if not G % a and not G % b:break
 		# if tm()-s>len(f"{greater}")*2:
-			# print(f"{color['red']}timed out{color['normal']}")
+			# print(f"{COLOR.red}timed out{COLOR.nc}")
 			# return None
 			# rai/se Exception('timed out')
 	return G
@@ -755,273 +677,6 @@ class code:
 			msg = ""
 		return msg
 
-class var: # TODO gonna remove this var!
-	'''
-	this class should NOT be used for items in iterables! (like lists)
-
-	this class "contains" the other classes in it,
-	so you can stop worring about doing this foo=DoShit(foo, args)
-	and start doing this foo.DoShit(args)
-	and facilitating your life when using dicts
-
-	for i in {'a':1, 'b':2, 'c':3} =  ERROR
-	for i in var({'a':1, 'b':2, 'c':3}) = dict.keys()
-
-	"hello world"[3] = '!' = ERROR
-	var("hello world")[3] = '!' = "hel!o world"
-
-	[1, 2, 3]+[2, 3, 4] = ERROR
-	var([1, 2, 3])+[2, 3, 4] = [1, 2, 3, 2, 3, 4]
-	var([1, 2, 3])+var([2, 3, 4]) = [1, 2, 3, 2, 3, 4]
-	'''
-
-	# this is bad (like, not well made and there are some things i didn't
-	# testd, so use this on your own)
-
-	def __init__(this, Value:Any, Type:type=None, PrintMutipleLines=True):
-		if type(Value) == type and type(Type) != type:
-			Value, Type = Type, Value
-
-		if Type == None:Type=type(Value)
-
-		this.Type = Type
-		this.Value = Value
-		# this.PrintMutipleLines=bo/ol(PrintMutipleLines)
-		this.PrintMutipleLines=not not (PrintMutipleLines)
-
-		Types = {
-			(float, int):"IsNumber",
-			(list, set, str):"IsIterable",
-			(str,):"IsString",
-			(frozenset,):"IsFrozenset",
-			(dict,):"IsDict"
-		}
-
-		for i in Types.keys():
-			exec(f"this.{Types[i]} = {this.Type in i}")
-
-	# math shit start
-
-	def __add__(this, add):
-		try:
-			return this.Value.__add__(add)
-		except Exception:pass
-		# var + var
-		ReturnVar = None
-		if type(add) == var:add=add.Value
-
-		# frozen set is frozen set!
-		if this.IsFrozenSet:
-			raise TypeError
-
-		# var != dict
-		if not this.IsDict:
-			if this.IsIterable:
-					ReturnVar = this.Type(ORGroups(this.Value, add))
-			else:
-					ReturnVar = this.Value+add
-
-		# var = dict
-		elif this.IsDict:
-			ret = this.Value
-			for i in add.keys():
-					ret[i] = add[i]
-		return ReturnVar
-
-	def __sub__(this, add):
-		# var - var
-		ReturnVar, ReturnType = None, this.Type
-		if type(add) == var:add=add.Value
-
-		# var != dict
-		if not this.IsDict:
-			if this.IsIterable:
-					ReturnVar = this.Type(NOTGroups(this.Value, add))
-			else:
-					ReturnVar = this.Value-add
-
-		# var == dict
-		else:
-			ret = this.Value
-			retK = ret.keys()
-			if type(add) == dict:
-					for i in add.keys():
-							del ret[i]
-			else:
-					for i in add:
-							del ret[i]
-			ReturnVar = ret
-
-		# return var obj of same type and (probably) different value
-		return ReturnVar
-
-	def __mul__(this, add):
-		if type(add) == var:add=add.Value
-
-		if this.IsNumber:
-			return this.Value * add
-		else:
-			raise TypeError(f"var class can't multiply {this.Value} with {add}")
-
-	def __truediv__(this, add):
-		if type(add) == var:add=add.Value
-
-		if this.IsNumber:
-			return this.Value / add
-		else:
-			raise TypeError(f"var class can't divide {this.Value} with {add}")
-
-	def __floordiv__(this, add):
-		if type(add) == var:add=add.Value
-
-		if this.IsNumber:
-			return this.Value // add
-		else:
-			raise TypeError(f"var class can't (floor) divide {this.Value} with {add}")
-
-	# math shit done
-	# list/dict stuff start
-
-	def __iter__(this):
-		for i in this.Value:
-			yield i
-
-	# calling method
-	def __getitem__(this, index_or_content):
-		if type(index_or_content) == var:index_or_content = index_or_content.Value
-		ret = this.Value[index_or_content]
-
-		return ret
-
-	# list/dict stuff done
-	# (other) magic methods start
-
-	def dict(this, lst:list) -> dict:
-		return this.__dict__()
-
-	def __dict__(this, lst:list) -> dict:
-		return MakeDict(this.Value, lst)
-
-	def __len__(this) -> int:
-		if this.IsDict:
-			return len(this.Value.Keys())
-		return len(this.Value)
-
-	def __setitem__(this, index, obj):
-		if this.IsFrozenSet:
-			raise TypeError(f"can't set value of FrozenSet\nvalue:{this.Value}")
-		if this.IsString:
-			ret = list(this.Value)
-			ret[index] = obj
-		else:
-			ret = [this.Value]
-			ret[index] = obj
-
-		this.Value = ret
-
-	def __repr__(this) -> str:
-		msg = ''
-		if this.IsIterable and not this.IsString:
-			for thingIndex in r(this.Value):
-					thing = this.Value[thingIndex].__repr__()
-					# if type(thing).find("__main__.") != -1:
-							# TypeMsg = f"{type(thing)}".split("__main__.")[1]
-					# else:
-					TypeMsg = f'{type(thing)}'.split('\'')[1]
-					if this.PrintMutipleLines:
-							msg += f"{thingIndex} : {TypeMsg} : {thing}\n"
-					else:
-							msg += f"{TypeMsg}: {thing}, "
-			msg = msg[:-1]
-		else:
-			# if f"{type(this.Value)}".find("__main__.") != -1:
-					# TypeMsg = f"{type(this.Value)}".split("__main__.")[1][:-2]
-			# else:
-			TypeMsg = f'{this.Type}'.split('\'')[1]
-			if this.IsString:
-					msg+=f"{TypeMsg} : {''.join(this.Value)}"
-			else:
-					msg += f"{TypeMsg} : {this.Value}"
-
-		return msg
-
-	# magic methods done
-	# complex methods start
-
-	def split(this, string:str=None) -> any:
-		if type(string) == var:string = string.Value
-		if string == None:
-			ret = this.Value.split()
-		else:
-			ret = this.Value.split(string)
-		return ret
-
-	def join(this, string:str or var) -> str:
-		if type(string) == var:string = string.Value
-		ret = ""
-		if this.IsIterable:
-			for thing in this.Value:
-					if type(thing) == var:
-							ret+=f"{string}{thing.Value}"
-					else:
-							ret+=f"{string}{thing}"
-
-			return ret[len(string):]
-		else:
-			raise TypeError(f"\n{var} is not iterable")
-
-	def SplitBracket(this, bracket, ClosingBracket="default") -> list[str]:
-		if type(bracket) == var:bracket = bracket.Value
-		if type(ClosingBracket) == var:ClosingBracket = ClosingBracket.Value
-
-		if ClosingBracket == "default":
-			ret = SplitBracket(this.Value, bracket)
-		else:
-			ret = SplitBracket(this.Value, bracket, ClosingBracket)
-		if type(ret)!=var:
-			ret = ret
-		return ret
-
-	def keys(this) -> list:
-		return list(this.Value.keys())
-
-	def index(this, content:object) -> int:
-		ret = None
-		if this.IsIterable:
-			ret = this.Value.index(content)
-		elif this.IsDict:
-			mkdict = {}
-			for i in this.keys():
-					mkdict[this[i]] = i
-			ret = mkdict[content]
-
-		else:
-			raise TypeError(f"{this} is not iterable or dictionary")
-		return ret
-
-	def pop(this, index) -> any:
-		if this.IsString:
-			char = this.Value[index]
-			if index == -1:
-					this.Value = this.Value[:-1]
-			else:
-					this.Value = this.Value[index+1:]+this.Value[:index]
-			return char
-		else:
-			return this.Value.pop(index)
-
-	def remove(this, content):
-		this.Value.remove(this)
-
-	# that's not how u do it right?
-	# def copy(this) -> :
-		# return var(this.Value, PrintMutipleLines=this.PrintMutipleLines)
-
-	def find(this, string:str) -> int:
-		return this.Value.find(string)
-
-	# complex methods done
-
 class BDP:
 	def __init__(this, name, autoload = True, IgnoreDataSize = False):
 		# for unix like system
@@ -1076,7 +731,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py")
 			return f"name: {this.name}\ndata: {this.data}"
 		else:
 			return f"name: {this.name}\n{COLOR.orange}data too big to display\n\
-BDP(IgnoreDataSize=True) to ignore size{color.nc}"
+BDP(IgnoreDataSize=True) to ignore size{COLOR.nc}"
 
 	def __call__(this, data=None) -> any: # this breaks occasionaly
 
@@ -1217,7 +872,7 @@ def DeepSum(args, ParseStringWith=eval, ParseString=False, ReturnDeeph=False) ->
 			else:
 					# breaks because found string
 					raise TypeError("\n%sERROR IN \"DeepSum\" function%s\n\
-value %s is of type string (and ParseString = False)" %  (color['br red'], color["nc"], repr(thing)))
+value %s is of type string (and ParseString = False)" %  (COLOR.BrRed, COLOR.nc, repr(thing)))
 		else:
 			# recourciveness (it that a word?)
 			deeph-=1
@@ -1286,16 +941,16 @@ def compare(*timest:tuple[list[int]]) -> str:
 
 	for i in r(times):
 		time = times[i]
-		ThisColor = color["red"] if time-avg > 0 else color["green"]
+		ThisColor = COLOR.red if time-avg > 0 else COLOR.green
 
 		PoM = ('' if (time-avg) < 0 else '+') + str(round(time-avg, sep-1))
 
-		prt = f"{i} : {color['magenta']}{' '*(sep-len(str(time)))}{time}{color['nc']} | {ThisColor}{PoM}"
+		prt = f"{i} : {COLOR.magenta}{' '*(sep-len(str(time)))}{time}{COLOR.nc} | {ThisColor}{PoM}"
 
-		ret+=prt+color["nc"]+"\n"
+		ret+=prt+COLOR.nc+"\n"
 	return ret
 
-def graphics(*intst:list[int], UnderAvg = color["red"], OverAvg = color["green"]) -> list[str]:
+def graphics(*intst:list[int], UnderAvg = COLOR.red, OverAvg = COLOR.green) -> list[str]:
 	ints:list[int] = SingleList(list(intst))
 
 	avg = average(ints)
@@ -1325,7 +980,7 @@ def graphics(*intst:list[int], UnderAvg = color["red"], OverAvg = color["green"]
 
 		l+=t[6]*fulls
 		l+=t[scale%6]
-		l+=color["nc"]
+		l+=COLOR.nc
 		ManysGraph.append(l)
 
 	return ManysGraph
@@ -1368,7 +1023,7 @@ def ppos(y, x):
 	sout.write("\x1B[%i;%iH" % (y+1, x+1))
 	sout.flush()
 
-def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color["nc"]):
+def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
 	if GetTerminalY == "default":
 		x, _ = GetTerminalSize()
 	else:
@@ -1376,7 +1031,7 @@ def ClearLine(y, GetTerminalY="default", char=' ', start=color["nc"], end=color[
 	sout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
 	sout.flush()
 
-def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=color["nc"]):
+def ClearCollum(x, GetTerminalX="default", char=' ', start=COLOR.nc, end=COLOR.nc):
 	if GetTerminalX == "default":
 		_, y = GetTerminalSize()
 	else:
@@ -1385,23 +1040,23 @@ def ClearCollum(x, GetTerminalX="default", char=' ', start=color["nc"], end=colo
 		sout.write("%s" % (start + pos(i, x) + char + end))
 	sout.flush()
 
-def DrawHLine(x, XTo, y, color, char = ' '):
+def DrawHLine(x, XTo, y, Color, char = ' '):
 	ps = pos(y, x)
 	_x, _y = GetTerminalSize()
 	len = (XTo-x)+1
-	sout.write(ps + color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
+	sout.write(ps + Color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
 	sout.flush()
 
 def DrawVLine(y, YTO, x, colo, char = ' '):
 	for i in range(0, YTO+1)[y:]:
-		sout.write("%s" % pos(i, x) + colo + char + color["nc"])
+		sout.write("%s" % pos(i, x) + colo + char + COLOR.nc)
 	sout.flush()
 
 def DrawSpot(y, x, char):
 	sout.write(pos(y,x) + char)
 
-def ColorSpot(y, x, color):
-	sout.write(pos(y, x)+color+' '+COLOR.nc)
+def ColorSpot(y, x, Color):
+	sout.write(pos(y, x)+Color+' '+COLOR.nc)
 
 def HideCursor():
 	sout.write("\x1b[?25l")
@@ -1514,7 +1169,7 @@ class TextBox:
 		if this.DoClear:
 			clear()
 		if this.DrawRect:
-			DrawRectangle((0, this.VSize-3), (this.HSize-1, this.VSize), BkColor=color['bk grey'])
+			DrawRectangle((0, this.VSize-3), (this.HSize-1, this.VSize), BkColor=COLOR.BkGrey)
 		char=''
 
 		# chars = []
@@ -1537,10 +1192,10 @@ class TextBox:
 # {not (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar)}")
 
 			if this.DrawRect:
-				sout.write(f"{pos(this.VSize-2, 1)}{color['nc']}{this.STRING}")
+				sout.write(f"{pos(this.VSize-2, 1)}{COLOR.nc}{this.STRING}")
 				sout.write(pos(this.VSize-2, this.CURSOR+2))
 			else:
-				sout.write(f"{pos(this.VSize-1, 1)}{color['nc']}{this.STRING}")
+				sout.write(f"{pos(this.VSize-1, 1)}{COLOR.nc}{this.STRING}")
 				sout.write(pos(this.VSize-1, this.CURSOR+2))
 
 			sout.flush()
@@ -1740,21 +1395,21 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 				raise ValueError(f"y {y} is smaller then window's y size {this.MinY}")
 		ClearLine(y,char=char, start=start,end=end)
 
-	def DrawOutline(this, color=-1):
-		if color == -1:
-			color = this.BorderColor
+	def DrawOutline(this, Color=-1):
+		if Color == -1:
+			Color = this.BorderColor
 		#def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 		#DrawBottom, DrawTop, DrawLeft, DrawRigh
 		x1, y1 = this.MinX-1, this.MinY-1
 		x2, y2 = this.MaxX, this.MaxY+1 # may do -1 @ MaxX
 		if this.DrawBottom:
-			DrawHLine(x1, x2, y2, color) # bottom
+			DrawHLine(x1, x2, y2, Color) # bottom
 		if this.DrawTop:
-			DrawHLine(x1, x2, y1, color) # top
+			DrawHLine(x1, x2, y1, Color) # top
 		if this.DrawLeft:
-			DrawVLine(y1, y2, x1, color) # left
+			DrawVLine(y1, y2, x1, Color) # left
 		if this.DrawRight:
-			DrawVLine(y1, y2, x2, color) # right
+			DrawVLine(y1, y2, x2, Color) # right
 
 		#DtrawRectangle(
 		#	(this.MinX-1, this.MinY-1),
@@ -1762,12 +1417,12 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		#	COLOR.BkDarkGrey
 		#)
 
-	def DrawBorder(this, color=-1):
-		if color == -1:
-			color = this.BorderColor
+	def DrawBorder(this, Color=-1):
+		if Color == -1:
+			Color = this.BorderColor
 		this.DrawedBorder = True
 		DrawRectangle((this.MinX,this.MinY),
-		(this.XDif,this.YDif), color)
+		(this.XDif,this.YDif), Color)
 
 	def move(this, y, x, relative = True):
 		if relative:
@@ -2248,19 +1903,13 @@ class noc:pass
 ARGV = ArgvAssing(argv[1:])
 
 if __name__=="__main__":
-	for i in get('-r').list:
+	for i in get('-r', '-c').list:
 		exec(i)
-	for i in get('-e', '-c').list:
+	for i in get('-e').list:
 		print(eval(i))
 
-#TODO update EOF list
 # funcs/classes
 """
-#OS FUNCS
-funct notify
-funct GetCh
-#FUNCS/CLASSES
-class time
 const time
 class log
 funct r
@@ -2277,17 +1926,17 @@ funct json
 funct GetInt
 funct GetFloat
 funct IsPrime
-funct case
 funct fib
 class rng
 funct print
 funct printl
 funct prints
+funct sprint
 funct input
-funct index
 funct GCH
 class COLOR
 funct SetColorMode
+funct AddStr
 funct PascalCase
 funct attrs
 funct SplitBracket
@@ -2297,14 +1946,11 @@ funct near
 funct rsymb
 funct rchar
 funct GetWLen
-funct CallWExcept
 funct count
 funct timeit
 funct mmc
 const lcm
 funct factorial
-funct ArgvAssing
-funct argv_assing
 funct exit
 funct between
 funct ls
@@ -2315,7 +1961,6 @@ funct ORGroups
 funct XORGroups
 funct NOTGroups
 class code
-class var
 class BDP
 funct NumberToExponent
 funct rbool
@@ -2325,8 +1970,7 @@ funct EncryptS
 funct DecryptS
 funct AdvEncryptS
 funct AdvDecryptS
-funct PosOrNeg
-funct odd
+const PosOrNeg
 funct numbers
 funct ShowTextGif
 funct JustDecimal
@@ -2349,6 +1993,8 @@ funct ClearLine
 funct ClearCollum
 funct DrawHLine
 funct DrawVLine
+funct DrawSpot
+funct ColorSpot
 funct HideCursor
 funct ShowCursor
 funct DrawRectangle
@@ -2356,7 +2002,6 @@ funct ReplaceStringByIndex
 class TextBox
 funct GetPrimeFactors
 class FancyIOStream
-const ARGV
 class get
 funct RmDir
 funct TrimSpaces
@@ -2365,16 +2010,30 @@ funct ReplaceAll
 funct MakeString
 funct IsListSorted
 class window
+const AvoidDrawedinBorder
 funct TestAll
 funct TestAny
-funct Getquadrant
-class _AdvTextBox
+funct GetQuadrant
+funct CursorMode
 funct AdvTextBox
+funct RGB
+funct ArgvAssing
+funct eprint
+funct distance
+funct DoAll
+class Filer
+funct IsLeapYear
+funct debugp
 funct sprintf
 funct printf
 funct words
 funct unwords
-#CONSTS
+funct IsBitSet
+funct NewOdd
+funct NewEven
+funct BinarySearch
+const true
+const false
 const USER
 funct nop
 const FuncType
@@ -2382,6 +2041,19 @@ const NoneType
 const ModuleType
 const iterables
 const infinity
-class noc
+class nocpass
 const ARGV
+class time
+class log
+class timer
+class rng
+class COLOR
+class code
+class var
+class BDP
+class TextBox
+class FancyIOStream
+class get
+class window
+class noc
 """
