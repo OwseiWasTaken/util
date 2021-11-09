@@ -1,4 +1,4 @@
-#! /usr/bin/python3.10
+#! /usr/bin/python3.9
 #TODO tests dir
 # _ prefixed imports
 #(IMPORTS
@@ -12,7 +12,7 @@ from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
-from typing import Callable, Any
+from typing import Callable, Any, Union
 from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
@@ -199,7 +199,7 @@ class timer:
 	def __repr__(this) -> str:
 		return f'{this.get}'
 
-def MakeDict(ls1:list | tuple, ls2:list | tuple) -> dict:
+def MakeDict(ls1:Union[list, tuple], ls2:Union[list, tuple]) -> dict:
 	ls1=list(ls1)
 	ls2=list(ls2)
 	ret = {x:y for x, y in zip(list(ls1), list(ls2))}
@@ -223,7 +223,7 @@ def even(var:int) -> bool:
 def odd(var:int) -> bool:
 	return not not var%2
 
-def lst1(lst:list | tuple):
+def lst1(lst:Union[list, tuple]):
 	if len(lst) == 1:
 		return lst[0]
 	elif not len(lst):
@@ -248,7 +248,7 @@ def UseFile(file: str, obj = None):
 		_PickleDump(obj, open(file, 'wb'))
 		return None
 
-def json(file:str, obj:object=None) -> dict | None:
+def json(file:str, obj:object=None) -> Union[dict, None]:
 	if obj == None:
 		return _JsonLoad(open(file, 'r'))
 	else:
@@ -448,7 +448,7 @@ def SetColorMode(Color:str, mode:str) -> str:
 	Color = ''.join(Colorl)
 	return Color
 
-def AddStr(Color:str, mode:str | int, string:str):
+def AddStr(Color:str, mode:Union[str, int], string:str):
 	if type(mode) == int:mode = str(mode)
 
 def PascalCase(string, remove=' ') -> str:
@@ -498,13 +498,13 @@ def bhask(a, b, c) -> tuple[int]:
 	return x, y
 
 def near(base:
-		float | int,
+		Union[float, int],
 		num:
-		float | int,
+		Union[float, int],
 		DifUp:
-		float | int,
+		Union[float, int],
 		DifDown:
-		float | int
+		Union[float, int]
 		=0) -> bool:
 	if not DifDown:
 		DifDown = DifUp
@@ -628,14 +628,14 @@ def ANDGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set o
 	return Gret
 
 def ORGroups( g1:
-		list | tuple | set | frozenset, g2:
-		list | tuple | set | frozenset) -> set:
+		Union[list, tuple, set, frozenset], g2:
+		Union[list, tuple, set, frozenset]) -> set:
 	Gret = set((*g1, *g2))
 	return Gret
 
 def XORGroups( g1:
-		list | tuple | set | frozenset, g2:
-		list | tuple | set | frozenset) -> set:
+		Union[list, tuple, set, frozenset], g2:
+		Union[list, tuple, set, frozenset]) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gall = *g1, *g2
@@ -646,8 +646,8 @@ def XORGroups( g1:
 	return Gret
 
 def NOTGroups( g1:
-		list | tuple | set | frozenset, g2:
-		list | tuple | set | frozenset) -> set:
+		Union[list, tuple, set, frozenset], g2:
+		Union[list, tuple, set, frozenset]) -> set:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gret = set()
@@ -1122,13 +1122,6 @@ class TextBox:
 				if this.CURSOR >= len(this.STRING): # if cursor if off screen get it back
 					this.CURSOR-=1
 
-				# strg = this.STRING.strip()
-				# if len(strg)-1 <= this.CURSOR:
-					# strg = this.STRING[:this.CURSOR]
-				# ClearLine(1)
-				# sout.write(f"{pos(1, 1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
-				# if not len(strg)-1 == this.CURSOR: # place not replace
-
 				if this.STRING[-1] == ' ': # move string right to add char to CURSOR's spot
 					this.STRING = list(this.STRING)[:-1]
 					this.STRING.insert(this.CURSOR, char)
@@ -1222,7 +1215,7 @@ class get:
 		return this.list[index]
 
 	def _get(this) -> list:
-		ret:list[list[str] | str | bool | None] = []
+		ret:list[Union[list[str], str, bool, None]] = []
 		other:list[str] = []
 		this.argvs
 
@@ -1698,12 +1691,12 @@ tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x
 def RGB(r,g,b):
 	return "\x1b[38;2;%s;%s;%sm" % (r,g,b)
 
-def ArgvAssing(args:list[str]) -> dict[None | str, list[str]]: # omfg it's so much better
+def ArgvAssing(args:list[str]) -> dict[Union[None, str], list[str]]: # omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
 	# items that start with '-' will be a key, the rest wil be values
 	# items that start with "/-" will be values, but the starting '/' will be removed
-	ret:dict[None | str, list[str]] = {None:[]}
+	ret:dict[Union[None, str], list[str]] = {None:[]}
 	now = None
 	for arg in args:
 		if arg[0] == '-':
