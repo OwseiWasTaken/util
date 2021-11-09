@@ -1,12 +1,13 @@
 #! /usr/local/bin/python3.10
+#TODO tests dir
 # _ prefixed imports
+#(IMPORTS
 from time import strftime as __ftime__
 from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
 from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
 
 import re
-# https://regex101.com/
 from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
@@ -15,9 +16,13 @@ from typing import Callable, Any
 from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
+#)IMPORTS
+# https://regex101.com/
 
-# this is a general python lib that aims to make fast (fast as in python)
-# functions and usefull constants
+#(LICENSE
+# this is a general python lib that aims to make fast (fast as in python fast)
+# usefull functions, classes and constants, such as IsBitSet, get class, USER
+# const and other things
 # 2021, by Pedro "owsei" Romero Manse
 
 # This program is free software; you can redistribute it and/or modify
@@ -28,11 +33,13 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License (the LICENSE.txt file)
+# You should have received a copy of the GNU General Public License
 # along with this program; if not get it here
+#)LICENSE
 
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
+#(STUFF
 # OS especific func
 if OS in ["linux", "macos"]: # TODO is it "macos"?
 	# it MAY work in windows, not sure tho
@@ -803,7 +810,7 @@ def numbers(times, nums=0) -> int:
 	return eval(f'[{nums}'+f", {nums}"*(times-1)+']')
 
 def ShowTextGif(sprites, SleepTime=0.35, times=-1):
-#if times is negative the loop won't stop || if times = 0, it will be len(sprites)
+	#if times is negative the loop won't stop || if times = 0, it will be len(sprites)
 	if times == 0:
 		times = len(sprites)
 	if times < 0:
@@ -912,7 +919,7 @@ def mid(msg, LenToBe, CanDeleteEnd=True, AddFront=' ', AddAfter=' ', DoToFront="
 	return msg
 
 def IsIterable(obj:object) -> bool:
-	return type(obj) in iterables
+	return type(obj) in Iterables
 
 def SingleList(args:list[...]) -> list[float or int or str or object]:
 	ret = []
@@ -985,37 +992,6 @@ def graphics(*intst:list[int], UnderAvg = COLOR.red, OverAvg = COLOR.green) -> l
 
 	return ManysGraph
 
-# def CharConverter(Chars:list[str]) -> str:
-#	ch = Chars.pop(0)
-
-#	# return None in in esc seq
-#	if ch == '\x1b':return None
-#	elif ch == '[' and Chars[0] == '\x1b':return None
-
-#	Chars = ''.join(Chars)
-#	if Chars == '\x1b[':
-#		ch = {
-#			'A':"UP",
-#			'B':"DOWN",
-#			'C':"RIGHT",
-#			'D':"LEFT",
-#		}.get(ch)
-#	elif Chars == '\x1b[1;5':
-#		ch = {
-#			'A':"CTRL UP",
-#			'B':"CTRL DOWN",
-#			'C':"CTRL RIGHT",
-#			'D':"CTRL LEFT",
-#		}.get(ch)
-#	elif Chars == '\x1b[1;2':
-#		ch = {
-#			'A':"SHIFT UP",
-#			'B':"SHIFT DOWN",
-#			'C':"SHIFT RIGHT",
-#			'D':"SHIFT LEFT",
-#		}.get(ch)
-#	return ch
-
 def pos(y:int, x=0) -> str:
 	return "\x1B[%i;%iH" % (y+1, x+1)
 
@@ -1084,7 +1060,6 @@ def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 	DrawHLine(x1, x2, y1, BkColor)
 	DrawHLine(x1, x2, y2, BkColor)
 
-#can also be used as RemoveStringByIndex if result:str = ''
 def ReplaceStringByIndex(string:str, index:int, result:str) -> str:
 	return string[:index] + result + string[index+1:]
 
@@ -1187,9 +1162,6 @@ class TextBox:
 			# sout.write(f"{pos(1, 1)}{chars}")
 			# ClearLine(4)
 			# sout.write(f"{pos(4, 4)} \
-# {this.CURSOR == len(this.STRING)-2} { this.IsOverChar}|\
-# {this.CURSOR == len(this.STRING)-2 or this.IsOverChar}|\
-# {not (not this.CURSOR == len(this.STRING)-2 or not this.IsOverChar)}")
 
 			if this.DrawRect:
 				sout.write(f"{pos(this.VSize-2, 1)}{COLOR.nc}{this.STRING}")
@@ -1214,20 +1186,18 @@ def GetPrimeFactors(number:int) -> list[int]:
 			factor+=1
 	return ret
 
-class FancyIOStream:
+class OStream:
+	def __init__(this, OutHandler=sout):
+		this.out = OutHandler
 	def __lshift__(this, msg:str):
-		sout.write(msg)
-
-		if '\n' in msg:
-			sout.flush()
-		return this
+		return (this, this.out.write("%s"%msg))[0]
 
 class get:
 	def __init__(this, *gets, argvs=None):
+		if not gets:gets = [None]
 		gets = list(gets)
-		if gets == [""]:
-			gets = [None]
 		for index in r(gets):
+			if gets[index] == "":gets[index]=None
 			if type(gets[index]) != NoneType and gets[index][0] != '-':
 				gets[index] = '-'+gets[index]
 		if argvs == None:
@@ -1717,10 +1687,10 @@ class _AdvTextBox:
 		ret = 1
 		return ret
 
-# drawsides = (bottom, top, left, right)
 def AdvTextBox(
 tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x, UpperMode = False, CustomStatusBar = False
 ):
+	# drawsides = (bottom, top, left, right)
 	if type(content) == str:
 		content = [content]
 	return _AdvTextBox(tl, br, content, DrawSides, update, UpperMode, CustomStatusBar)()
@@ -1731,7 +1701,6 @@ def RGB(r,g,b):
 def ArgvAssing(args:list[str]) -> dict[None | str, list[str]]: # omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
-#None: [], '-d': ['4', 'u', 'j', '-3'], '-4': ['f'], '-f': []}
 	# items that start with '-' will be a key, the rest wil be values
 	# items that start with "/-" will be values, but the starting '/' will be removed
 	ret:dict[None | str, list[str]] = {None:[]}
@@ -1834,6 +1803,8 @@ def sprintf(string, *stuff, HideErrors=True):
 	# different to c's sprintf the template doesn't show what the var is
 	# it shows what you want the var to be and sprintf will try to convert it
 	ToReplace = __sprintf_regex.findall(string)
+	assert len(ToReplace) == len(stuff), sprintf(
+"miss matched string template and value replacer len {i} != {i}", len(ToReplace), len(stuff))
 	if len(ToReplace) == len(stuff) or HideErrors:
 		for i in r(ToReplace):
 			if len(stuff) > i:
@@ -1892,24 +1863,33 @@ def BinarySearch(lst:list[int], item:list[int]) -> int:
 			left = mid + 1
 	return -1
 
-# consts
+#)STUFF
+
+#(CONSTS
 true = True
 false = False
 USER = _getlogin()
-def nop(*a, **b):pass
+def nop(*a, **b):
+	pass
 FuncType = type(nop)
 NoneType = type(None)
 ModuleType = type(re)
-iterables = [list, set, frozenset]
-infinity = float("inf")
-class noc:pass
+Iterables = [list, set, frozenset]
+Infinity = float("inf")
+class noc:
+	pass
 ARGV = ArgvAssing(argv[1:])
+Endl = "\n"
+#)CONSTS
 
+#(CLI
 if __name__=="__main__":
-	for i in get('-r', '-c').list:
+	for i in get("-r", "-c").list:
 		exec(i)
-	for i in get('-e').list:
+	for i in get("-e", "").list:
 		print(eval(i))
+#)CLI
+#!END
 
 # funcs/classes
 """
@@ -2004,7 +1984,7 @@ funct DrawRectangle
 funct ReplaceStringByIndex
 class TextBox
 funct GetPrimeFactors
-class FancyIOStream
+class OStream
 class get
 funct RmDir
 funct TrimSpaces
@@ -2042,8 +2022,8 @@ funct nop
 const FuncType
 const NoneType
 const ModuleType
-const iterables
-const infinity
+const Iterables
+const Infinity
 class nocpass
 const ARGV
 class time
@@ -2052,11 +2032,10 @@ class timer
 class rng
 class COLOR
 class code
-class var
 class BDP
 class TextBox
-class FancyIOStream
 class get
 class window
 class noc
+const Endl
 """
