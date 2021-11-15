@@ -405,12 +405,12 @@ class COLOR:
 	red				=			"\033[0;31m"
 	green			=			"\033[0;32m"
 	magenta			=			"\033[0;35m"
-	blue			=			"\033[0;36m"
+	blue			=			"\033[0;34m"
+	cyan			=			"\033[0;36m"
 	white			=			"\033[0;37m"
 	GreenishCyan	=			"\033[0;96m" #kinda too complex ()
 	orange			=			"\033[0;33m" #bruh
 	#orange			=			"\033[0;91m" # bruh
-	cyan			=			"\033[0;34m"
 
 	DarkBlue		=			"\033[0;94m"
 
@@ -440,11 +440,12 @@ class COLOR:
 	BkBrOrange		=			"\033[0;103m"
 	BkBrGrey		=			"\033[0;105m"
 
-# modes: 0:normal, 1:bold, 2:dark, 3:italics, 4:underline, 5:blinking, 7:bkground, 8:hidden
-def SetColorMode(Color:str, mode:str) -> str:
+# modes: 1:light, 2:dim, 3:italics, 4:underline, 5:blink
+# 7:bkground, 8:hidden, 9: crossed
+def SetColorMode(Color:str, mode:str | int) -> str:
 	index = Color.find('[')+1
 	Colorl = list(Color)
-	Colorl[index] = mode
+	Colorl[index] = str(mode)
 	Color = ''.join(Colorl)
 	return Color
 
