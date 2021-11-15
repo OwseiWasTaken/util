@@ -1,5 +1,4 @@
 #! /usr/bin/python3.10
-#TODO tests dir
 # _ prefixed imports
 #(IMPORTS
 from time import strftime as __ftime__
@@ -1894,149 +1893,138 @@ if __name__=="__main__":
 
 # funcs/classes
 """
-const time
-class log
-funct r
-class timer
-funct MakeDict
-funct sleep
-funct pc
-funct even
-funct odd
-funct lst1
-funct RngNoRepetition
-funct UseFile
-funct json
-funct GetInt
-funct GetFloat
-funct IsPrime
-funct fib
-class rng
-funct print
-funct printl
-funct prints
-funct sprint
-funct input
-funct GCH
-class COLOR
-funct SetColorMode
-funct AddStr
-funct PascalCase
-funct attrs
-funct SplitBracket
-funct StrToMs
-funct bhask
-funct near
-funct rsymb
-funct rchar
-funct GetWLen
-funct count
-funct timeit
-funct mmc
-const lcm
-funct factorial
-funct exit
-funct between
-funct ls
-funct rstr
-funct clear
-funct ANDGroups
-funct ORGroups
-funct XORGroups
-funct NOTGroups
-class code
-class BDP
-funct NumberToExponent
-funct rbool
-funct rcase
-funct invert
-funct EncryptS
-funct DecryptS
-funct AdvEncryptS
-funct AdvDecryptS
-const PosOrNeg
-funct numbers
-funct ShowTextGif
-funct JustDecimal
-funct NoDecimal
-funct number
-funct TimesInNumber
-funct NumSum
-funct FindAll
-funct DeepSum
-funct average
-funct mid
-funct IsIterable
-funct SingleList
-funct BiggestLen
-funct compare
-funct graphics
-funct pos
-funct ppos
-funct ClearLine
-funct ClearCollum
-funct DrawHLine
-funct DrawVLine
-funct DrawSpot
-funct ColorSpot
-funct HideCursor
-funct ShowCursor
-funct DrawRectangle
-funct ReplaceStringByIndex
-class TextBox
-funct GetPrimeFactors
-class OStream
-class get
-funct RmDir
-funct TrimSpaces
-funct Hamiltons
-funct ReplaceAll
-funct MakeString
-funct IsListSorted
-class window
-const AvoidDrawedinBorder
-funct TestAll
-funct TestAny
-funct GetQuadrant
-funct CursorMode
-funct AdvTextBox
-funct RGB
-funct ArgvAssing
-funct eprint
-funct distance
-funct DoAll
-class Filer
-funct IsLeapYear
-funct debugp
-funct sprintf
-funct printf
-funct words
-funct unwords
-funct IsBitSet
-funct NewOdd
-funct NewEven
-funct BinarySearch
-const true
-const false
-const USER
-funct nop
-const FuncType
-const NoneType
-const ModuleType
-const Iterables
-const Infinity
-class nocpass
-const ARGV
-class time
-class log
-class timer
-class rng
-class COLOR
-class code
-class BDP
-class TextBox
-class get
-class window
-class noc
-const Endl
+include time
+include json
+include pickle
+include os
+include re
+include functools
+include numpy
+include time
+include os.path
+include typing
+include random
+include os
+include sys
+def cls log
+def fct r
+def cls timer
+def fct MakeDict
+def fct sleep
+def fct pc
+def fct even
+def fct odd
+def fct lst1
+def fct RngNoRepetition
+def fct UseFile
+def fct json
+def fct GetInt
+def fct GetFloat
+def fct IsPrime
+def fct fib
+def cls rng
+def fct print
+def fct printl
+def fct prints
+def fct sprint
+def fct input
+def fct GCH
+def cls COLOR
+def fct SetColorMode
+def fct AddStr
+def fct PascalCase
+def fct attrs
+def fct SplitBracket
+def fct StrToMs
+def fct bhask
+def fct near
+def fct rsymb
+def fct rchar
+def fct GetWLen
+def fct count
+def fct timeit
+def fct mmc
+def fct factorial
+def fct exit
+def fct between
+def fct ls
+def fct rstr
+def fct clear
+def fct ANDGroups
+def fct ORGroups
+def fct XORGroups
+def fct NOTGroups
+def cls code
+def cls BDP
+def fct NumberToExponent
+def fct rbool
+def fct rcase
+def fct invert
+def fct EncryptS
+def fct DecryptS
+def fct AdvEncryptS
+def fct AdvDecryptS
+def fct numbers
+def fct ShowTextGif
+def fct JustDecimal
+def fct NoDecimal
+def fct number
+def fct TimesInNumber
+def fct NumSum
+def fct FindAll
+def fct DeepSum
+def fct average
+def fct mid
+def fct IsIterable
+def fct SingleList
+def fct BiggestLen
+def fct compare
+def fct graphics
+def fct pos
+def fct ppos
+def fct ClearLine
+def fct ClearCollum
+def fct DrawHLine
+def fct DrawVLine
+def fct DrawSpot
+def fct ColorSpot
+def fct HideCursor
+def fct ShowCursor
+def fct DrawRectangle
+def fct ReplaceStringByIndex
+def cls TextBox
+def fct GetPrimeFactors
+def cls OStream
+def cls get
+def fct RmDir
+def fct TrimSpaces
+def fct Hamiltons
+def fct ReplaceAll
+def fct MakeString
+def fct IsListSorted
+def cls window
+def fct TestAll
+def fct TestAny
+def fct GetQuadrant
+def fct CursorMode
+def fct AdvTextBox
+def fct RGB
+def fct ArgvAssing
+def fct eprint
+def fct distance
+def fct DoAll
+def cls Filer
+def fct IsLeapYear
+def fct debugp
+def fct sprintf
+def fct printf
+def fct fprintf
+def fct words
+def fct unwords
+def fct IsBitSet
+def fct NewOdd
+def fct NewEven
+def fct BinarySearch
+def fct nop
+def cls noc
 """

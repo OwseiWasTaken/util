@@ -48,7 +48,7 @@ def Main() -> int:
 				labels[now].append(ln(index, Type_Import, line[fs+1:ss]))
 	lk = list(labels.keys())
 
-	if get("--help", '-h').exists or not get().list:
+	if get("--help", '-h').exists or not get().list or not get("--defs").exists:
 		printf("0 : No Label\n")
 		for i in r(labels.keys()):
 			key = lk[i]
@@ -75,7 +75,17 @@ def Main() -> int:
 				fprintf(out, l.Text+'\n')
 		if outfile:
 			out.close()
-	tosave = labels["STUFF"] + labels["CONSTS"]
+	tosave = labels["IMPORTS"] + labels["STUFF"] + labels["CONSTS"]
+	if get('--defs').exists:
+		for _ in tosave:
+			if _.Text[0] != '_':
+				tp = _.Type
+				if tp == Type_Import:
+					printf("include {s}\n", _.Text)
+				elif tp == Type_Class:
+					printf("def cls {s}\n", _.Text.removesuffix(':'))
+				elif tp == Type_Func:
+					printf("def fct {s}\n", _.Text)
 	#TODO modiffs (--comments, --imports ...)
 	#TODO replace indexes ( --STUFF -> {stuff's lk index}, --LICENSE -> ...)
 
