@@ -70,7 +70,7 @@ else:
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
 	import msvcrt
 	def GetCh() -> str:
-		char = ""
+		char = msvcrt.getch()
 		while msvcrt.kbhit():
 			char+=msvcrt.getch()
 		return char
