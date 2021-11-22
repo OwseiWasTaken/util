@@ -1878,6 +1878,9 @@ Iterables = [list, set, frozenset]
 Infinity = float("inf")
 class noc:
 	pass
+class _:
+	def _():pass
+MethodType = type(_._)
 ARGV = ArgvAssing(argv[1:])
 Endl = "\n"
 #)CONSTS
