@@ -15,6 +15,7 @@ from typing import Callable, Any
 from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
+from sys import stdout, stdin, stderr
 #)IMPORTS
 # https://regex101.com/
 
@@ -102,7 +103,9 @@ class __time:
 time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, stream = open("log", 'w'), autosave = False):
+	def __init__(this, sep=', ', tm=True, stream = "log", autosave = False):
+		if type(stream) == str:
+			stream = open(stream, 'w')
 		this.autosave:bool = autosave
 		this.tm:bool = tm
 		this.sep:str= sep
