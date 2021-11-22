@@ -1896,6 +1896,17 @@ if __name__=="__main__":
 
 # funcs/classes
 """
+constdf USER
+constdf nop
+constdf FuncType
+constdf NoneType
+constdf ModuleType
+constdf Iterables
+constdf Infinity
+constdf noc
+constdf MethodType
+constdf ARGV
+constdf Endl
 include time
 include json
 include pickle
@@ -2028,6 +2039,4 @@ def fct IsBitSet
 def fct NewOdd
 def fct NewEven
 def fct BinarySearch
-def fct nop
-def cls noc
 """
