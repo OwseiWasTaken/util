@@ -102,14 +102,12 @@ class __time:
 time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = False, autosave = False):
-		this.tm = tm
-		this.autosave = autosave
-		this.sep = sep
+	def __init__(this, sep=', ', tm=True, file="log", autosave = False):
+		this.tm:bool = tm
+		this.sep:bool = sep
+		this.file:str = file
 		this.LOG:list[str] = []
-		if ShowCreated == True:
-			this.add('the log was created')
-		this.file = file
+		this.autosave:bool = autosave
 
 	def clear(this):
 		this.LOG = []
