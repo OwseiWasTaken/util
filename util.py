@@ -102,12 +102,12 @@ class __time:
 time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log", autosave = False):
-		this.tm:bool = tm
-		this.sep:bool = sep
-		this.file:str = file
-		this.LOG:list[str] = []
+	def __init__(this, sep=', ', tm=True, stream = open("log", 'w'), autosave = False):
 		this.autosave:bool = autosave
+		this.tm:bool = tm
+		this.sep:str= sep
+		this.stream :str = stream
+		this.LOG:list[str] = []
 
 	def clear(this):
 		this.LOG = []
@@ -150,9 +150,8 @@ class log:
 			print(i)
 
 	def save(this):
-		with open(this.file, 'w') as SaveFileLog:
-			for i in this.LOG:
-					SaveFileLog.write(f'{i}\n')
+		for i in this.LOG:
+			this.stream.write(f'{i}\n')
 
 def r(end, start:int=0, jmp:int=1):
 	try:

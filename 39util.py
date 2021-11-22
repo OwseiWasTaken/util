@@ -103,14 +103,13 @@ class __time:
 time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, file="log", ShowCreated = False, autosave = False):
-		this.tm = tm
-		this.autosave = autosave
-		this.sep = sep
+	def __init__(this, sep=', ', tm=True, stream = open("log", 'w'), autosave = False, StreamIsFile = True):
+		this.StreamIsFile:bool = StreamIsFile
+		this.autosave:bool = autosave
+		this.tm:bool = tm
+		this.sep:str= sep
+		this.stream = stream
 		this.LOG:list[str] = []
-		if ShowCreated == True:
-			this.add('the log was created')
-		this.file = file
 
 	def clear(this):
 		this.LOG = []
@@ -153,7 +152,7 @@ class log:
 			print(i)
 
 	def save(this):
-		with open(this.file, 'w') as SaveFileLog:
+		with this.strem as SaveFileLog:
 			for i in this.LOG:
 					SaveFileLog.write(f'{i}\n')
 
