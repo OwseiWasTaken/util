@@ -16,6 +16,8 @@ from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 from sys import stdout, stdin, stderr
+from dataclasses import dataclasses
+from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 #)IMPORTS
 # https://regex101.com/
 

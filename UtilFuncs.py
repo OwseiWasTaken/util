@@ -2,18 +2,21 @@
 #imports
 from util import *
 
-Type_Comment = 0
-Type_Func = 1
-Type_Class = 2
-Type_Import = 3
 
+class Type(IntEnum):
+	Comment = iota()
+	Func = iota()
+	Class = iota()
+	Import = iota()
+	Count = iota()
+
+@dataclass
 class ln:
-	def __init__(this, Index:int, Type:int, Text:str):
-		this.Index = Index
-		this.Type = Type
-		this.Text = Text
+	Line:int
+	Type:int # Type.*
+ 	Text:str
 	def __repr__(this):
-		return this.Text
+		return "%d : %s" % (this.Line, this.Text)
 
 #main
 def Main() -> int:
@@ -83,9 +86,9 @@ def Main() -> int:
 				if tp == Type_Import:
 					printf("include {s}\n", _.Text)
 				elif tp == Type_Class:
-					printf("def cls {s}\n", _.Text.removesuffix(':'))
+					printf("def cls {s} @ {i}\n", _.Text.removesuffix(':'), _.Line)
 				elif tp == Type_Func:
-					printf("def fct {s}\n", _.Text)
+					printf("def fct {s} @ {i}\n", _.Text, _.Line)
 	#TODO modiffs (--comments, --imports ...)
 	#TODO replace indexes ( --STUFF -> {stuff's lk index}, --LICENSE -> ...)
 
