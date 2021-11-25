@@ -152,7 +152,7 @@ class log:
 			print(i)
 
 	def save(this):
-		with this.strem as SaveFileLog:
+		with this.stream as SaveFileLog:
 			for i in this.LOG:
 					SaveFileLog.write(f'{i}\n')
 
