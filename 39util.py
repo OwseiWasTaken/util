@@ -19,12 +19,12 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 #)IMPORTS
 # https://regex101.com/
 
-#(LICENSE
 # this is a general python lib that aims to make fast (fast as in python fast)
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
 # const and other things
-# 2021, by Pedro "owsei" Romero Manse
+# 2021, by Pedro "owsei" Manse
 
+#(LICENSE
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 3
@@ -103,12 +103,14 @@ class __time:
 time = __time()
 
 class log:
-	def __init__(this, sep=', ', tm=True, stream = open("log", 'w'), autosave = False, StreamIsFile = True):
-		this.StreamIsFile:bool = StreamIsFile
+	def __init__(this, sep=', ', tm=True, stream = "log", autosave = False):
+		if type(stream) == str:
+			stream = open(stream, 'w')
 		this.autosave:bool = autosave
 		this.tm:bool = tm
 		this.sep:str= sep
 		this.stream = stream
+		this.StreamIsFile = not (stream in [stdout, stderr])
 		this.LOG:list[str] = []
 
 	def clear(this):
@@ -152,9 +154,13 @@ class log:
 			print(i)
 
 	def save(this):
-		with this.stream as SaveFileLog:
+		if this.StreamIsFile:
+			this.stream.truncate()
 			for i in this.LOG:
-					SaveFileLog.write(f'{i}\n')
+					this.stream.write(f'{i}\n')
+		else:
+			for i in this.LOG:
+					this.stream.write(f'{i}\n')
 
 def r(end, start:int=0, jmp:int=1):
 	try:
@@ -1822,6 +1828,9 @@ def printf(string, *stuff, flush = True):
 
 def fprintf(FileHandler, string, *stuff):
 	FileHandler.write(sprintf(string, *stuff))
+
+def fprint(FileHandler, string):
+	FileHandler.write(string)
 
 def words(string: str) -> list[str]:
 	return string.split()

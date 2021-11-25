@@ -110,6 +110,7 @@ class log:
 		this.tm:bool = tm
 		this.sep:str= sep
 		this.stream :str = stream
+		this.StreamIsFile = not (stream in [stdout, stderr])
 		this.LOG:list[str] = []
 
 	def clear(this):
@@ -142,7 +143,9 @@ class log:
 
 	def __call__(this, *ask):this.add(*ask) # defined in __init__
 
-	def __add__(this, *ask):this.add(*ask)# defined in __init__
+	def __add__(this, *ask):
+		this.add(*ask)
+		return this
 
 	def __iter__(this):
 		for i in this():
@@ -153,8 +156,13 @@ class log:
 			print(i)
 
 	def save(this):
-		for i in this.LOG:
-			this.stream.write(f'{i}\n')
+		if this.StreamIsFile:
+			this.stream.truncate()
+			for i in this.LOG:
+					this.stream.write(f'{i}\n')
+		else:
+			for i in this.LOG:
+					this.stream.write(f'{i}\n')
 
 def r(end, start:int=0, jmp:int=1):
 	try:
@@ -1830,6 +1838,9 @@ def printf(string, *stuff, flush = True):
 
 def fprintf(FileHandler, string, *stuff):
 	FileHandler.write(sprintf(string, *stuff))
+
+def fprint(FileHandler, string):
+	FileHandler.write(string)
 
 def words(string: str) -> list[str]:
 	return string.split()
