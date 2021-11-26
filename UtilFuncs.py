@@ -61,13 +61,15 @@ def Main() -> int:
 			if i:
 				printf("{i} : {s}\n", i, key)
 
-	out = sout
+	out = stdout # -o for out file, stdout is default
 	outfile = False
 	if get('-o').exists:
 		outs = get('-o').first
 		outfile = False
-		if outs == "sout":out = sout
-		elif outs in ["eout", "serr"]:out = eout
+		if outs == "stdout":
+			out = stdout
+		elif outs == "stderr":
+			out = stderr
 		else:
 			out = open(outs, 'w')
 			outfile = True
