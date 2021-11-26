@@ -367,31 +367,31 @@ def print(*msg, end='\n', sep=", "):
 
 	# write msg
 	# escrever a msg no terminal
-	sout.write(f'{msg}{end}')
+	stdout.write(f'{msg}{end}')
 
 	# flush msg
 	# escrever o conteúdo do terminal no cmd
-	sout.flush()
+	stdout.flush()
 
 def printl(*msg, sep=", "):
 	# make msg
 	msg = sep.join([str(m) for m in msg])
 
 	# write msg
-	sout.write(f'{msg}')
+	stdout.write(f'{msg}')
 
 	# flush msg
-	sout.flush()
+	stdout.flush()
 
 def prints(*msg, sep=", "):
 	# make msg
 	msg = sep.join([str(m) for m in msg])
 
 	# write msg
-	sout.write(f'{msg}')
+	stdout.write(f'{msg}')
 
 def sprint(msg): # simple print
-	sout.write(msg)
+	stdout.write(msg)
 
 def input(*msg, sep=", "):
 	printl(*msg, sep=sep)
@@ -827,13 +827,13 @@ def ShowTextGif(sprites, SleepTime=0.35, times=-1):
 		while True:
 			for sprite in sprites:
 					clear()
-					sout.write(sprite)
+					stdout.write(sprite)
 					sleep(SleepTime)
 	else:
 		for tick in r(times):
 			for sprite in sprites:
 					clear()
-					sout.write(sprite)
+					stdout.write(sprite)
 					sleep(SleepTime)
 
 def JustDecimal(number:float) -> float:
@@ -1006,16 +1006,16 @@ def pos(y:int, x=0) -> str:
 	return "\x1B[%i;%iH" % (y+1, x+1)
 
 def ppos(y, x):
-	sout.write("\x1B[%i;%iH" % (y+1, x+1))
-	sout.flush()
+	stdout.write("\x1B[%i;%iH" % (y+1, x+1))
+	stdout.flush()
 
 def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
 	if GetTerminalY == "default":
 		x, _ = GetTerminalSize()
 	else:
 		x = GetTerminalY()
-	sout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
-	sout.flush()
+	stdout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
+	stdout.flush()
 
 def ClearCollum(x, GetTerminalX="default", char=' ', start=COLOR.nc, end=COLOR.nc):
 	if GetTerminalX == "default":
@@ -1023,34 +1023,34 @@ def ClearCollum(x, GetTerminalX="default", char=' ', start=COLOR.nc, end=COLOR.n
 	else:
 		y = GetTerminalX()
 	for i in r(y):
-		sout.write("%s" % (start + pos(i, x) + char + end))
-	sout.flush()
+		stdout.write("%s" % (start + pos(i, x) + char + end))
+	stdout.flush()
 
 def DrawHLine(x, XTo, y, Color, char = ' '):
 	ps = pos(y, x)
 	_x, _y = GetTerminalSize()
 	len = (XTo-x)+1
-	sout.write(ps + Color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
-	sout.flush()
+	stdout.write(ps + Color + char * len + COLOR.nc + char*(_x-len))	# if optmizing change XTO -> msg lenght
+	stdout.flush()
 
 def DrawVLine(y, YTO, x, colo, char = ' '):
 	for i in range(0, YTO+1)[y:]:
-		sout.write("%s" % pos(i, x) + colo + char + COLOR.nc)
-	sout.flush()
+		stdout.write("%s" % pos(i, x) + colo + char + COLOR.nc)
+	stdout.flush()
 
 def DrawSpot(y, x, char):
-	sout.write(pos(y,x) + char)
+	stdout.write(pos(y,x) + char)
 
 def ColorSpot(y, x, Color):
-	sout.write(pos(y, x)+Color+' '+COLOR.nc)
+	stdout.write(pos(y, x)+Color+' '+COLOR.nc)
 
 def HideCursor():
-	sout.write("\x1b[?25l")
-	sout.flush()
+	stdout.write("\x1b[?25l")
+	stdout.flush()
 
 def ShowCursor():
-	sout.write("\x1b[?25h")
-	sout.flush()
+	stdout.write("\x1b[?25h")
+	stdout.flush()
 
 def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 	x1, y1 = UpLeft
@@ -1136,7 +1136,7 @@ class TextBox:
 				# if len(strg)-1 <= this.CURSOR:
 					# strg = this.STRING[:this.CURSOR]
 				# ClearLine(1)
-				# sout.write(f"{pos(1, 1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
+				# stdout.write(f"{pos(1, 1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
 				# if not len(strg)-1 == this.CURSOR: # place not replace
 
 				if this.STRING[-1] == ' ': # move string right to add char to CURSOR's spot
@@ -1160,7 +1160,7 @@ class TextBox:
 		# chars = []
 
 		while True:
-			# sout.write(pos(this.VSize-1, this.HSize))
+			# stdout.write(pos(this.VSize-1, this.HSize))
 
 			# chars.append(repr(char))
 
@@ -1169,18 +1169,18 @@ class TextBox:
 
 			this.SetChar(char)
 
-			# sout.write(f"{pos(1, 1)}{chars}")
+			# stdout.write(f"{pos(1, 1)}{chars}")
 			# ClearLine(4)
-			# sout.write(f"{pos(4, 4)} \
+			# stdout.write(f"{pos(4, 4)} \
 
 			if this.DrawRect:
-				sout.write(f"{pos(this.VSize-2, 1)}{COLOR.nc}{this.STRING}")
-				sout.write(pos(this.VSize-2, this.CURSOR+2))
+				stdout.write(f"{pos(this.VSize-2, 1)}{COLOR.nc}{this.STRING}")
+				stdout.write(pos(this.VSize-2, this.CURSOR+2))
 			else:
-				sout.write(f"{pos(this.VSize-1, 1)}{COLOR.nc}{this.STRING}")
-				sout.write(pos(this.VSize-1, this.CURSOR+2))
+				stdout.write(f"{pos(this.VSize-1, 1)}{COLOR.nc}{this.STRING}")
+				stdout.write(pos(this.VSize-1, this.CURSOR+2))
 
-			sout.flush()
+			stdout.flush()
 
 			char = GetCh()
 
@@ -1197,7 +1197,7 @@ def GetPrimeFactors(number:int) -> list[int]:
 	return ret
 
 class OStream:
-	def __init__(this, OutHandler=sout):
+	def __init__(this, OutHandler=stdout):
 		this.out = OutHandler
 	def __lshift__(this, msg:str):
 		return (this, this.out.write("%s"%msg))[0]
@@ -1363,8 +1363,8 @@ f"y {y} is {'bigger' if x > this.MaxX else 'smaller'} then window's y size {this
 			elif this.MinX < x < this.MaxX:
 				raise ValueError(
 f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this.MaxX}")
-		sout.write(f"{pos(y, x)}{msg}")
-		sout.flush()
+		stdout.write(f"{pos(y, x)}{msg}")
+		stdout.flush()
 
 	def ClearLine(this, y, char=' ', start=COLOR.nc, end=COLOR.nc, relative=True):
 		if relative:
@@ -1446,7 +1446,7 @@ def GetQuadrant(x, y):
 	}.get((x,y), 0)
 
 def CursorMode(mode:str):
-	sout.write("\033[" + {
+	stdout.write("\033[" + {
 		"blinking block":'1',
 		"block":'2',
 		"blinking underline":'3',
@@ -1454,7 +1454,7 @@ def CursorMode(mode:str):
 		"blinking I-beam":'5',
 		"I-beam":'6'
 	}.get(mode, '0') + " q")
-	sout.flush()
+	stdout.flush()
 
 class _AdvTextBox:
 	def __init__(this, tl, br, content, DrawSides, update, UpperMode, CustomStatusBar):
@@ -1662,7 +1662,7 @@ class _AdvTextBox:
 			else:
 				ToPrint += pos(0, this.win.XDif-2) + ' '
 				#this.win.print(0, this.win.XDif-2, ' ', False)
-			sout.write(ToPrint)
+			stdout.write(ToPrint)
 			if this.DrawRect:
 				this.win.DrawOutline()
 			this.ShowMode(this)
@@ -1728,8 +1728,8 @@ def ArgvAssing(args:list[str]) -> dict[None | str, list[str]]: # omfg it's so mu
 
 def eprint(*msg, end='\n', sep=", "):
 	msg = sep.join([str(m) for m in msg])
-	eout.write(f'{msg}{end}')
-	eout.flush()
+	stderr.write(f'{msg}{end}')
+	stderr.flush()
 
 def distance(y:int, x:int) -> int:
 	# (x>y) 2x-y-x = x-y
@@ -1788,7 +1788,7 @@ def IsLeapYear(year=None):
 		return False
 
 def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc): # debug print
-	sout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
+	stdout.write(f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n")
 
 __sprintf_types:dict[str, Callable[[Any], Any]] = {
 	'i':int,
@@ -1834,9 +1834,9 @@ len(ToReplace), len(stuff)))
 
 def printf(string, *stuff, flush = True):
 	string = sprintf(string, *stuff)
-	sout.write(string)
+	stdout.write(string)
 	if flush:
-		sout.flush()
+		stdout.flush()
 
 def fprintf(FileHandler, string, *stuff):
 	FileHandler.write(sprintf(string, *stuff))
