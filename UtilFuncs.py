@@ -50,8 +50,10 @@ def Main() -> int:
 				ss = t.find(' ')
 				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
 	lk = list(labels.keys())
-
-	if get("--help", '-h').exists or not get().list or not get("--defs").exists:
+	GHelp = get('--help', '-h').exists
+	GDefs = get('--defs', '-d').exists
+	GArgs = get().list
+	if not (GHelp + GDefs + len(GArgs)):
 		printf("0 : No Label\n")
 		for i in r(labels.keys()):
 			key = lk[i]
