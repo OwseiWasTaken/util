@@ -20,6 +20,31 @@ class ln:
 
 #main
 def Main() -> int:
+	GHelp = get('--help', '-h').exists
+	GDefs = get('--defs', '-d').exists
+	GArgs = get().list
+
+	files = ls()
+	if "util.py" in files:
+		filename = "util.py"
+	elif "310util.py" in files:
+		filename = "310util.py"
+	# 3.10
+	elif exists("/usr/lib/python3.9/util.py"):
+		filename = "/usr/lib/python3.9/util.py"
+	elif exists("/usr/local/lib/python3.9/util.py"):
+		filename = "/usr/local/lib/python3.9/util.py"
+	# 3.9
+	elif "39util.py" in files:
+		filename = "39util.py"
+	elif exists("/usr/lib/python3.9/util.py"):
+		filename = "/usr/lib/python3.9/util.py"
+	elif exists("/usr/local/lib/python3.9/util.py"):
+		filename = "/usr/local/lib/python3.9/util.py"
+
+	if GArgs:
+		if not GArgs[0].isnumeric():
+			filename = GArgs.pop(0)
 	file = open("/usr/lib/python3.9/util.py")
 	lines = file.readlines()
 	file.close()
@@ -49,11 +74,10 @@ def Main() -> int:
 				fs = t.find('\x1b')
 				ss = t.find(' ')
 				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
+
 	lk = labels.keys()
 	ll = list(lk)
-	GHelp = get('--help', '-h').exists
-	GDefs = get('--defs', '-d').exists
-	GArgs = get().list
+
 	if not (GHelp + GDefs + len(GArgs)):
 		printf("0 : No Label\n")
 		for i in r(lk):
