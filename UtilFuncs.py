@@ -49,14 +49,15 @@ def Main() -> int:
 				fs = t.find('\x1b')
 				ss = t.find(' ')
 				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
-	lk = list(labels.keys())
+	lk = labels.keys()
+	ll = list(lk)
 	GHelp = get('--help', '-h').exists
 	GDefs = get('--defs', '-d').exists
 	GArgs = get().list
 	if not (GHelp + GDefs + len(GArgs)):
 		printf("0 : No Label\n")
-		for i in r(labels.keys()):
-			key = lk[i]
+		for i in r(lk):
+			key = ll[i]
 			cont = labels[key]
 			if i:
 				printf("{i} : {s}\n", i, key)
@@ -75,24 +76,29 @@ def Main() -> int:
 			outfile = True
 
 	gl = get().list
-	assert [int(gt) >= 0 for gt in gl] or not gl, "all (no -) args must be integers, to print labels' line list"
-	if [int(gt) < len(lk) for gt in gl]:
-		for gt in gl:
-			for l in labels[lk[int(gt)]]:
-				fprintf(out, l.Text+'\n')
-		if outfile:
-			out.close()
+	for ga in GArgs:
+		if ga.isnumeric():
+			if not (len(lk) > int(ga) > -1):
+				fprintf(stderr, "{i} > {s} > -1", len(lk), ga)
+		else:
+			fprintf(stderr, "can't convert \"{s}\" to int\n", ga)
+	for gt in GArgs:
+		for l in labels[list(lk)[int(gt)]]:
+			fprintf(out, l.Text+'\n')
+
 	tosave = labels["IMPORTS"] + labels["STUFF"] + labels["CONSTS"]
 	if get('--defs').exists:
 		for _ in tosave:
 			if _.Text[0] != '_':
 				tp = _.Type
 				if tp == Type.Import:
-					printf("include {s}\n", _.Text)
+					fprintf(out, "include {s}\n", _.Text)
 				elif tp == Type.Class:
-					printf("def cls {s} @ {i}\n", _.Text.removesuffix(':'), _.Line)
+					fprintf(out, "def cls {s} @ {i}\n", _.Text.removesuffix(':'), _.Line)
 				elif tp == Type.Func:
-					printf("def fct {s} @ {i}\n", _.Text, _.Line)
+					fprintf(out, "def fct {s} @ {i}\n", _.Text, _.Line)
+	if outfile:
+		out.close()
 	#TODO modiffs (--comments, --imports ...)
 	#TODO replace indexes ( --STUFF -> {stuff's lk index}, --LICENSE -> ...)
 
