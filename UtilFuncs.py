@@ -14,7 +14,7 @@ class Type(IntEnum):
 class ln:
 	Line:int
 	Type:int # Type.*
- 	Text:str
+	Text:str
 	def __repr__(this):
 		return "%d : %s" % (this.Line, this.Text)
 
@@ -36,19 +36,19 @@ def Main() -> int:
 				else:
 					now = ""
 			elif line[0:3] == "def":
-				labels[now].append(ln(index, Type_Func, line[4:line.find('(')]))
+				labels[now].append(ln(index, Type.Func, line[4:line.find('(')]))
 			elif line[0:5] == "class":
 				if '#' in line or "pass" in line:
-					labels[now].append(ln(index, Type_Class, line[6:line.find(':')]))
+					labels[now].append(ln(index, Type.Class, line[6:line.find(':')]))
 				else:
-					labels[now].append(ln(index, Type_Class, line[6:-1]))
+					labels[now].append(ln(index, Type.Class, line[6:-1]))
 			elif line[0] == '#':
-				labels[now].append(ln(index, Type_Comment, line[:-1]))
+				labels[now].append(ln(index, Type.Comment, line[:-1]))
 			elif line[:4] == "from" or line[:6] == "import":
 				t = line.replace(' ', '\x1b', 1)
 				fs = t.find('\x1b')
 				ss = t.find(' ')
-				labels[now].append(ln(index, Type_Import, line[fs+1:ss]))
+				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
 	lk = list(labels.keys())
 
 	if get("--help", '-h').exists or not get().list or not get("--defs").exists:
@@ -83,11 +83,11 @@ def Main() -> int:
 		for _ in tosave:
 			if _.Text[0] != '_':
 				tp = _.Type
-				if tp == Type_Import:
+				if tp == Type.Import:
 					printf("include {s}\n", _.Text)
-				elif tp == Type_Class:
+				elif tp == Type.Class:
 					printf("def cls {s} @ {i}\n", _.Text.removesuffix(':'), _.Line)
-				elif tp == Type_Func:
+				elif tp == Type.Func:
 					printf("def fct {s} @ {i}\n", _.Text, _.Line)
 	#TODO modiffs (--comments, --imports ...)
 	#TODO replace indexes ( --STUFF -> {stuff's lk index}, --LICENSE -> ...)

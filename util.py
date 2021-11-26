@@ -16,7 +16,7 @@ from random import randint as rint, choice as ritem
 from os import getcwd as pwd, system as ss, chdir as cd, getenv, get_terminal_size as GetTerminalSize
 from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as sin, stderr as eout, platform as OS
 from sys import stdout, stdin, stderr
-from dataclasses import dataclasses
+from dataclasses import dataclass
 from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 #)IMPORTS
 # https://regex101.com/
@@ -1898,28 +1898,15 @@ ARGV = ArgvAssing(argv[1:])
 Endl = "\n"
 #)CONSTS
 
-#(CLI
 if __name__=="__main__":
 	for i in get("-r", "-c").list:
 		exec(i)
 	for i in get("-e", "").list:
 		print(eval(i))
-#)CLI
 #!END
 
 # funcs/classes
 """
-constdf USER
-constdf nop
-constdf FuncType
-constdf NoneType
-constdf ModuleType
-constdf Iterables
-constdf Infinity
-constdf noc
-constdf MethodType
-constdf ARGV
-constdf Endl
 include time
 include json
 include pickle
@@ -1933,123 +1920,126 @@ include typing
 include random
 include os
 include sys
-def cls log
-def fct r
-def cls timer
-def fct MakeDict
-def fct sleep
-def fct pc
-def fct even
-def fct odd
-def fct lst1
-def fct RngNoRepetition
-def fct UseFile
-def fct json
-def fct GetInt
-def fct GetFloat
-def fct IsPrime
-def fct fib
-def cls rng
-def fct print
-def fct printl
-def fct prints
-def fct sprint
-def fct input
-def fct GCH
-def cls COLOR
-def fct SetColorMode
-def fct AddStr
-def fct PascalCase
-def fct attrs
-def fct SplitBracket
-def fct StrToMs
-def fct bhask
-def fct near
-def fct rsymb
-def fct rchar
-def fct GetWLen
-def fct count
-def fct timeit
-def fct mmc
-def fct factorial
-def fct exit
-def fct between
-def fct ls
-def fct rstr
-def fct clear
-def fct ANDGroups
-def fct ORGroups
-def fct XORGroups
-def fct NOTGroups
-def cls code
-def cls BDP
-def fct NumberToExponent
-def fct rbool
-def fct rcase
-def fct invert
-def fct EncryptS
-def fct DecryptS
-def fct AdvEncryptS
-def fct AdvDecryptS
-def fct numbers
-def fct ShowTextGif
-def fct JustDecimal
-def fct NoDecimal
-def fct number
-def fct TimesInNumber
-def fct NumSum
-def fct FindAll
-def fct DeepSum
-def fct average
-def fct mid
-def fct IsIterable
-def fct SingleList
-def fct BiggestLen
-def fct compare
-def fct graphics
-def fct pos
-def fct ppos
-def fct ClearLine
-def fct ClearCollum
-def fct DrawHLine
-def fct DrawVLine
-def fct DrawSpot
-def fct ColorSpot
-def fct HideCursor
-def fct ShowCursor
-def fct DrawRectangle
-def fct ReplaceStringByIndex
-def cls TextBox
-def fct GetPrimeFactors
-def cls OStream
-def cls get
-def fct RmDir
-def fct TrimSpaces
-def fct Hamiltons
-def fct ReplaceAll
-def fct MakeString
-def fct IsListSorted
-def cls window
-def fct TestAll
-def fct TestAny
-def fct GetQuadrant
-def fct CursorMode
-def fct AdvTextBox
-def fct RGB
-def fct ArgvAssing
-def fct eprint
-def fct distance
-def fct DoAll
-def cls Filer
-def fct IsLeapYear
-def fct debugp
-def fct sprintf
-def fct printf
-def fct fprintf
-def fct words
-def fct unwords
-def fct IsBitSet
-def fct NewOdd
-def fct NewEven
-def fct BinarySearch
+def cls log @ 104
+def fct r @ 164
+def cls timer @ 175
+def fct MakeDict @ 206
+def fct sleep @ 212
+def fct pc @ 221
+def fct even @ 224
+def fct odd @ 227
+def fct lst1 @ 230
+def fct RngNoRepetition @ 238
+def fct UseFile @ 248
+def fct json @ 255
+def fct GetInt @ 262
+def fct GetFloat @ 277
+def fct IsPrime @ 292
+def fct fib @ 305
+def cls rng @ 313
+def fct print @ 357
+def fct printl @ 371
+def fct prints @ 381
+def fct sprint @ 388
+def fct input @ 391
+def fct GCH @ 399
+def cls COLOR @ 405
+def fct SetColorMode @ 448
+def fct AddStr @ 455
+def fct PascalCase @ 458
+def fct attrs @ 465
+def fct SplitBracket @ 468
+def fct StrToMs @ 479
+def fct bhask @ 496
+def fct near @ 504
+def fct rsymb @ 517
+def fct rchar @ 530
+def fct GetWLen @ 534
+def fct count @ 552
+def fct timeit @ 565
+def fct mmc @ 572
+def fct factorial @ 590
+def fct exit @ 596
+def fct between @ 601
+def fct ls @ 604
+def fct rstr @ 607
+def fct clear @ 621
+def fct ANDGroups @ 624
+def fct ORGroups @ 634
+def fct XORGroups @ 640
+def fct NOTGroups @ 652
+def cls code @ 663
+def cls BDP @ 691
+def fct NumberToExponent @ 758
+def fct rbool @ 763
+def fct rcase @ 766
+def fct invert @ 778
+def fct EncryptS @ 781
+def fct DecryptS @ 788
+def fct AdvEncryptS @ 795
+def fct AdvDecryptS @ 803
+def fct numbers @ 813
+def fct ShowTextGif @ 816
+def fct JustDecimal @ 833
+def fct NoDecimal @ 836
+def fct number @ 839
+def fct TimesInNumber @ 843
+def fct NumSum @ 847
+def fct FindAll @ 855
+def fct DeepSum @ 866
+def fct average @ 901
+def fct mid @ 908
+def fct IsIterable @ 925
+def fct SingleList @ 928
+def fct BiggestLen @ 940
+def fct compare @ 943
+def fct graphics @ 964
+def fct pos @ 999
+def fct ppos @ 1002
+def fct ClearLine @ 1006
+def fct ClearCollum @ 1014
+def fct DrawHLine @ 1023
+def fct DrawVLine @ 1030
+def fct DrawSpot @ 1035
+def fct ColorSpot @ 1038
+def fct HideCursor @ 1041
+def fct ShowCursor @ 1045
+def fct DrawRectangle @ 1049
+def fct ReplaceStringByIndex @ 1067
+def cls TextBox @ 1070
+def fct GetPrimeFactors @ 1174
+def cls OStream @ 1186
+def cls get @ 1192
+def fct RmDir @ 1269
+def fct TrimSpaces @ 1278
+def fct Hamiltons @ 1283
+def fct ReplaceAll @ 1286
+def fct MakeString @ 1295
+def fct IsListSorted @ 1314
+def cls window @ 1317
+def fct TestAll @ 1411
+def fct TestAny @ 1418
+def fct GetQuadrant @ 1425
+def fct CursorMode @ 1435
+def fct AdvTextBox @ 1687
+def fct RGB @ 1695
+def fct ArgvAssing @ 1698
+def fct eprint @ 1716
+def fct distance @ 1721
+def fct DoAll @ 1725
+def cls Filer @ 1728
+def fct IsLeapYear @ 1764
+def fct debugp @ 1777
+def fct sprintf @ 1799
+def fct printf @ 1822
+def fct fprintf @ 1828
+def fct fprint @ 1831
+def fct words @ 1834
+def fct unwords @ 1837
+def fct IsBitSet @ 1840
+def fct NewOdd @ 1843
+def fct NewEven @ 1846
+def fct BinarySearch @ 1849
+def fct nop @ 1872
+def cls noc @ 1879
 """
