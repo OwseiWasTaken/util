@@ -54,7 +54,7 @@ def Main() -> int:
 		line = lines[index]
 		if line == "#!END\n":break
 		if line:
-			if line[0] == "#" and line[1] in "()":
+			if len(line) > 2 and line[0] == "#" and line[1] in "()":
 				if line[1] == '(':
 					now = line[2:-1]
 					labels[now] = []
@@ -74,6 +74,12 @@ def Main() -> int:
 				fs = t.find('\x1b')
 				ss = t.find(' ')
 				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
+			if labels[now]:
+				pass
+				#TODO there's smh wrong with the line number and the line index
+				#prints a lot of shit btw
+				#printf("line: {s} @: {i} is \"{s}\"\n",
+				#line[:-1], index, repr(labels[now][-1])[:-1])
 
 	lk = labels.keys()
 	ll = list(lk)
@@ -110,7 +116,10 @@ def Main() -> int:
 		for l in labels[list(lk)[int(gt)]]:
 			fprintf(out, l.Text+'\n')
 
-	tosave = labels["IMPORTS"] + labels["STUFF"] + labels["CONSTS"]
+	if "IMPORTS" in lk and "STUFF" in lk:
+		tosave = labels["IMPORTS"] + labels["STUFF"]
+	else:
+		tosave = []
 	if get('--defs').exists:
 		for _ in tosave:
 			if _.Text[0] != '_':
