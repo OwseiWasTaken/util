@@ -1697,9 +1697,7 @@ class _AdvTextBox:
 		ret = 1
 		return ret
 
-def AdvTextBox(
-tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x, UpperMode = False, CustomStatusBar = False
-):
+def AdvTextBox( tl, br, content=[''], DrawSides = (True, True, True, True), update = lambda *x:x, UpperMode = False, CustomStatusBar = False):
 	# drawsides = (bottom, top, left, right)
 	if type(content) == str:
 		content = [content]
@@ -1853,12 +1851,6 @@ def unwords(lst:list[str]) -> str:
 def IsBitSet(num, index):
 	return num & 1 << index != 0
 
-def NewOdd(num):
-	return IsBitSet(num, 0)
-
-def NewEven(num):
-	return not IsBitSet(num, 0)
-
 def BinarySearch(lst:list[int], item:list[int]) -> int:
 	"""
 	Returns the position of item in the list if found, -1 otherwise.
@@ -1875,6 +1867,16 @@ def BinarySearch(lst:list[int], item:list[int]) -> int:
 		if lst[mid] < item:
 			left = mid + 1
 	return -1
+
+def FastSingleList(Listing:list[Any]) -> Any:
+	ret = []
+	for item in Listing:
+		if type(item) == list:
+			ret+=FastSingleList(item)
+		else:
+			ret.append(item)
+	return ret
+
 
 #)STUFF
 
@@ -2037,8 +2039,6 @@ def fct fprint @ 1831
 def fct words @ 1834
 def fct unwords @ 1837
 def fct IsBitSet @ 1840
-def fct NewOdd @ 1843
-def fct NewEven @ 1846
 def fct BinarySearch @ 1849
 def fct nop @ 1872
 def cls noc @ 1879
