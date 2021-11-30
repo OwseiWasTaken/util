@@ -1902,15 +1902,25 @@ def rpos(y, x): #relative pos func
 		ret += "\x1B[%i%c" % (abs(y), ver)
 	return (ret)
 	#\x1b[<Value> prefix
-	#up Y:      A
-	#down Y:    B
+	#up Y:		A
+	#down Y:	B
 	#forward X: C
 	#backward X:D
 
 #TODO delline revline
-#def DeleteLine
+def DeleteLine(y):
+	stdout.write(pos(y, 0)+"\x1b[K")
+def rDeleteLine(y):
+	#TODO help!
+	stdout.write(pos(0, 0)+rpos(y, 0)+"\x1b[K")
 
-#Erase to end of line: \033[K
+printf("bonk")
+GetCh()
+printf(rpos(0, -2))
+GetCh()
+rDeleteLine(0)
+GetCh()
+#Erase to end of line: \x1b[K
 
 #)STUFF
 
