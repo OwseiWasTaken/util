@@ -1877,6 +1877,19 @@ def FastSingleList(Listing:list[Any]) -> Any:
 			ret.append(item)
 	return ret
 
+def rpos(y, x): #relative pos func
+	ver = ("A" if y < 0 else "B")
+	hor = ("D" if x < 0 else "C")
+	return "\x1B[%i%c\x1b[%i%c" % (abs(y)+1, hor, abs(x)+1, ver)
+	#Move the cursor up N lines: \033[<N>A
+	#Move the cursor down N lines: \033[<N>B
+	#Move the cursor forward N columns:\033[<N>C
+	#Move the cursor backward N columns: \033[<N>D
+
+#Clear the screen, move to (0,0): \033[2J
+#Erase to end of line: \033[K
+#Save cursor position: \033[s
+
 
 #)STUFF
 
