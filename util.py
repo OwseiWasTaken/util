@@ -45,6 +45,8 @@ from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 # OS especific func
 if OS in ["linux", "macos"]: # TODO is it "macos"?
 	# it MAY work in windows, not sure tho
+	def clear():
+		stdout.write("\x1b[0H")
 	try:
 		import gi
 		gi.require_version('Notify', '0.7')
@@ -67,7 +69,10 @@ if OS in ["linux", "macos"]: # TODO is it "macos"?
 		finally:
 			tcsetattr(fd, TCSADRAIN, OldSettings)
 		return ch
-else:
+else: # (prolly) windows
+	def clear():
+		ss("clear")
+
 	def notify(title="", body=""):
 		eprint(f"notify function not yet implemented in util.py for {OS}\n\
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
@@ -623,9 +628,6 @@ def rstr(ln:int, chars:bool=True, symbs:bool=True, ints:bool=True, intmin:int=0,
 		else:
 			ret.append(f())
 	return ''.join([str(a) for a in ret])
-
-def clear():
-	ss("clear")
 
 def ANDGroups(g1:set or list or frozenset, g2:set or list or frozenset) -> set or list or frozenset:
 	G1 = set(g1)
@@ -1876,15 +1878,16 @@ def FastSingleList(Listing:list[Any]) -> Any:
 		else:
 			ret.append(item)
 	return ret
-
 def rpos(y, x): #relative pos func
 	ver = ("A" if y < 0 else "B")
 	hor = ("D" if x < 0 else "C")
 	return "\x1B[%i%c\x1b[%i%c" % (abs(y)+1, hor, abs(x)+1, ver)
-	#Move the cursor up N lines: \033[<N>A
-	#Move the cursor down N lines: \033[<N>B
-	#Move the cursor forward N columns:\033[<N>C
-	#Move the cursor backward N columns: \033[<N>D
+	#\x1b[<Value> prefix
+	#up Y:      A
+	#down Y:    B
+	#forward X: C
+	#backward X:D
+
 
 #Clear the screen, move to (0,0): \033[2J
 #Erase to end of line: \033[K
