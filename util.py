@@ -1888,8 +1888,6 @@ def rpos(y, x): #relative pos func
 	#forward X: C
 	#backward X:D
 
-
-#Clear the screen, move to (0,0): \033[2J
 #Erase to end of line: \033[K
 #Save cursor position: \033[s
 
