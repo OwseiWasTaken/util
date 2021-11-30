@@ -1878,19 +1878,39 @@ def FastSingleList(Listing:list[Any]) -> Any:
 		else:
 			ret.append(item)
 	return ret
+
+def frpos(value, move):
+	return "\x1b[%i%c" % (value, move)
+
 def rpos(y, x): #relative pos func
-	ver = ("A" if y < 0 else "B")
-	hor = ("D" if x < 0 else "C")
-	return "\x1B[%i%c\x1b[%i%c" % (abs(y)+1, hor, abs(x)+1, ver)
+	# y > 0 down
+	if y < 0:
+		ver = 'A'
+	else:
+		ver = 'B'
+		y*=-1
+
+	if x < 0:
+		hor = 'D'
+	else:
+		hor = 'C'
+		x*=-1
+	ret = ""
+	if x:
+		ret += "\x1B[%i%c" % (abs(x), hor)
+	if y:
+		ret += "\x1B[%i%c" % (abs(y), ver)
+	return (ret)
 	#\x1b[<Value> prefix
 	#up Y:      A
 	#down Y:    B
 	#forward X: C
 	#backward X:D
 
-#Erase to end of line: \033[K
-#Save cursor position: \033[s
+#TODO delline revline
+#def DeleteLine
 
+#Erase to end of line: \033[K
 
 #)STUFF
 
