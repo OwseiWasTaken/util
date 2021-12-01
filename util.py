@@ -1914,12 +1914,12 @@ def rDeleteLine(y):
 	#TODO help!
 	stdout.write(pos(0, 0)+rpos(y, 0)+"\x1b[K")
 
-printf("bonk")
-GetCh()
-printf(rpos(0, -2))
-GetCh()
-rDeleteLine(0)
-GetCh()
+#printf("bonk")
+#GetCh()
+#printf(rpos(0, -2))
+#GetCh()
+#rDeleteLine(0)
+#GetCh()
 #Erase to end of line: \x1b[K
 
 #)STUFF
