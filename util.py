@@ -1803,6 +1803,8 @@ __:dict[str, Callable[[Any], Any]] = __sprintf_types.copy()
 for _ in __sprintf_types.keys():
 	__['l'+_]=lambda x: [__[_](y) for y in x]
 	__['t'+_]=lambda x: tuple([__[_](y) for y in x])
+	# dict ain't workin
+	#__['d'+_]=lambda x: dict([__[_](k) : __[_](v) for k, v in x.items()])
 __sprintf_types = __
 
 __sprintf_sj = '|'.join(__sprintf_types.keys())
