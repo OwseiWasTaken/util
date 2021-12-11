@@ -36,7 +36,7 @@ from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
-# along with this program; if not get it here
+# along with this program; if not get it here https://www.gnu.org/licenses/gpl-3.0.en.html
 #)LICENSE
 
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
@@ -1295,6 +1295,11 @@ def TrimSpaces(string:str) -> str:
 		string = string.replace('  ', ' ')
 	return string
 
+def TrimChar(string:str, remove = '  ', replace = ' ') -> str:
+	while remove in string:
+		string = string.replace(remove, replace)
+	return string
+
 def Hamiltons(benefit, probability, cost) -> bool:
 	return benefit*probability/cost>0
 
@@ -1736,7 +1741,9 @@ def distance(y:int, x:int) -> int:
 	return 2*max(y,x)-y-x
 
 def DoAll(lst, func):
-	return [func(l) for l in lst]
+	if type(func) != FuncType:
+		lst, func = func, lst
+	return list(map(func, lst))
 
 class Filer: # plain text, for UseFile file check BDP (in this lib)
 	def __init__(this,name, contents=[], ReadIfExistis=True):
