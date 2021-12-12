@@ -19,6 +19,7 @@ from sys import stdout, stdin, stderr
 from dataclasses import dataclass
 from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 #)IMPORTS
+
 # https://regex101.com/
 
 #(LICENSE
@@ -45,8 +46,6 @@ from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 # OS especific func
 if OS in ["linux", "macos"]: # TODO is it "macos"?
 	# it MAY work in windows, not sure tho
-	def clear():
-		stdout.write("\x1b[0H")
 	try:
 		import gi
 		gi.require_version('Notify', '0.7')
@@ -69,7 +68,26 @@ if OS in ["linux", "macos"]: # TODO is it "macos"?
 		finally:
 			tcsetattr(fd, TCSADRAIN, OldSettings)
 		return ch
+	def ClearLine(y):
+		stdout.write(pos(y, 0)+"\x1b[K")
+	def rClearLine(y):
+		stdout.write("\n\x1b[F")
+		if y:
+			stdout.write(frpos(abs(y), ('A' if y < 0 else 'B'))+"\x1b[K")
+		else:
+			stdout.write("\x1b[K")
+	def clear():
+		stdout.write("\x1b[0H")
+
 else: # (prolly) windows
+	def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
+		if GetTerminalY == "default":
+			x, _ = GetTerminalSize()
+		else:
+			x = GetTerminalY()
+		stdout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
+		stdout.flush()
+
 	def clear():
 		ss("clear")
 
@@ -1011,14 +1029,6 @@ def ppos(y, x):
 	stdout.write("\x1B[%i;%iH" % (y+1, x+1))
 	stdout.flush()
 
-def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
-	if GetTerminalY == "default":
-		x, _ = GetTerminalSize()
-	else:
-		x = GetTerminalY()
-	stdout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
-	stdout.flush()
-
 def ClearCollum(x, GetTerminalX="default", char=' ', start=COLOR.nc, end=COLOR.nc):
 	if GetTerminalX == "default":
 		_, y = GetTerminalSize()
@@ -1916,14 +1926,7 @@ def rpos(y, x): #relative pos func
 	#forward X: C
 	#backward X:D
 
-#TODO delline revline
-def DeleteLine(y):
-	stdout.write(pos(y, 0)+"\x1b[K")
-def rDeleteLine(y):
-	#TODO help!
-	stdout.write(pos(0, 0)+rpos(y, 0)+"\x1b[K")
-
-
+#TODO make xmpver, u know, mean smh
 def DecodeXmp( filename:str ) -> dict[str:Any]:
 	with open(filename, 'r') as file:
 		cont = tuple(file.readlines())
