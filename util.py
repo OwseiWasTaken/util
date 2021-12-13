@@ -1926,8 +1926,8 @@ def rpos(y, x): #relative pos func
 	#forward X: C
 	#backward X:D
 
-#TODO make xmpver, u know, mean smh
-def DecodeXmp( filename:str ) -> dict[str:Any]:
+_XMPVER:int = 0.2
+def DecodeXmp( filename:str , XmpCheck = True) -> dict[str:Any]:
 	with open(filename, 'r') as file:
 		cont = tuple(file.readlines())
 	ncont = ""
@@ -1944,6 +1944,15 @@ def DecodeXmp( filename:str ) -> dict[str:Any]:
 
 	while i < len(cont):
 		char = cont[i]
+		if not i and XmpCheck:
+			if char == '/':
+				xmpver = float(cont[i+1:i+cont[i+1:].find('/')+1])
+				if xmpver != _XMPVER:
+					raise ValueError("wrong xmpver, %s:%1.1f, DecodeXmp():%1.1f" % (filename, xmpver, _XMPVER))
+			else:
+				# can't find /x.x/ xmpver
+				raise ValueError("DecodeXmp() can't find xmpver in file %s" % filename)
+
 		if char == '<':
 			if contname:
 				condepth.append((contname, contnow))
@@ -2015,17 +2024,18 @@ def _SEncodeXmp( structure , rl = 0 ):
 	return ret
 
 def EncodeXmp( filename:str, structure:dict[str,Any] ):
-	if "meta" not in structure.keys():
-		structure["meta"] = {}
-		structure["meta"]["xmpver"] = 0.2
 	with open(filename, 'w') as file:
-		file.write( _SEncodeXmp(structure)[:-1] )
+		file.write(
+			(f"/{_XMPVER}/\n" # xmpver
+			)+(
+			_SEncodeXmp(structure)[:-1] )) # data
 
 def UseXmp( filename:str, structure:dict[str, Any] = None ):
 	if structure == None:
 		return DecodeXmp(filename)
 	else:
 		EncodeXmp(filename, structure)
+
 
 #printf("bonk")
 #GetCh()
