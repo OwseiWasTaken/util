@@ -1209,10 +1209,21 @@ def GetPrimeFactors(number:int) -> list[int]:
 	return ret
 
 class OStream:
-	def __init__(this, OutHandler=stdout):
-		this.out = OutHandler
+	def __init__(this, OutHandler=stdout, InHandler=stdin):
+		this.outs = OutHandler
+		this.ins = InHandler
 	def __lshift__(this, msg:str):
-		return (this, this.out.write("%s"%msg))[0]
+		return (this, this.outs.write("%s"%msg))[0]
+	def __rshift__(this, msg:str):
+		if this.ins.readable():
+			this.outs.write(msg)
+			this.outs.flush()
+			for line in this.ins:
+				msg = line[:-1]
+				break
+			return msg
+		else:
+			raise ValueError(f"{{{this}}}\ncan't read from out read steam!")
 
 class get:
 	def __init__(this, *gets, argvs=None):
