@@ -18,7 +18,6 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 from sys import stdout, stdin, stderr
 from dataclasses import dataclass
 from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
-from xmp.xmp import UseFile
 
 #)IMPORTS
 
