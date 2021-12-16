@@ -18,6 +18,8 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 from sys import stdout, stdin, stderr
 from dataclasses import dataclass
 from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
+from xmp.xmp import UseFile
+
 #)IMPORTS
 
 # https://regex101.com/
@@ -1937,8 +1939,9 @@ def rpos(y, x): #relative pos func
 	#forward X: C
 	#backward X:D
 
-_XMPVER:int = 0.2
-def DecodeXmp( filename:str , XmpCheck = True) -> dict[str:Any]:
+# XMP stuff
+_XMP_XMPVER:int = 0.3
+def _XMP_Decode( filename:str , XmpCheck = True) -> dict[str:Any]:
 	with open(filename, 'r') as file:
 		cont = tuple(file.readlines())
 	ncont = ""
@@ -1955,15 +1958,6 @@ def DecodeXmp( filename:str , XmpCheck = True) -> dict[str:Any]:
 
 	while i < len(cont):
 		char = cont[i]
-		if not i and XmpCheck:
-			if char == '/':
-				xmpver = float(cont[i+1:i+cont[i+1:].find('/')+1])
-				if xmpver != _XMPVER:
-					raise ValueError("wrong xmpver, %s:%1.1f, DecodeXmp():%1.1f" % (filename, xmpver, _XMPVER))
-			else:
-				# can't find /x.x/ xmpver
-				raise ValueError("DecodeXmp() can't find xmpver in file %s" % filename)
-
 		if char == '<':
 			if contname:
 				condepth.append((contname, contnow))
@@ -2015,15 +2009,18 @@ f"<{contname}> != <{ncontname}> container closer must be the same to container o
 					else:
 						structure[varname] = eval(varval)
 		i+=1
+	if structure["meta"]["xmpver"] != _XMP_XMPVER and XmpCheck:
+		fprintf(stderr, "unmatched xmpver, file:{f} decoder:{f}\n",
+			structure["meta"]["xmpver"], _XMP_XMPVER)
 	return structure
 
-def _SEncodeXmp( structure , rl = 0 ):
+def _XMP_SEncode( structure , rl = 0 ):
 	ret = ""
 	rs = "\t"*rl
 	for k in structure.keys():
 		if isinstance(structure[k], dict):
 			ret+=f"{rs}<{k}>\n"
-			ret+=_SEncodeXmp(structure[k], rl+1)
+			ret+=_XMP_SEncode(structure[k], rl+1)
 			ret+=f"{rs}</{k}>\n"
 		else:
 			if isinstance(structure[k], list):
@@ -2034,19 +2031,19 @@ def _SEncodeXmp( structure , rl = 0 ):
 			ret+='\n'
 	return ret
 
-def EncodeXmp( filename:str, structure:dict[str,Any] ):
+def _XMP_Encode( filename:str, structure:dict[str,Any] ):
+	if "meta" not in structure.keys():
+		structure["meta"] = {}
+		structure["meta"]["xmpver"] = _XMP_XMPVER
 	with open(filename, 'w') as file:
-		file.write(
-			(f"/{_XMPVER}/\n" # xmpver
-			)+(
-			_SEncodeXmp(structure)[:-1] )) # data
+		file.write( _SEncode(structure)[:-1] )
 
 def UseXmp( filename:str, structure:dict[str, Any] = None ):
 	if structure == None:
-		return DecodeXmp(filename)
+		return _XMP_Decode(filename)
 	else:
-		EncodeXmp(filename, structure)
-
+		_XMP_Encode(filename, structure)
+# end of XMP stuff
 
 #printf("bonk")
 #GetCh()
