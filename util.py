@@ -1,4 +1,6 @@
 #! /usr/bin/python3.10
+#TODO:
+#  test pos func in windows
 # _ prefixed imports
 #(IMPORTS
 from time import strftime as __ftime__
@@ -6,7 +8,6 @@ from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
 from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
 
-import re
 from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
@@ -18,21 +19,22 @@ from sys import argv, exit as exi, getsizeof as sizeof, stdout as sout, stdin as
 from sys import stdout, stdin, stderr
 from dataclasses import dataclass
 from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
+# only import re for .compile as comreg and from ModuleType
+import re
+comreg = re.compile
 
 #)IMPORTS
-
 # https://regex101.com/
-
 #(LICENSE
 # this is a general python lib that aims to make fast (fast as in python fast)
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
 # const and other things
 # 2021, by Pedro "owsei" Romero Manse
-
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 3
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
@@ -40,13 +42,11 @@ from enum import IntEnum, Enum, auto as iota # (1, 2, 3, ...), fafo, go's iota
 # You should have received a copy of the GNU General Public License
 # along with this program; if not get it here https://www.gnu.org/licenses/gpl-3.0.en.html
 #)LICENSE
-
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
 #(STUFF
 # OS especific func
 if OS in ["linux", "macos"]: # TODO is it "macos"?
-	# it MAY work in windows, not sure tho
 	try:
 		import gi
 		gi.require_version('Notify', '0.7')
@@ -81,17 +81,6 @@ if OS in ["linux", "macos"]: # TODO is it "macos"?
 		stdout.write("\x1b[0H")
 
 else: # (prolly) windows
-	def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
-		if GetTerminalY == "default":
-			x, _ = GetTerminalSize()
-		else:
-			x = GetTerminalY()
-		stdout.write("%s%s%s%s%s" % (start, pos(y, 0), char*x, pos(y, 0), end))
-		stdout.flush()
-
-	def clear():
-		ss("clear")
-
 	def notify(title="", body=""):
 		eprint(f"notify function not yet implemented in util.py for {OS}\n\
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
@@ -101,6 +90,16 @@ if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py
 		while msvcrt.kbhit():
 			char+=msvcrt.getch()
 		return char
+
+	def ClearLine(y, GetTerminalY="default", char=' ', start=COLOR.nc, end=COLOR.nc):
+		eprint(f"ClearLine function not yet implemented in util.py for {OS}\n\
+if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
+	def rClearLine(y):
+		eprint(f"rClearLine function not yet implemented in util.py for {OS}\n\
+if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py")
+
+	def clear():
+		ss("clear")
 
 class __time:
 	@property
@@ -1376,8 +1375,18 @@ AvoidDrawedinBorder=True, DrawBottom=True, DrawTop=True, DrawLeft=True, DrawRigh
 		this.DrawedBorder = False
 		this.AvoidDrawedinBorder = AvoidDrawedinBorder
 		this.BorderColor = '\033[7;90m'
+		this.y = 0
+		this.x = 0
 	def __call__(this, args=None):
 		return this.update(this, args)
+
+	def write(this, msg:str):
+		stdout.write(pos(this.y, this.x)+msg)
+
+	def wprint(this, y, x, msg):
+		this.y = y
+		this.x = x
+		stdout.write(pos(y, x)+msg)
 
 	def print(this, y, x, msg, relative = True):
 		if this.AvoidDrawedinBorder:
@@ -1445,7 +1454,8 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 				raise ValueError(f"x {x} is bigger then window's x size {this.MaxX}")
 			elif x < this.MinX:
 				raise ValueError(f"x {x} is smaller then window's x size {this.MinX}")
-		ppos(y,x)
+		this.y = y
+		this.x = x
 
 	def update(this, *args):
 		return this.UpdateFunc(this, args)
@@ -1837,7 +1847,7 @@ for _ in __sprintf_types.keys():
 __sprintf_types = __
 
 __sprintf_sj = '|'.join(__sprintf_types.keys())
-__sprintf_regex = re.compile(rf"\{{({__sprintf_sj})\}}")
+__sprintf_regex = comreg(rf"\{{({__sprintf_sj})\}}")
 
 @cache
 def sprintf(string, *stuff, HideErrors=True):
