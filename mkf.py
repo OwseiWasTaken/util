@@ -49,7 +49,7 @@ def Main() -> int:
 		if not ch in ['y','Y']:
 			exit(1)
 		else:
-			printl(ch)
+			print(ch)
 
 	ss(f"cp {CopyFile} {ResultFile}")
 
