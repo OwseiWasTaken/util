@@ -1065,8 +1065,8 @@ def ShowCursor():
 	stdout.flush()
 
 def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
-	x1, y1 = UpLeft
-	x2, y2 = DownRight
+	y1, x1 = UpLeft
+	y2, x2 = DownRight
 	# |x1, -y1
 	#
 	#	|x2, -y2
@@ -1166,7 +1166,8 @@ class TextBox:
 		if this.DoClear:
 			clear()
 		if this.DrawRect:
-			DrawRectangle((0, this.VSize-3), (this.HSize-1, this.VSize), BkColor=COLOR.BkGrey)
+			DrawRectangle(
+				(this.VSize-3, 0), (this.VSize, this.HSize-1), BkColor=COLOR.BkGrey)
 		char=''
 
 		# chars = []
@@ -1439,8 +1440,7 @@ f"x {x} is {'bigger' if x > this.MaxX else 'smaller'} then window's x size {this
 		if Color == -1:
 			Color = this.BorderColor
 		this.DrawedBorder = True
-		DrawRectangle((this.MinX,this.MinY),
-		(this.XDif,this.YDif), Color)
+		DrawRectangle(this.tl, this.bl, Color)
 
 	def move(this, y, x, relative = True):
 		if relative:
@@ -2054,13 +2054,106 @@ def UseXmp( filename:str, structure:dict[str, Any] = None ):
 		_XMP_Encode(filename, structure)
 # end of XMP stuff
 
-#printf("bonk")
-#GetCh()
-#printf(rpos(0, -2))
-#GetCh()
-#rDeleteLine(0)
-#GetCh()
-#Erase to end of line: \x1b[K
+class Window:
+	def __init__(this, TopLeft:tuple[int, int], BottomRight:tuple[int, int]):
+		#border points excluded from text out
+		this.tl = TopLeft
+		this.br = BottomRight
+		this.t = TopLeft[0]
+		this.l = TopLeft[1]
+		this.b = BottomRight[0]
+		this.r = BottomRight[1]
+		this.y = this.t # + t && < b
+		this.x = this.l # + l && > r
+		#
+		this.wprint = this.puts
+		this.write = this.iputs
+		this.print = this.iputs
+	def printf(this, y, x, string, *args):
+		this.wprint(y, x, sprintf(string, *args))
+	def iprintf(this, string, *args):
+		printf(string, *args)
+
+	# edges
+	def DrawEdges(this, char=RGB(0xff, 0xff, 0xa0)+'@'+COLOR.nc):
+		# delete this later?
+		DrawSpot(this.t, this.r, char)
+		DrawSpot(this.t, this.l, char)
+		DrawSpot(this.b, this.r, char)
+		DrawSpot(this.b, this.l, char)
+		this.mb()
+	def DrawOuterEdges(this, char=RGB(0xff, 0xff, 0xa0)+'@'+COLOR.nc):
+		# delete this later?
+		DrawSpot(this.t-1, this.l-1, char)
+		DrawSpot(this.t-1, this.r+1, char)
+		DrawSpot(this.b+1, this.l-1, char)
+		DrawSpot(this.b+1, this.r+1, char)
+		this.mb()
+
+	# borders
+	def DrawBorders(this):
+		DrawRectangle(this.tl,
+		(this.br), COLOR.BkDarkGrey)
+		this.mb()
+	def DrawOuterBorders(this):
+		DrawRectangle((this.t-1,this.l-1),
+		(this.b+1,this.r+1), COLOR.BkDarkGrey)
+		this.mb()
+
+	# moves
+	def CheckMove(this, y, x):
+		rs = ""
+		#y
+		if y > this.b:
+			rs += f"\ny is bigger then window's bottom border {y} > {this.b}:\nWindow.[rs]move( {COLOR.red}>{y}<{COLOR.nc}, {x} )\n"
+		elif y < this.t:
+			rs += f"\ny is smaller then window's top border {y} > {this.t}:\nWindow.[rs]move( {COLOR.red}>{y}<{COLOR.nc}, {x} )\n"
+		#x
+		if x > this.r:
+			rs += f"\nx is bigger then window's right border {y} > {this.r}:\nWindow.[rs]move( {y}, {COLOR.red}>{x}<{COLOR.nc} )\n"
+		elif x < this.l:
+			rs += f"\nx is smaller then window's left border {y} > {this.l}:\nWindow.[rs]move( {y}, {COLOR.red}>{x}<{COLOR.nc} )\n"
+		if rs:
+			raise ValueError( "\n\nWindow class [rs]move call value error!\n"+rs )
+	def mb(this):
+		stdout.write(pos(this.y, this.x))
+	def move(this, y, x):
+		# non relative start at win border
+		y += this.t
+		x += this.l
+		this.CheckMove(y, x)
+		this.y = y
+		this.x = x
+		stdout.write(pos(y, x))
+	# set move
+	def smove(this, y, x):
+		# non relative start at win border
+		y += this.t
+		x += this.l
+		this.CheckMove(y, x)
+		this.y = y
+		this.x = x
+	# relative
+	def rmove(this, y, x):
+		this.CheckMove(this.y+y, this.x+x)
+		this.y += y
+		this.x += x
+		stdout.write(pos(y, x))
+	# relative, set
+	def rsmove(this, y, x):
+		this.CheckMove(this.y+y, this.x+x)
+		this.y += y
+		this.x += x
+
+	def putc(this, ch):
+		stdout.write("%s%c"%(pos(this.y, this.x), ch))
+	def puts(this, string):
+		stdout.write("%s%s"%(pos(this.y, this.x), string))
+	def iputc(this, ch):
+		stdout.write(ch)
+	def iputs(this, string):
+		stdout.write(string)
+
 
 #)STUFF
 
