@@ -2045,13 +2045,15 @@ def _XMP_Encode( filename:str, structure:dict[str,Any] ):
 		structure["meta"] = {}
 		structure["meta"]["xmpver"] = _XMP_XMPVER
 	with open(filename, 'w') as file:
-		file.write( _SEncode(structure)[:-1] )
+		file.write( _XMP_SEncode(structure)[:-1] )
+		file.flush()
 
 def UseXmp( filename:str, structure:dict[str, Any] = None ):
 	if structure == None:
 		return _XMP_Decode(filename)
 	else:
 		_XMP_Encode(filename, structure)
+
 # end of XMP stuff
 
 class Window:
