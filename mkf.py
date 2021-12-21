@@ -59,11 +59,11 @@ def help():
 	print("""
 this program will search for template files in ~/Templates, and copy them to the [Result File Name]
 
-$mkf [File Template name (not complete name)] [Result File Name]
+%s [Result File Name] [File Template name (not complete name)]
 
 e.g. (create a file called program.py)
-$mkf py program
-"""[1:-1])
+%s program ytho
+"""[1:-1]%(argv[0], argv[0]))
 	return 0
 
 
