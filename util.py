@@ -1955,6 +1955,9 @@ def _XMP_Decode( filename:str , XmpCheck = True) -> dict[str:Any]:
 		cont = tuple(file.readlines())
 	ncont = ""
 	for i in r(cont):
+		# comments with '#'
+		if TrimChar( TrimChar( cont[i]), "\t", "")[0] == '#':
+			continue
 		if cont[i][:-1]:
 			ncont+=( TrimChar( TrimChar( cont[i][:-1]), "\t", ""))
 	cont = ncont
