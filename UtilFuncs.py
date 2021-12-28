@@ -25,7 +25,9 @@ def Main() -> int:
 	GArgs = get().list
 
 	files = ls()
-	if "util.py" in files:
+	if "utilblack.py" in files:
+		filename = "utilblack.py"
+	elif "util.py" in files:
 		filename = "util.py"
 	elif "310util.py" in files:
 		filename = "310util.py"
@@ -41,11 +43,19 @@ def Main() -> int:
 		filename = "/usr/lib/python3.9/util.py"
 	elif exists("/usr/local/lib/python3.9/util.py"):
 		filename = "/usr/local/lib/python3.9/util.py"
+	else:
+		stderr.write("no util.py file")
+		stdout.write("please provide path to gather the definitions")
+		filename = input("asb path:")
+		while not exists(filename):
+			stdout.write("no such file \"%s\"" % filename)
+			filename = input("asb path:")
+	print("gathering info from \"%s\"" % filename)
 
 	if GArgs:
 		if not GArgs[0].isnumeric():
 			filename = GArgs.pop(0)
-	file = open("/usr/lib/python3.9/util.py")
+	file = open(filename)
 	lines = file.readlines()
 	file.close()
 	labels:dict[str:list[ln]] = {"":[]}
@@ -54,8 +64,9 @@ def Main() -> int:
 		line = lines[index]
 		if line == "#!END\n":break
 		if line:
-			if len(line) > 2 and line[0] == "#" and line[1] in "()":
-				if line[1] == '(':
+			# yeet
+			if len(line) > 3 and line[0] == '#' and line[2] in "()":
+				if line[2] == '(':
 					now = line[2:-1]
 					labels[now] = []
 				else:
