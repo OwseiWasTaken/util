@@ -607,12 +607,11 @@ def mmc(a:int, b:int) -> int:
 	# s = tm()
 	for i in count(0):
 		G = greater+i
-		if not G % a and not G % b:break
+		if not G % a and not G % b:return G
 		# if tm()-s>len(f"{greater}")*2:
 			# print(f"{COLOR.red}timed out{COLOR.nc}")
 			# return None
 			# rai/se Exception('timed out')
-	return G
 
 lcm = mmc
 
@@ -1342,7 +1341,7 @@ def MakeString(line:str, sep:str = " ", quote:str = '"', escape ='\\', MaintainQ
 		char = line[pos]
 		if char == quote and pos > 0 and line[pos-1] != escape:
 			if MaintainQuotes:now+='"'
-			InString = not InString
+			InString ^= InString # invert
 		else:
 			# " start or end string
 			if char == sep and not InString:
@@ -1834,6 +1833,7 @@ __sprintf_types:dict[str, Callable[[Any], Any]] = {
 	'f':float,
 	's':str,
 	'b':bool,
+	't':bool,
 	'x':hex,
 	'r':repr,
 }
@@ -1842,7 +1842,7 @@ __:dict[str, Callable[[Any], Any]] = __sprintf_types.copy()
 for _ in __sprintf_types.keys():
 	__['l'+_]=lambda x: [__[_](y) for y in x]
 	__['t'+_]=lambda x: tuple([__[_](y) for y in x])
-	# dict ain't workin
+	# dict ain't workin :(
 	#__['d'+_]=lambda x: dict([__[_](k) : __[_](v) for k, v in x.items()])
 __sprintf_types = __
 
@@ -1974,6 +1974,7 @@ def _XMP_Decode( filename:str , XmpCheck = True) -> dict[str:Any]:
 			if contname:
 				condepth.append((contname, contnow))
 			ncontname = cont[i+1:i+cont[i:].find('>')]
+			#TODO if len() < 2 raise
 			if contname and ncontname and ncontname[0] == '/' and ncontname[1:] != contname:
 				raise WrongClosingName(
 f"<{contname}> != <{ncontname}> container closer must be the same to container opener")
@@ -1986,14 +1987,15 @@ f"<{contname}> != <{ncontname}> container closer must be the same to container o
 					contnow[_n] = _c
 				else:
 					structure[contname[1:]] = contnow
-					if condepth:
-						contname, contnow = condepth.pop(-1)
-					else:
-						contname = ""
+					## condepth can't be true right?
+					#if condepth:
+					#	contname, contnow = condepth.pop(-1)
+					#else:
+					#	contname = ""
+					contname = ""
 			else: # real contname
 				contnow = {}
 		else:
-
 			if char == '[':
 				varname = cont[
 					i+1
@@ -2008,18 +2010,30 @@ f"<{contname}> != <{ncontname}> container closer must be the same to container o
 				i += len(varname)+cont[i+len(varname):].find(']')
 				if contname:
 					if varval[0] == '{' and varval[-1] == '}':
-						contnow[varname] = list(eval(
-							varval[1:-1].replace('{', '[').replace('}', ']')
-						))
+						if len(varval) == 2:
+							contnow[varname] = []
+						else:
+							contnow[varname] = list(eval(
+								varval[1:-1].replace('{', '[').replace('}', ']')
+							))
 					else:
 						contnow[varname] = eval(varval)
 				else:
 					if varval[0] == '{' and varval[-1] == '}':
-						structure[varname] = list(eval(
-							varval[1:-1].replace('{', '[').replace('}', ']')
-						))
+						if len(varval) == 2:
+							structure[varname] = []
+						else:
+							structure[varname] = list(eval(
+								varval[1:-1].replace('{', '[').replace('}', ']')
+							))
 					else:
-						structure[varname] = eval(varval)
+						structure[varname] = {
+							"null":None,
+							"none":None,
+							"true":True,
+							"false":False,
+						}.get(varval, eval(varval))
+						#structure[varname] = eval(varval)
 		i+=1
 	if structure["meta"]["xmpver"] != _XMP_XMPVER and XmpCheck:
 		fprintf(stderr, "unmatched xmpver, file:{f} decoder:{f}\n",
@@ -2159,6 +2173,24 @@ class Window:
 	def iputs(this, string):
 		stdout.write(string)
 
+def MeterToFoot(meter:float) -> float:
+	return meter*3.28084
+
+def FootToMeter(foot:float) -> float:
+	return foot*0.3048
+
+# smh is wrong (maybe with kelvins)
+def CelsiusToFahrenheit(Celsius:float) -> float:
+	return Celsius * 1.8 + 32
+
+def FahrenheitToCelsius(Fahrenheit:float) -> float:
+	return (Fahrenheit - 32) * 5/9
+
+def CelsiusToKelvin(Celsius:float) -> float:
+	return Celsius-273.15
+
+def KelvinToCelsius(Kelvin:float) -> float:
+	return Kelvin+273.15
 
 #)STUFF
 
