@@ -213,7 +213,7 @@ class log:
 		return this
 
 	def __iter__(this):
-		for i in this():
+		for i in this.LOG:
 			yield i
 
 	def show(this):
@@ -1059,7 +1059,8 @@ def DeepSum(args, ParseStringWith=eval, ParseString=False, ReturnDeeph=False) ->
 				raise TypeError(
 					"""
 %sERROR IN "DeepSum" function%s
-value %s is of type string (and ParseString = False)""" % (COLOR.BrRed, COLOR.nc, repr(thing))
+value %s is of type string (and ParseString = False)"""
+					% (COLOR.BrRed, COLOR.nc, repr(thing))
 				)
 		else:
 			# recourciveness (it that a word?)
@@ -2515,15 +2516,19 @@ def MeterToFoot(meter: float) -> float:
 def FootToMeter(foot: float) -> float:
 	return foot * 0.3048
 
+
 # smh is wrong (maybe with kelvins)
 def CelsiusToFahrenheit(Celsius: float) -> float:
 	return Celsius * 1.8 + 32
 
+
 def FahrenheitToCelsius(Fahrenheit: float) -> float:
 	return (Fahrenheit - 32) * 5 / 9
 
+
 def CelsiusToKelvin(Celsius: float) -> float:
 	return Celsius - 273.15
+
 
 def KelvinToCelsius(Kelvin: float) -> float:
 	return Kelvin + 273.15
