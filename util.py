@@ -41,7 +41,7 @@ from re import compile as comreg
 # )IMPORTS
 # https://regex101.com/
 # (LICENSE
-# this is a general python lib that aims to make fast (fast as in python fast)
+# this is a general python lib that aims to make fast (fast as in "python fast")
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
 # const and other things
 # 2021, by Pedro "owsei" Romero Manse
@@ -2575,8 +2575,9 @@ if __name__ == "__main__":
 		exec(i)
 	for i in get("-e", "").list:
 		print(eval(i))
+	# adapt cmd.py (lib) for this
 	if get("--cli").exists:
-		if input("enter cli mode [Y/n]:") in 'yY':
+		if input("enter cli mode [yY]:") in 'yY':
 			while True:
 				exec(input(">"))
 #!END
