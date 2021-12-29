@@ -2576,7 +2576,7 @@ if __name__ == "__main__":
 	for i in get("-e", "").list:
 		print(eval(i))
 	if get("--cli").exists:
-		if input("enter cli mode [Y/n]:")  'yY':
+		if input("enter cli mode [Y/n]:") in 'yY':
 			while True:
 				exec(input(">"))
 #!END
