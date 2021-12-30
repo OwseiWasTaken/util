@@ -2577,9 +2577,8 @@ if __name__ == "__main__":
 		print(eval(i))
 	# adapt cmd.py (lib) for this
 	if get("--cli").exists:
-		if input("enter cli mode [yY]:") in 'yY':
-			while True:
-				exec(input(">"))
+		# python3.10, interactive mode, util lib imported
+		ss('python3.10 -i -m util')
 #!END
 
 # funcs/classes
