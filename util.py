@@ -12,7 +12,7 @@ from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
-from typing import Callable, Any
+from typing import Callable, Any, Optional, Generator, Iterable
 from random import randint as rint, choice as ritem
 from os import (
 	getcwd as pwd,
@@ -44,7 +44,7 @@ from re import compile as comreg
 # this is a general python lib that aims to make fast (fast as in "python fast")
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
 # const and other things
-# 2021, by Pedro "owsei" Romero Manse
+# 2022, by Pedro "owsei" Romero Manse
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -513,7 +513,7 @@ class COLOR:
 	blue = "\033[0;34m"
 	cyan = "\033[0;36m"
 	white = "\033[0;37m"
-	GreenishCyan = "\033[0;96m"  # kinda too complex ()
+	GreenishCyan = "\033[0;96m"  # kinda too complex
 	orange = "\033[0;33m"  # bruh
 	# orange			=			"\033[0;91m" # bruh
 
@@ -663,7 +663,7 @@ def GetWLen(msg: str, ln: int, end: str = "\n") -> int:
 		GetWLen(msg, ln, end)
 
 
-def count(end: object, start: int = 0, jmp: int = 1) -> int:
+def count(end: int, start: int = 0, jmp: int = 1) -> Generator:
 	i = start
 	if end == 0:
 		while True:
@@ -737,14 +737,14 @@ def rstr(
 	intmax: int = 9,
 ) -> str:
 	ret = []
+	fs:list[Callable] = []
+	if chars:
+		fs.append(rchar)
+	if symbs:
+		fs.append(rsymb)
+	if ints:
+		fs.append(rint)
 	for _ in r(ln):
-		fs = []
-		if chars:
-			fs.append(rchar)
-		if symbs:
-			fs.append(rsymb)
-		if ints:
-			fs.append(rint)
 		f = ritem(fs)
 		if f == rint:
 			ret.append(f(intmin, intmax))
@@ -754,8 +754,7 @@ def rstr(
 
 
 def ANDGroups(
-	g1: set or list or frozenset, g2: set or list or frozenset
-) -> set or list or frozenset:
+	g1: Iterable, g2: Iterable) -> Iterable:
 	G1 = set(g1)
 	G2 = set(g2)
 	Gall = *g1, *g2
@@ -887,7 +886,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"""
 			return f"""name: {this.name}\n{COLOR.orange}data too big to display
 BDP(IgnoreDataSize=True) to ignore size{COLOR.nc}"""
 
-	def __call__(this, data=None) -> any:  # this breaks occasionaly
+	def __call__(this, data=None) -> Any:  # this breaks occasionaly
 
 		if data == None and this.data == None:
 			return this.load()
@@ -935,11 +934,8 @@ def rcase(word: str, chance: float = 0.5) -> str:
 	return wd
 
 
-def invert(var: list or tuple or str) -> list or tuple or str:
-	return var[::-1]
-
-
-def EncryptS(var, key: int or float) -> list[int]:
+#TODO: test
+def EncryptS(var:str, key: int) -> list[int]:
 	return [ord(char) + key for char in var]
 	# ret = []
 	# for char in str(var):
@@ -947,7 +943,8 @@ def EncryptS(var, key: int or float) -> list[int]:
 	# return ret
 
 
-def DecryptS(var: str, key: int or float) -> str:
+#TODO: test
+def DecryptS(var: list[int], key: int ) -> str:
 	return "".join([f"{chr(char-key)}" for char in var])
 	# ret = []
 	# for char in var:
@@ -958,7 +955,7 @@ def DecryptS(var: str, key: int or float) -> str:
 def AdvEncryptS(var, key, deep) -> list[int]:
 	if deep <= 0:
 		deep = 1
-	elif deep == 1 or deep == 0:
+	if deep == 1 or deep == 0:
 		return EncryptS(var, key)
 	else:
 		return AdvEncryptS(var, key * deep, deep - 1)
@@ -967,7 +964,7 @@ def AdvEncryptS(var, key, deep) -> list[int]:
 def AdvDecryptS(var, key, deep) -> str:
 	if deep <= 0:
 		deep = 1
-	elif deep == 1:
+	if deep == 1:
 		return DecryptS(var, key)
 	else:
 		return AdvDecryptS(var, key * deep, deep - 1)
@@ -1006,9 +1003,10 @@ def NoDecimal(number: float) -> int:
 	return int(number)
 
 
-def number(num: str) -> int or float or None:
-	if num.isnumeric():
+def number(num: str) -> int | float | None:
+	if all([char in "0987654321+-.*/" for char in num]):
 		return eval(num)
+	return None
 
 
 def TimesInNumber(TimesIn, NumberTo) -> bool:
@@ -1016,13 +1014,13 @@ def TimesInNumber(TimesIn, NumberTo) -> bool:
 	# return bo/ol(sum([rbool(TimesIn) for x in r(NumberTo)]))
 
 
-def NumSum(numbers: int or float) -> int:
-	numbers = str(numbers).replace(".", "")
-	numbers = sum([int(num) for num in numbers])
-	if len(str(numbers)) != 1:
-		return NumSum(numbers)
+def NumSum(numbers: int | float) -> int:
+	snumbers = str(numbers).replace(".", "")
+	inumbers = int(snumbers)
+	if len(snumbers) != 1:
+		return NumSum(inumbers)
 	else:
-		return numbers
+		return inumbers
 
 
 def FindAll(StringToSearchIn: str, StringToFind: str) -> list[int]:
@@ -1036,8 +1034,41 @@ def FindAll(StringToSearchIn: str, StringToFind: str) -> list[int]:
 		StringToSearchIn = StringToSearchIn.replace(StringToFind, NotStringToFind, 1)
 	return ret
 
+def RDDeepSum(args, ParseStringWith=eval, ParseString=False) -> tuple[int, int]:
+	ret = 0
+	deeph = 0
+	for thing in args:
+		deeph += 1
+		if type(thing) in (float, int):
+			# add number
+			ret += thing
+		elif type(thing) == str:
+			if ParseString:
+				# parse and add string
+				ret += ParseStringWith(thing)
+			else:
+				# breaks because found string
+				raise TypeError(
+					"""
+%sERROR IN "DeepSum" function%s
+value %s is of type string (and ParseString = False)"""
+					% (COLOR.red, COLOR.nc, repr(thing))
+				)
+		else:
+			# recourciveness (it that a word?)
+			deeph -= 1
+			RetA, DeephA = RDDeepSum(
+				thing,
+				ParseStringWith=ParseStringWith,
+				ParseString=ParseString,
+			)
+			# adds the nums and deeph of recourcive run
+			ret += RetA
+			deeph += DeephA
 
-def DeepSum(args, ParseStringWith=eval, ParseString=False, ReturnDeeph=False) -> int:
+	return ret, deeph
+
+def DeepSum(args, ParseStringWith=eval, ParseString=False) -> int:
 	"""
 	this function will add everything in the iterable in {args}, even strings!
 	this function will return deeph of the iterable in {ReturnDeeph} is True (will calculate deeph any way tho)
@@ -1060,33 +1091,25 @@ def DeepSum(args, ParseStringWith=eval, ParseString=False, ReturnDeeph=False) ->
 					"""
 %sERROR IN "DeepSum" function%s
 value %s is of type string (and ParseString = False)"""
-					% (COLOR.BrRed, COLOR.nc, repr(thing))
+					% (COLOR.red, COLOR.nc, repr(thing))
 				)
 		else:
 			# recourciveness (it that a word?)
 			deeph -= 1
-			RetA, DeephA = DeepSum(
+			RetA, DeephA = RDDeepSum(
 				thing,
-				ParseString=ParseString,
 				ParseStringWith=ParseStringWith,
-				ReturnDeeph=True,
+				ParseString=ParseString,
 			)
 			# adds the nums and deeph of recourcive run
 			ret += RetA
 			deeph += DeephA
 
-	if ReturnDeeph:
-		return ret, deeph
-	else:
-		return ret
-	# DUDE DOING THIS MADE ME WANT TO KILL SOMEONE
+	return ret
 
 
-def average(args, ParseDeepSumString=False, SumFunc=DeepSum) -> int:
-	if SumFunc == DeepSum:
-		sum, deeph = SumFunc(args, ParseString=ParseDeepSumString, ReturnDeeph=True)
-	else:
-		sum, deeph = SumFunc(args)
+def average(args, SumFunc=RDDeepSum) -> int:
+	sum, deeph = SumFunc(args)
 	return sum / deeph
 
 
@@ -1114,8 +1137,8 @@ def IsIterable(obj: object) -> bool:
 	return type(obj) in Iterables
 
 
-def SingleList(args: list[...]) -> list[float or int or str or object]:
-	ret = []
+def SingleList(args: list[Any]) -> list[Any]:
+	ret:list[Any] = []
 	for thing in args:
 		if IsIterable(thing):
 			# recourciveness (it that a word?)
@@ -1127,8 +1150,8 @@ def SingleList(args: list[...]) -> list[float or int or str or object]:
 	return ret
 
 
-def BiggestLen(lst: list[any]) -> int:	# biggest by len
-	return max([len(str(thing)) for thing in lst])
+def BiggestLen(lst: list[Any]) -> int:	# biggest by len
+	return max( [len(str(thing)) for thing in lst] )
 
 
 def compare(*timest: tuple[list[int]]) -> str:
@@ -1349,7 +1372,7 @@ class TextBox:
 			clear()
 		if this.DrawRect:
 			DrawRectangle(
-				(this.VSize - 3, 0), (this.VSize, this.HSize - 1), BkColor=COLOR.BkGrey
+				(this.VSize - 3, 0), (this.VSize, this.HSize - 1), BkColor=COLOR.BkBrGrey
 			)
 		char = ""
 
@@ -2198,7 +2221,7 @@ def IsBitSet(num, index):
 	return num & 1 << index != 0
 
 
-def BinarySearch(lst: list[int], item: list[int]) -> int:
+def BinarySearch(lst: list[int], item: int) -> int:
 	"""
 	Returns the position of item in the list if found, -1 otherwise.
 	List must be sorted.
@@ -2257,33 +2280,39 @@ def rpos(y, x):  # relative pos func
 
 
 # XMP stuff
-_XMP_XMPVER: int = 0.3
+_XMP_XMPVER: float = 0.3
 
 
-def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str:Any]:
+def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str,Any]:
 	with open(filename, "r") as file:
-		cont = tuple(file.readlines())
-	ncont = ""
-	for i in r(cont):
+		lcont:tuple[str, ...] = tuple(file.readlines())
+	ncont:str = ""
+	for i in r(lcont):
 		# comments with '#'
 		if TrimChar(TrimChar(cont[i]), "\t", "")[0] == "#":
 			continue
-		if cont[i][:-1]:
-			ncont += TrimChar(TrimChar(cont[i][:-1]), "\t", "")
-	cont = ncont
+		if lcont[i][:-1]:
+			ncont += TrimChar(TrimChar(lcont[i][:-1]), "\t", "")
+	cont:str = ncont
 	del ncont
 	i = 0
-	structure = {}
-	contnow = {}
+	structure:dict[str, Any] = {}
+	contnow:dict[str, Any] = {}
 	condepth = []  # keep track of active conteiner tree
 	contname = ""
+	aliases:dict[str, Any] = {
+		"null": None,
+		"none": None,
+		"true": True,
+		"false": False,
+	}
 
 	while i < len(cont):
 		char = cont[i]
 		if char == "<":
 			if contname:
 				condepth.append((contname, contnow))
-			ncontname = cont[i + 1 : i + cont[i:].find(">")]
+			ncontname = cont[i + 1 : i + str(cont[i:]).find(">")]
 			# TODO if len() < 2 raise
 			if (
 				contname
@@ -2313,13 +2342,12 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str:Any]:
 				contnow = {}
 		else:
 			if char == "[":
-				varname = cont[i + 1 : i + cont[i:].find(" ")]
-				varval = cont[
-					i
-					+ 2
+				varname:str = cont[i + 1 : i + cont[i:].find(" ")]
+				varval:str = cont[
+					i + 2
 					+ len(varname) : i
 					+ len(varname)
-					+ cont[i + len(varname) :].find("]")
+					+ str(cont[i + len(varname) :]).find("]")
 				]  # help
 				i += len(varname) + cont[i + len(varname) :].find("]")
 				if contname:
@@ -2341,13 +2369,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str:Any]:
 								eval(varval[1:-1].replace("{", "[").replace("}", "]"))
 							)
 					else:
-						structure[varname] = {
-							"null": None,
-							"none": None,
-							"true": True,
-							"false": False,
-						}.get(varval, eval(varval))
-						# structure[varname] = eval(varval)
+						structure[varname] = aliases.get(varval, eval(varval))
 		i += 1
 	if structure["meta"]["xmpver"] != _XMP_XMPVER and XmpCheck:
 		fprintf(
@@ -2359,7 +2381,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str:Any]:
 	return structure
 
 
-def _XMP_SEncode(structure, rl=0):
+def _XMP_SEncode(structure:dict[str,Any], rl:int=0) -> str:
 	ret = ""
 	rs = "\t" * rl
 	for k in structure.keys():
@@ -2386,11 +2408,11 @@ def _XMP_Encode(filename: str, structure: dict[str, Any]):
 		file.flush()
 
 
-def UseXmp(filename: str, structure: dict[str, Any] = None):
-	if structure == None:
-		return _XMP_Decode(filename)
-	else:
+def UseXmp(filename: str, structure: Optional[dict[str, Any]] = None):
+	if structure is not None:
 		_XMP_Encode(filename, structure)
+	else:
+		return _XMP_Decode(filename)
 
 
 # end of XMP stuff
@@ -2560,12 +2582,12 @@ class noc:
 	pass
 
 
-class _:
-	def _():
+class _c:
+	def _m(this):
 		pass
 
 
-MethodType = type(_._)
+MethodType = type(_c._m)
 ARGV = ArgvAssing(argv[1:])
 Endl = "\n"
 # )CONSTS
@@ -2649,7 +2671,6 @@ def cls BDP @ 691
 def fct NumberToExponent @ 758
 def fct rbool @ 763
 def fct rcase @ 766
-def fct invert @ 778
 def fct EncryptS @ 781
 def fct DecryptS @ 788
 def fct AdvEncryptS @ 795
