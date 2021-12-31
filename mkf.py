@@ -19,7 +19,7 @@ def Main() -> int:
 		ResultFile, CopyFile = get(None).list[0:2]
 	except ValueError:
 		help()
-		exit(2)
+		return 2
 
 	ss(f"echo /home/owsei/Templates/*{CopyFile.lower()}* > /tmp/mkf.cache")
 	if verbose:
@@ -33,7 +33,7 @@ def Main() -> int:
 		[print(f"{i+1} : {FileData[i].split('/')[-1].split('.')[-1]}") for i in r(FileData)]
 		msg = GetInt(">")
 		if msg == 0:
-			exit(0)
+			return 0
 		CopyFile = FileData[msg-1]
 	else:
 		CopyFile = FileData[0]
@@ -47,7 +47,7 @@ def Main() -> int:
 		print(f"{ResultFile} already exists, overwrite? [y] :",end='')
 		ch = GetCh()
 		if not ch in ['y','Y']:
-			exit(1)
+			return 1
 		else:
 			print(ch)
 
@@ -79,11 +79,8 @@ if __name__ == '__main__':
 			ExitCode = Main()
 		except KeyboardInterrupt:
 			pass
-
-
-
 	if get('--debug').exists:
-		if not ExitCode:printl("%scode successfully exited in " % color["green"])
-		else:printl("%scode exited with error %d in " % (color["red"],ExitCode))
-		print("%.3f seconds%s" % (tm()-start,color["nc"]))
+		if not ExitCode:printl("%scode successfully exited in " % COLOR.green)
+		else:printl("%scode exited with error %d in " % (COLOR.red,ExitCode))
+		print("%.3f seconds%s" % (tm()-start,COLOR.nc))
 	exit(ExitCode)
