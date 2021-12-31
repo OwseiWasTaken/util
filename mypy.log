@@ -5,81 +5,10 @@ util.py:119: error: Module has no attribute "getch"
 util.py:120: error: Module has no attribute "kbhit"
 util.py:121: error: Module has no attribute "getch"
 util.py:124: error: All conditional function variants must have identical signatures
-util.py:278: error: X | Y syntax for unions requires Python 3.10
-util.py:315: error: X | Y syntax for unions requires Python 3.10
-util.py:343: error: X | Y syntax for unions requires Python 3.10
 util.py:347: error: Argument 2 to "dump" has incompatible type "str"; expected "IO[str]"
-util.py:551: error: X | Y syntax for unions requires Python 3.10
-util.py:559: error: X | Y syntax for unions requires Python 3.10
 util.py:612: error: Incompatible return value type (got "Tuple[Any, Any]", expected "Tuple[int]")
-util.py:616: error: X | Y syntax for unions requires Python 3.10
 util.py:647: error: Missing return statement
-util.py:666: error: The return type of a generator function should be "Generator" or one of its supertypes
-util.py:676: error: Unsupported operand types for >= ("int" and "object")
 util.py:685: error: Incompatible return value type (got "float", expected "int")
 util.py:690: error: Missing return statement
-util.py:697: error: "int" has no attribute "__iter__"; maybe "__str__", "__int__", or "__invert__"? (not iterable)
 util.py:723: error: Invalid type comment or annotation
-util.py:747: error: Argument 1 to "append" of "list" has incompatible type "Callable[[int, int], int]"; expected "Callable[[Any], str]"
-util.py:750: error: Too many arguments
-util.py:757: error: Invalid type comment or annotation
-util.py:758: error: Invalid type comment or annotation
-util.py:770: error: X | Y syntax for unions requires Python 3.10
-util.py:777: error: X | Y syntax for unions requires Python 3.10
-util.py:790: error: X | Y syntax for unions requires Python 3.10
-util.py:890: error: Function "builtins.any" is not valid as a type
-util.py:890: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:938: error: Invalid type comment or annotation
-util.py:942: error: Invalid type comment or annotation
-util.py:950: error: Invalid type comment or annotation
-util.py:958: error: Missing return statement
-util.py:967: error: Missing return statement
-util.py:1009: error: Invalid type comment or annotation
-util.py:1019: error: Invalid type comment or annotation
-util.py:1063: error: "Type[COLOR]" has no attribute "BrRed"
-util.py:1068: error: "int" object is not iterable
-util.py:1075: error: Cannot determine type of "RetA"
-util.py:1076: error: Cannot determine type of "DeephA"
-util.py:1079: error: Incompatible return value type (got "Tuple[int, int]", expected "int")
-util.py:1117: error: Unexpected "..."
-util.py:1117: error: Invalid type comment or annotation
-util.py:1118: error: Need type annotation for "ret" (hint: "ret: List[<type>] = ...")
-util.py:1130: error: Function "builtins.any" is not valid as a type
-util.py:1130: note: Perhaps you need "Callable[...]" or a callback protocol?
-util.py:1352: error: "Type[COLOR]" has no attribute "BkGrey"
-util.py:1449: error: X | Y syntax for unions requires Python 3.10
-util.py:2019: error: X | Y syntax for unions requires Python 3.10
-util.py:2024: error: X | Y syntax for unions requires Python 3.10
-util.py:2212: error: Unsupported operand types for > ("int" and "List[int]")
-util.py:2214: error: Unsupported operand types for < ("int" and "List[int]")
-util.py:2263: error: "dict" expects 2 type arguments, but 1 given
-util.py:2263: error: Invalid type comment or annotation
-util.py:2263: note: did you mean to use ',' instead of ':' ?
-util.py:2273: error: Incompatible types in assignment (expression has type "str", variable has type "Tuple[str, ...]")
-util.py:2277: error: Need type annotation for "contnow" (hint: "contnow: Dict[<type>, <type>] = ...")
-util.py:2286: error: "Tuple[str, ...]" has no attribute "find"
-util.py:2297: error: Incompatible types in assignment (expression has type "Tuple[str, ...]", variable has type "str")
-util.py:2316: error: "Tuple[str, ...]" has no attribute "find"
-util.py:2322: error: "Tuple[str, ...]" has no attribute "find"
-util.py:2324: error: "Tuple[str, ...]" has no attribute "find"
-util.py:2331: error: "Tuple[str, ...]" has no attribute "replace"
-util.py:2334: error: Argument 1 to "eval" has incompatible type "Tuple[str, ...]"; expected "Union[str, bytes, CodeType]"
-util.py:2338: error: Invalid index type "Tuple[str, ...]" for "Dict[str, Dict[Any, Any]]"; expected type "str"
-util.py:2338: error: Incompatible types in assignment (expression has type "List[<nothing>]", target has type "Dict[Any, Any]")
-util.py:2340: error: Invalid index type "Tuple[str, ...]" for "Dict[str, Dict[Any, Any]]"; expected type "str"
-util.py:2340: error: Incompatible types in assignment (expression has type "List[Any]", target has type "Dict[Any, Any]")
-util.py:2341: error: "Tuple[str, ...]" has no attribute "replace"
-util.py:2344: error: Invalid index type "Tuple[str, ...]" for "Dict[str, Dict[Any, Any]]"; expected type "str"
-util.py:2344: error: No overload variant of "get" of "Mapping" matches argument types "Tuple[str, ...]", "Any"
-util.py:2344: note: Possible overload variants:
-util.py:2344: note:		def get(self, key: str) -> Optional[bool]
-util.py:2344: note:		def [_T] get(self, str, Union[bool, None, _T]) -> Union[bool, None, _T]
-util.py:2349: error: Argument 1 to "eval" has incompatible type "Tuple[str, ...]"; expected "Union[str, bytes, CodeType]"
-util.py:2352: error: Name "_XMP_XMPVER" is not defined
-util.py:2357: error: Name "_XMP_XMPVER" is not defined
-util.py:2383: error: Name "_XMP_XMPVER" is not defined
-util.py:2393: error: Argument 2 to "_XMP_Encode" has incompatible type "Optional[Dict[str, Any]]"; expected "Dict[str, Any]"
-util.py:2563: error: Name "_" already defined on line 2124
-util.py:2564: error: Method must have at least one argument
-util.py:2568: error: "str" has no attribute "_"
-Found 77 errors in 1 file (checked 1 source file)
+Found 12 errors in 1 file (checked 1 source file)
