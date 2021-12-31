@@ -11,7 +11,7 @@ class Type(IntEnum):
 	Count = iota()
 
 @dataclass
-class ln:
+class Ln:
 	Line:int
 	Type:int # Type.*
 	Text:str
@@ -58,7 +58,7 @@ def Main() -> int:
 	file = open(filename)
 	lines = file.readlines()
 	file.close()
-	labels:dict[str:list[ln]] = {"":[]}
+	labels:dict[str,list[Ln]] = {"":[]}
 	now = ""
 	for index in r(lines):
 		line = lines[index]
@@ -72,19 +72,19 @@ def Main() -> int:
 				else:
 					now = ""
 			elif line[0:3] == "def":
-				labels[now].append(ln(index, Type.Func, line[4:line.find('(')]))
+				labels[now].append(Ln(index, Type.Func, line[4:line.find('(')]))
 			elif line[0:5] == "class":
 				if '#' in line or "pass" in line:
-					labels[now].append(ln(index, Type.Class, line[6:line.find(':')]))
+					labels[now].append(Ln(index, Type.Class, line[6:line.find(':')]))
 				else:
-					labels[now].append(ln(index, Type.Class, line[6:-1]))
+					labels[now].append(Ln(index, Type.Class, line[6:-1]))
 			elif line[0] == '#':
-				labels[now].append(ln(index, Type.Comment, line[:-1]))
+				labels[now].append(Ln(index, Type.Comment, line[:-1]))
 			elif line[:4] == "from" or line[:6] == "import":
 				t = line.replace(' ', '\x1b', 1)
 				fs = t.find('\x1b')
 				ss = t.find(' ')
-				labels[now].append(ln(index, Type.Import, line[fs+1:ss]))
+				labels[now].append(Ln(index, Type.Import, line[fs+1:ss]))
 			if labels[now]:
 				pass
 				#TODO there's smh wrong with the line number and the line index
