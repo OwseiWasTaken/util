@@ -1,14 +1,20 @@
-util.py:66: error: Skipping analyzing "gi": module is installed, but missing library stubs or py.typed marker
-util.py:66: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
-util.py:69: error: Skipping analyzing "gi.repository": module is installed, but missing library stubs or py.typed marker
-util.py:119: error: Module has no attribute "getch"
-util.py:120: error: Module has no attribute "kbhit"
-util.py:121: error: Module has no attribute "getch"
-util.py:124: error: All conditional function variants must have identical signatures
-util.py:347: error: Argument 2 to "dump" has incompatible type "str"; expected "IO[str]"
-util.py:612: error: Incompatible return value type (got "Tuple[Any, Any]", expected "Tuple[int]")
-util.py:647: error: Missing return statement
-util.py:685: error: Incompatible return value type (got "float", expected "int")
-util.py:690: error: Missing return statement
-util.py:723: error: Invalid type comment or annotation
-Found 12 errors in 1 file (checked 1 source file)
+util.py:279: error: X | Y syntax for unions requires Python 3.10
+util.py:316: error: X | Y syntax for unions requires Python 3.10
+util.py:344: error: X | Y syntax for unions requires Python 3.10
+util.py:552: error: X | Y syntax for unions requires Python 3.10
+util.py:560: error: X | Y syntax for unions requires Python 3.10
+util.py:617: error: X | Y syntax for unions requires Python 3.10
+util.py:720: error: X | Y syntax for unions requires Python 3.10
+util.py:766: error: X | Y syntax for unions requires Python 3.10
+util.py:773: error: X | Y syntax for unions requires Python 3.10
+util.py:786: error: X | Y syntax for unions requires Python 3.10
+util.py:1003: error: X | Y syntax for unions requires Python 3.10
+util.py:1014: error: X | Y syntax for unions requires Python 3.10
+util.py:1469: error: X | Y syntax for unions requires Python 3.10
+util.py:2039: error: X | Y syntax for unions requires Python 3.10
+util.py:2044: error: X | Y syntax for unions requires Python 3.10
+Found 15 errors in 1 file (checked 1 source file)
+
+-------------------- -------------------- --------------------
+
+these errors only occour cuz mypy doesn't support python3.10 yet
