@@ -1,8 +1,9 @@
 #! /usr/bin/python3.10
 # TODO:
-#  test pos func in windows
-# _ prefixed imports
+#  test pos funcs in windows
+
 # (IMPORTS
+
 from time import strftime as __ftime__
 from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
@@ -12,7 +13,7 @@ from functools import cache
 from numpy import sign as signum
 from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
-from typing import Callable, Any, Optional, Generator, Iterable
+from typing import Callable, Any, Optional, Iterator, Iterable
 from random import randint as rint, choice as ritem
 from os import (
 	getcwd as pwd,
@@ -39,7 +40,10 @@ from enum import IntEnum, Enum, auto as iota  # (1, 2, 3, ...), fafo, go's iota
 from re import compile as comreg
 
 # )IMPORTS
+# (LINKS
+# __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 # https://regex101.com/
+# )LINKS
 # (LICENSE
 # this is a general python lib that aims to make fast (fast as in "python fast")
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
@@ -57,11 +61,10 @@ from re import compile as comreg
 # You should have received a copy of the GNU General Public License
 # along with this program; if not get it here https://www.gnu.org/licenses/gpl-3.0.en.html
 # )LICENSE
-# __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 
 # (STUFF
 # OS especific func
-if OS in ["linux", "macos"]:  # TODO is it "macos"?
+if OS in ["linux", "darwin"]:
 	try:
 		import gi
 
@@ -106,6 +109,7 @@ if OS in ["linux", "macos"]:  # TODO is it "macos"?
 
 
 else:  # (prolly) windows
+	import msvcrt
 
 	def notify(title="", body=""):
 		stdout.write(
@@ -113,7 +117,6 @@ else:  # (prolly) windows
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py"""
 		)
 
-	import msvcrt
 
 	def GetCh() -> str:
 		char = msvcrt.getch()
@@ -121,7 +124,7 @@ if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py
 			char += msvcrt.getch()
 		return char
 
-	def ClearLine(y, GetTerminalY="default", char=" ", start=COLOR.nc, end=COLOR.nc):
+	def ClearLine(y):
 		stderr.write(
 			f"""ClearLine function not yet implemented in util.py for {OS}
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py"""
@@ -341,10 +344,10 @@ def UseFile(file: str, obj=None):
 
 
 def json(file: str, obj: object = None) -> dict | None:
-	if obj == None:
-		return _JsonLoad(open(file, "r"))
+	if obj is None:
+		return _JsonLoad(open(file, 'r'))
 	else:
-		_JsonDump(obj, file)
+		_JsonDump(obj, open(file, 'w'))
 		return None
 
 
@@ -603,12 +606,12 @@ def StrToMs(ipts: str) -> int:
 	return -1
 
 
-def bhask(a, b, c) -> tuple[int]:
+def bhask(a, b, c) -> tuple[int, int]:
 	delt = ((b ** 2) - (4 * a * c)) ** 0.5
 	b *= -1  # can be anyware before x,y
 	a *= 2
-	x = (b + delt) / a
-	y = (b - delt) / a
+	x:int = (b + delt) / a
+	y:int = (b - delt) / a
 	return x, y
 
 
@@ -660,10 +663,10 @@ def GetWLen(msg: str, ln: int, end: str = "\n") -> int:
 	if len(x) == ln:
 		return x
 	else:
-		GetWLen(msg, ln, end)
+		return GetWLen(msg, ln, end)
 
 
-def count(end: int, start: int = 0, jmp: int = 1) -> Generator:
+def count(end: int, start: int = 0, jmp: int = 1) -> Iterator[int]:
 	i = start
 	if end == 0:
 		while True:
@@ -679,7 +682,7 @@ def count(end: int, start: int = 0, jmp: int = 1) -> Generator:
 
 # decorator
 def timeit(func):
-	def wrapper(*args, **kwargs) -> int:
+	def wrapper(*args, **kwargs) -> float:
 		timer = tm()
 		func(args, **kwargs)
 		return round(tm() - timer, 6)
@@ -688,20 +691,16 @@ def timeit(func):
 
 
 def mmc(a: int, b: int) -> int:
-	assert type(a) == int, f"a : {a} != int"
-	assert type(b) == int, f"b : {b} != int"
+	if not (isinstance(a, int) and isinstance(b, int)):
+		raise ValueError(f"values from lcm need to be int!, a:{type(a)}, b:{type(b)}")
 	if a - 1 < b or b < a + 1:
 		return a * b
-	greater = max(a, b)
-	# s = tm()
-	for i in count(0):
-		G = greater + i
+	G = max(a, b)
+	for _ in count(0):
+		G += 1
 		if not G % a and not G % b:
 			return G
-		# if tm()-s>len(f"{greater}")*2:
-		# print(f"{COLOR.red}timed out{COLOR.nc}")
-		# return None
-		# rai/se Exception('timed out')
+	return -1
 
 
 lcm = mmc
@@ -720,7 +719,7 @@ def exit(num: int = 1):
 	exi(num)
 
 
-def between(x: float or int, min: float or int, max: float or int) -> bool:
+def between(x: float | int, min: float | int, max: float | int) -> bool:
 	return min < x < max
 
 
@@ -2313,7 +2312,6 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str,Any]:
 			if contname:
 				condepth.append((contname, contnow))
 			ncontname = cont[i + 1 : i + str(cont[i:]).find(">")]
-			# TODO if len() < 2 raise
 			if (
 				contname
 				and ncontname
