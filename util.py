@@ -2288,7 +2288,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str,Any]:
 	ncont:str = ""
 	for i in r(lcont):
 		# comments with '#'
-		if TrimChar(TrimChar(cont[i]), "\t", "")[0] == "#":
+		if TrimChar(TrimChar(lcont[i]), "\t", "")[0] == "#":
 			continue
 		if lcont[i][:-1]:
 			ncont += TrimChar(TrimChar(lcont[i][:-1]), "\t", "")
