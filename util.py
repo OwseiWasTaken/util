@@ -44,6 +44,7 @@ from re import compile as comreg
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 # https://regex101.com/
 # )LINKS
+
 # (LICENSE
 # this is a general python lib that aims to make fast (fast as in "python fast")
 # usefull functions, classes and constants, such as IsBitSet, get class, USER

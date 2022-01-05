@@ -16,7 +16,8 @@ def Main() -> int:
 	db.save(verbose)
 
 	try:
-		ResultFile, CopyFile = get(None).list[0:2]
+		gn = get("")
+		ResultFile, CopyFile = gn.first, gn.last
 	except ValueError:
 		help()
 		return 2
@@ -37,6 +38,7 @@ def Main() -> int:
 		CopyFile = FileData[msg-1]
 	else:
 		CopyFile = FileData[0]
+
 
 	ending = '.' + CopyFile.split('.')[-1]
 
