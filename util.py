@@ -2539,22 +2539,34 @@ def FootToMeter(foot: float) -> float:
 	return foot * 0.3048
 
 
-#temperatures
-def CelsiusToFahrenheit(Celsius: float) -> float:
-	return Celsius * 1.8 + 32
+class Temperature:
+	def CelsiusToFahrenheit(Celsius: float) -> float:
+		return Celsius * 1.8 + 32
+	CTF = CelsiusToFahrenheit
+
+	def FahrenheitToCelsius(Fahrenheit: float) -> float:
+		return (Fahrenheit - 32) / 1.8
+	FTC = FahrenheitToCelsius
 
 
-def FahrenheitToCelsius(Fahrenheit: float) -> float:
-	return (Fahrenheit - 32) / 1.8
+	def CelsiusToKelvin(Celsius: float) -> float:
+		return Celsius - 273.15
+	CTK = CelsiusToKelvin
 
 
-def CelsiusToKelvin(Celsius: float) -> float:
-	return Celsius - 273.15
+	def KelvinToCelsius(Kelvin: float) -> float:
+		return Kelvin + 273.15
+	KTC = KelvinToCelsius
+
+	def FahrenheitToKelvin(Fahrenheit: float) -> float:
+		return CelsiusToKelvin(FahrenheitToCelsius(Fahrenheit))
+	FTK = FahrenheitToKelvin
+	def KelvinToFahrenheit(Kelvin: float) -> float:
+		return CelsiusToFahrenheit(KelvinToFahrenheit(Kelvin))
+	KTF = KelvinToFahrenheit
 
 
-def KelvinToCelsius(Kelvin: float) -> float:
-	return Kelvin + 273.15
-
+# )STUFF
 # (CONSTS
 class WrongClosingName(Exception):
 	pass
