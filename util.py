@@ -2331,6 +2331,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str,Any]:
 					contnow[_n] = _c
 				else:
 					structure[contname[1:]] = contnow
+					## TODO
 					## condepth can't be true right?
 					# if condepth:
 					#	contname, contnow = condepth.pop(-1)
@@ -2538,13 +2539,13 @@ def FootToMeter(foot: float) -> float:
 	return foot * 0.3048
 
 
-# smh is wrong (maybe with kelvins)
+#temperatures
 def CelsiusToFahrenheit(Celsius: float) -> float:
 	return Celsius * 1.8 + 32
 
 
 def FahrenheitToCelsius(Fahrenheit: float) -> float:
-	return (Fahrenheit - 32) * 5 / 9
+	return (Fahrenheit - 32) / 1.8
 
 
 def CelsiusToKelvin(Celsius: float) -> float:
@@ -2553,9 +2554,6 @@ def CelsiusToKelvin(Celsius: float) -> float:
 
 def KelvinToCelsius(Kelvin: float) -> float:
 	return Kelvin + 273.15
-
-
-# )STUFF
 
 # (CONSTS
 class WrongClosingName(Exception):
