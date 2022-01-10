@@ -941,7 +941,7 @@ def EncryptS(var: str, key: int) -> list[int]:
     # return ret
 
 
-# TODO: test
+# TODO(#5): test
 def DecryptS(var: list[int], key: int) -> str:
     return "".join([f"{chr(char-key)}" for char in var])
     # ret = []
