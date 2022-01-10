@@ -932,7 +932,7 @@ def rcase(word: str, chance: float = 0.5) -> str:
 	return wd
 
 
-# TODO(#4): test
+# TODO: test EncryptS func
 def EncryptS(var: str, key: int) -> list[int]:
 	return [ord(char) + key for char in var]
 	# ret = []
@@ -941,7 +941,7 @@ def EncryptS(var: str, key: int) -> list[int]:
 	# return ret
 
 
-# TODO(#5): test
+# TODO(#5): test DecryptS func
 def DecryptS(var: list[int], key: int) -> str:
 	return "".join([f"{chr(char-key)}" for char in var])
 	# ret = []
