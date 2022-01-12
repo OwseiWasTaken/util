@@ -548,8 +548,19 @@ class COLOR:
 	BkBrOrange = "\033[0;103m"
 	BkBrGrey = "\033[0;105m"
 
+	MODE_LIGHT = 1
+	MODE_DIM = 2
+	MODE_ITALICS = 3
+	MODE_UNDERLINED = 4
+	MODE_BLINK = 5
+	MODE_SIX = 6 # idk what it is
+	MODE_BKGROUND = 7
+	MODE_HIDDEN = 8
+	MODE_CROSSED = 9
 
-# modes: 1:light, 2:dim, 3:italics, 4:underline, 5:blink
+
+# color modes:
+# 1:light, 2:dim, 3:italics, 4:underline, 5:blink
 # 7:bkground, 8:hidden, 9: crossed
 def SetColorMode(Color: str, mode: str | int) -> str:
 	index = Color.find("[") + 1
