@@ -170,14 +170,10 @@ time = __time()
 
 
 class log:
-	def __init__(this, sep=", ", tm=True, stream="log", autosave=False):
-		if type(stream) == str:
-			stream = open(stream, "w")
+	def __init__(this, sep=", ", tm=True, autosave=False):
 		this.autosave: bool = autosave
 		this.tm: bool = tm
 		this.sep: str = sep
-		this.stream: str = stream
-		this.StreamIsFile = not (stream in [stdout, stderr])
 		this.LOG: list[str] = []
 
 	def clear(this):
@@ -222,15 +218,6 @@ class log:
 	def show(this):
 		for i in this:
 			print(i)
-
-	def save(this):
-		if this.StreamIsFile:
-			this.stream.truncate()
-			for i in this.LOG:
-				this.stream.write(f"{i}\n")
-		else:
-			for i in this.LOG:
-				this.stream.write(f"{i}\n")
 
 
 def r(end, start: int = 0, jmp: int = 1):
