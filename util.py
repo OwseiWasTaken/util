@@ -545,6 +545,101 @@ class COLOR:
 	MODE_HIDDEN = 8
 	MODE_CROSSED = 9
 
+# Regular Colors
+
+class color:
+	Black	=	"\x1b[0;30m"
+	Red		=	"\x1b[0;31m"
+	Green	=	"\x1b[0;32m"
+	Yellow	=	"\x1b[0;33m"
+	Blue	=	"\x1b[0;34m"
+	Purple	=	"\x1b[0;35m"
+	Cyan	=	"\x1b[0;36m"
+	White	=	"\x1b[0;37m"
+	#Reset
+	Reset="\x1b[0m"
+
+	class Regular:
+		Black	=	"\x1b[0;30m"
+		Red		=	"\x1b[0;31m"
+		Green	=	"\x1b[0;32m"
+		Yellow	=	"\x1b[0;33m"
+		Blue	=	"\x1b[0;34m"
+		Purple	=	"\x1b[0;35m"
+		Cyan	=	"\x1b[0;36m"
+		White	=	"\x1b[0;37m"
+
+	class Bold:
+		Black	=	"\x1b[1;30m"
+		Red		=	"\x1b[1;31m"
+		Green	=	"\x1b[1;32m"
+		Yellow	=	"\x1b[1;33m"
+		Blue	=	"\x1b[1;34m"
+		Purple	=	"\x1b[1;35m"
+		Cyan	=	"\x1b[1;36m"
+		White	=	"\x1b[1;37m"
+
+	class Underline:
+		Black	=	"\x1b[4;30m"
+		Red		=	"\x1b[4;31m"
+		Green	=	"\x1b[4;32m"
+		Yellow	=	"\x1b[4;33m"
+		Blue	=	"\x1b[4;34m"
+		Purple	=	"\x1b[4;35m"
+		Cyan	=	"\x1b[4;36m"
+		White	=	"\x1b[4;37m"
+
+	class Background:
+		Black	=	"\x1b[40m"
+		Red	  	=	"\x1b[41m"
+		Green 	=	"\x1b[42m"
+		Yellow	=	"\x1b[43m"
+		Blue  	=	"\x1b[44m"
+		Purple	=	"\x1b[45m"
+		Cyan  	=	"\x1b[46m"
+		White 	=	"\x1b[47m"
+
+	class HighIntensty:
+		Black	=	"\x1b[0;90m"
+		Red		=	"\x1b[0;91m"
+		Green	=	"\x1b[0;92m"
+		Yellow  =	"\x1b[0;93m"
+		Blue	=	"\x1b[0;94m"
+		Purple  =	"\x1b[0;95m"
+		Cyan	=	"\x1b[0;96m"
+		White	=	"\x1b[0;97m"
+
+	class BoldHighIntensty:
+		Black	=	"\x1b[1;90m"
+		Red		=	"\x1b[1;91m"
+		Green	=	"\x1b[1;92m"
+		Yellow	=	"\x1b[1;93m"
+		Blue	=	"\x1b[1;94m"
+		Purple	=	"\x1b[1;95m"
+		Cyan	=	"\x1b[1;96m"
+		White	=	"\x1b[1;97m"
+
+	class HighIntenstybackgrounds:
+		Black	=	"\x1b[0;100m"
+		Red		=	"\x1b[0;101m"
+		Green	=	"\x1b[0;102m"
+		Yellow	=	"\x1b[0;103m"
+		Blue	=	"\x1b[0;104m"
+		Purple	=	"\x1b[0;105m"
+		Cyan	=	"\x1b[0;106m"
+		White	=	"\x1b[0;107m"
+
+def RGB(r, g, b):
+	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
+
+def _RGB(m, t, r, g, b):
+	return "\x1b[%s;%s;%s;%s;%sm" % (m, t, r, g, b)
+
+# TODO remove!
+#for i in r(25):
+#	if not i in (12,):
+#		print(_RGB(i, 2, 20, 200, 200)+("%d yeet me daddy"%i)+RGB(255, 255, 255), end = ' --- ')
+#		print(_RGB(i+25, 2, 20, 200, 200)+("%d yeet me daddy"%(i+25))+RGB(255, 255, 255))
 
 # color modes:
 # 1:light, 2:dim, 3:italics, 4:underline, 5:blink
@@ -555,11 +650,6 @@ def SetColorMode(Color: str, mode: str | int) -> str:
 	Colorl[index] = str(mode)
 	Color = "".join(Colorl)
 	return Color
-
-
-def AddStr(Color: str, mode: str | int, string: str):
-	if type(mode) == int:
-		mode = str(mode)
 
 
 def PascalCase(string, remove=" ") -> str:
@@ -2033,10 +2123,6 @@ def AdvTextBox(
 	return _AdvTextBox(tl, br, content, DrawSides, update, UpperMode, CustomStatusBar)()
 
 
-def RGB(r, g, b):
-	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
-
-
 def ArgvAssing(
 	args: list[str],
 ) -> dict[None | str, list[str]]:  # omfg it's so much better
@@ -2658,7 +2744,6 @@ def fct input @ 391
 def fct GCH @ 399
 def cls COLOR @ 405
 def fct SetColorMode @ 448
-def fct AddStr @ 455
 def fct PascalCase @ 458
 def fct attrs @ 465
 def fct SplitBracket @ 468
