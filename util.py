@@ -635,8 +635,8 @@ class color:
 def RGB(r:int | str, g : int | str, b: int | str) -> str:
 	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
 
-def _RGB(a, b, r, g, b) -> str: # what is a and b?!?!
-	return "\x1b[%s;%s;%s;%s;%sm" % (a, b, r, g, b)
+def _RGB(z, x, r, g, b) -> str: # what is z and x?!?!
+	return "\x1b[%s;%s;%s;%s;%sm" % (z, x, r, g, b)
 
 # color modes:
 # 1:light, 2:dim, 3:italics, 4:underline, 5:blink
