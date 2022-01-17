@@ -2478,6 +2478,7 @@ def _XMP_SEncode(structure: dict[str, Any], rl: int = 0) -> str:
 			ret += _XMP_SEncode(structure[k], rl + 1)
 			ret += f"{rs}</{k}>\n"
 		else:
+			assert not isinstance(structure[k], set), "xmp can't store/load a set yet"
 			if isinstance(structure[k], list):
 				ret += f"{rs}[{k} {str(structure[k]).replace('[', '{').replace(']', '}')}]\n"
 			else:
