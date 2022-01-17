@@ -1,6 +1,7 @@
 #! /usr/bin/python3.10
 # TODO:
-#  test pos (and other cursor) funcs in windows
+#	test pos (and other cursor) funcs in windows
+#	sshkeyboard?, it's slow, but VERY easy to work with
 
 # (IMPORTS
 
@@ -84,15 +85,15 @@ if OS in ["linux", "darwin"]:
 	from tty import setraw
 	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
 	from fcntl import ioctl
+	sfo = sin.fileno()
 
-	def GetCh() -> str:
-		fd = sin.fileno()
-		OldSettings = tcgetattr(fd)
+	def GetCh(charlen = 1) -> str:
+		OldSettings = tcgetattr(sfo)
 		try:
-			setraw(sin.fileno())
-			ch = sin.read(1)
+			setraw(sfo)
+			ch = sin.read(charlen)
 		finally:
-			tcsetattr(fd, TCSADRAIN, OldSettings)
+			tcsetattr(sfo, TCSADRAIN, OldSettings)
 		return ch
 
 	def ClearLine(y):
@@ -118,6 +119,7 @@ else:  # (prolly) windows
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py"""
 		)
 
+	sfo = None
 	def GetCh() -> str:
 		char = msvcrt.getch()
 		while msvcrt.kbhit():
