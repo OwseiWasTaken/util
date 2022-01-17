@@ -139,7 +139,7 @@ if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py
 		)
 
 	def clear():
-		ss("clear")
+		ss("cls")
 
 
 class __time:
@@ -2405,7 +2405,9 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str, Any]:
 				and ncontname[1:] != contname
 			):
 				raise WrongClosingName(
-					f"<{contname}> != <{ncontname}> container closer must be the same to container opener"
+					"\n"
+					f"can't close <{contname}> with <{ncontname}>\n"
+					"container closer must be the same to container opener"
 				)
 			contname = ncontname
 			if contname[0] == "/":	# contname end
