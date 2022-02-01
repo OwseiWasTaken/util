@@ -10,8 +10,8 @@ from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
 from os import listdir as _ls, getlogin as _getlogin, rmdir as _rmdir
 
+
 from functools import cache
-from numpy import sign as signum
 from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
 from typing import Callable, Any, Optional, Iterator, Iterable
@@ -85,10 +85,10 @@ if OS in ["linux", "darwin"]:
 	from tty import setraw
 	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
 	from fcntl import ioctl
-	sfo = sin.fileno()
+	sfo = sin.fileno() # get fd
+	OldSettings = tcgetattr(sfo) # get fd state
 
 	def GetCh(charlen = 1) -> str:
-		OldSettings = tcgetattr(sfo)
 		try:
 			setraw(sfo)
 			ch = sin.read(charlen)
@@ -1053,9 +1053,6 @@ def AdvDecryptS(var, key, deep) -> str:
 		return DecryptS(var, key)
 	else:
 		return AdvDecryptS(var, key * deep, deep - 1)
-
-
-PosOrNeg = signum
 
 
 def numbers(times, nums=0) -> int:
@@ -2333,11 +2330,12 @@ def FastSingleList(Listing: list[Any]) -> Any:
 			ret.append(item)
 	return ret
 
-
-def frpos(value, move):
+@cache
+def frpos(value, move): # 'fast' relative pos
+	# move is defined by user
 	return "\x1b[%i%c" % (value, move)
 
-
+@cache
 def rpos(y, x):  # relative pos func
 	# y > 0 down
 	if y < 0:
@@ -2481,6 +2479,8 @@ def _XMP_SEncode(structure: dict[str, Any], rl: int = 0) -> str:
 			assert not isinstance(structure[k], set), "xmp can't store/load a set yet"
 			if isinstance(structure[k], list):
 				ret += f"{rs}[{k} {str(structure[k]).replace('[', '{').replace(']', '}')}]\n"
+			if isinstance(structure[k], str):
+				ret += f"{rs}[{k} \"{structure[k]}\"]\n"
 			else:
 				ret += f"{rs}[{k} {repr(structure[k])}]\n"
 		if rl == 0:
@@ -2659,6 +2659,33 @@ class Temperature:
 
 	KTF = KelvinToFahrenheit
 
+def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tuple[int, Any]:
+	# (dict tree, []PathToTake, ARF=False) -> (error index (0 = OK) , value)
+	rn = xmp
+	path = path.copy() # de-ref []Path
+	r = 0
+	if len(path) > 0:
+		next = path.pop(0)
+		if next in rn.keys():
+			rn = xmp[next]
+		else:
+			if AlwaysReturnFoud:
+				return r, rn
+			return r, None
+	while len(path):
+		r += 1
+		next = path.pop(0)
+		if next in rn.keys():
+			rn = rn[next]
+		else:
+			if AlwaysReturnFoud:
+				return r, rn
+			return r, None
+		if len(path) == 0:
+			return 0, rn
+	else:
+		return 0, rn
+
 
 # )STUFF
 # (CONSTS
@@ -2666,19 +2693,8 @@ class WrongClosingName(Exception):
 	pass
 
 
-true = True
-false = False
-USER = _getlogin()
-
-
 def nop(*a, **b):
 	pass
-
-
-FuncType = type(nop)
-NoneType = type(None)
-Iterables = [list, set, frozenset]
-Infinity = float("inf")
 
 
 class noc:
@@ -2690,6 +2706,13 @@ class _c:
 		pass
 
 
+true = True
+false = False
+USER = _getlogin()
+FuncType = type(nop)
+NoneType = type(None)
+Iterables = [list, set, frozenset]
+Infinity = float("inf")
 MethodType = type(_c._m)
 ARGV = ArgvAssing(argv[1:])
 Endl = "\n"
@@ -2714,7 +2737,6 @@ include pickle
 include os
 include re
 include functools
-include numpy
 include time
 include os.path
 include typing
