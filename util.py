@@ -2675,8 +2675,10 @@ def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tu
 	while len(path):
 		r += 1
 		next = path.pop(0)
+		# found next goto in tree
 		if next in rn.keys():
 			rn = rn[next]
+		# path was broken
 		else:
 			if AlwaysReturnFoud:
 				return r, rn
