@@ -1,7 +1,7 @@
 #! /usr/bin/python3.10
 # TODO:
-#	test pos (and other cursor) funcs in windows
-#	sshkeyboard?, it's slow, but VERY easy to work with
+# test pos (and other cursor) funcs in windows
+# sshkeyboard?, it's slow, but VERY easy to work with
 
 # (IMPORTS
 
@@ -58,7 +58,7 @@ from re import compile as comreg
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
 # along with this program; if not get it here https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -1560,22 +1560,24 @@ class get:
 		this.argvs
 
 		for indicator in SingleList(this.gets):  # list
-
 			other = [*other, *this.argvs.get(indicator, [])]
+
+
 		if other:
 			ret.append(other)
 		else:
 			ret.append([])
 
 		if other:  # MakeBool
-			if other[0] in "-+0987654321":
+			if other[0] and other[0] in "-+0987654321":
 				ret.append(not not eval(other[0]))
 			else:
 				ret.append(True)
 		else:
 			ret.append(None)
 
-		if other and other[0] in "-+987654321":  # MakeEval
+
+		if other and other[0] and other[0] in "-+987654321":  # MakeEval
 			ret.append(eval(other[0]))
 		else:
 			ret.append(None)
@@ -2129,7 +2131,7 @@ def ArgvAssing(
 	ret: dict[None | str, list[str]] = {None: []}
 	now = None
 	for arg in args:
-		if arg[0] == "-":
+		if arg and arg[0] == "-":
 			ret[(now := arg)] = ret.get(arg, [])
 		else:
 			if arg[0:2] == "/-":
