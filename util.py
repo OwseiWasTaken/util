@@ -1600,9 +1600,8 @@ def _RmDirWindows(dir: str) -> int:  # not sure if works
 		if file.endswith("/"):
 			_RmDirWindows(file)
 		else:
-			ss("del file")
-	else:
-		_rmdir(dir)
+			ss(f"del {file}")
+	_rmdir(dir)
 
 	return 0
 
