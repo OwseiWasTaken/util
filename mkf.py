@@ -23,9 +23,9 @@ def Main() -> int:
 		help()
 		return 2
 
-	ss(f"echo /home/owsei/Templates/*{CopyFile.lower()}* > /tmp/mkf.cache")
+	ss(f"echo ~/Templates/*{CopyFile.lower()}* > /tmp/mkf.cache")
 	if get("-v").exists:
-		ss(f"echo make {ResultFile} from /home/owsei/Templates/*{CopyFile.lower()}*")
+		ss(f"echo make {ResultFile} from ~/Templates/*{CopyFile.lower()}*")
 	with open("/tmp/mkf.cache", "r") as fl:
 		FileData = fl.readline().split()
 
