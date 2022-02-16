@@ -2412,12 +2412,6 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str, Any]:
 					contnow[_n] = _c
 				else:
 					structure[contname[1:]] = contnow
-					## TODO
-					## condepth can't be true right?
-					# if condepth:
-					#	contname, contnow = condepth.pop(-1)
-					# else:
-					#	contname = ""
 					contname = ""
 			else:  # real contname
 				contnow = {}
