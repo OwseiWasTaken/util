@@ -1796,8 +1796,8 @@ class window:
 		this.y = y
 		this.x = x
 
-	def update(this, *args):
-		return this.UpdateFunc(this, args)
+	def update(this, *args, **kwargs):
+		return this.UpdateFunc(this, *args, **kwargs)
 
 
 def TestAll(lst: list[Any], test=lambda x: not not x):
