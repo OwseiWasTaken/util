@@ -2210,11 +2210,6 @@ def IsLeapYear(year=None):
 		return False
 
 
-def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc):  # debug print
-	stdout.write(
-		f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n"
-	)
-
 
 __sprintf_types: dict[str, Callable[[Any], Any]] = {
 	"i": int,
@@ -2689,6 +2684,14 @@ def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tu
 	else:
 		return 0, rn
 
+_dprint_titles_to_color = {
+	"ERROR":RGB(0xff, 0, 0),
+}
+
+def dprint(stream, title:str, text:str):
+	if title in _dprint_titles_to_color.keys():
+		title = '['+_dprint_titles_to_color[title]+title+RGB(0xff, 0xff, 0xff)+']'
+	stream.write(title+": "+text)
 
 # )STUFF
 # (CONSTS
@@ -2698,11 +2701,6 @@ class WrongClosingName(Exception):
 
 def nop(*a, **b):
 	pass
-
-
-class noc:
-	pass
-
 
 class _c:
 	def _m(this):
@@ -2714,12 +2712,14 @@ false = False
 USER = _getlogin()
 FuncType = type(nop)
 NoneType = type(None)
-Iterables = [list, set, frozenset]
+Iterables = (list, set, frozenset, set)
 Infinity = float("inf")
+ClassType = type(_c)
 MethodType = type(_c._m)
 ARGV = ArgvAssing(argv[1:])
 Endl = "\n"
 # )CONSTS
+
 
 if __name__ == "__main__":
 	for i in get("-r", "-c").list:
@@ -2853,7 +2853,6 @@ def fct distance @ 1721
 def fct DoAll @ 1725
 def cls Filer @ 1728
 def fct IsLeapYear @ 1764
-def fct debugp @ 1777
 def fct sprintf @ 1799
 def fct printf @ 1822
 def fct fprintf @ 1828
@@ -2863,5 +2862,4 @@ def fct unwords @ 1837
 def fct IsBitSet @ 1840
 def fct BinarySearch @ 1849
 def fct nop @ 1872
-def cls noc @ 1879
 """
