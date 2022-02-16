@@ -2306,9 +2306,9 @@ def IsBitSet(num, index):
 
 def BinarySearch(lst: list[int], item: int) -> int:
 	"""
-	Returns the position of item in the list if found, -1 otherwise.
+	Returns the index of item in the list if found, -1 otherwise.
 	List must be sorted.
-	"""  # is returing -1 a good idea?, it doesn't seem like one
+	"""
 	left = 0
 	right = len(lst) - 1
 	while left <= right:
