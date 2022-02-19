@@ -288,14 +288,15 @@ def lst1(lst: Union[list, tuple]):
 		return lst
 
 
-def RngNoRepetition(min: int, max: int, HowMany: int = 1) -> list:
+def RngNoRep(min: int, max: int, HowMany: int = 1) -> list:
 	ret = []
-	all = [x + 1 for x in r(min, max)]
+	al = max-min
+	all = [x + 1 for x in range(al)]
 	if len(all) <= HowMany:
 		return all
 	else:
 		for i in r(HowMany):
-			ret.append(all.pop(rint(min, max - i)))
+			ret.append(all.pop(rint(0, al-i-1)))
 		return ret
 
 

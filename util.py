@@ -313,7 +313,7 @@ def lst1(lst: list | tuple):
 		return lst
 
 
-def RngNoRepetition(min: int, max: int, HowMany: int = 1) -> list:
+def RngNoRep(min: int, max: int, HowMany: int = 1) -> list:
 	ret = []
 	all = [x + 1 for x in r(min, max)]
 	if len(all) <= HowMany:
