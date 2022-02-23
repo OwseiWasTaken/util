@@ -2694,6 +2694,11 @@ def dprint(stream, title:str, text:str):
 		title = '['+_dprint_titles_to_color[title]+title+RGB(0xff, 0xff, 0xff)+']'
 	stream.write(title+": "+text)
 
+def draise(errtype:str, text:str):
+	raise Exception(
+f"[{RGB(0xff,0,0)}{errtype}{RGB(0xff,0xff,0xff)}]{text}"
+	)
+
 # )STUFF
 # (CONSTS
 class WrongClosingName(Exception):
