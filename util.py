@@ -2680,7 +2680,14 @@ def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tu
 
 _dprint_titles_to_color = {
 	"ERROR":RGB(0xff, 0, 0),
+	"INFO":RGB(0xff, 0xff, 00),
+	"CMD":RGB(0xff,0xff,0xff),
+	"CHECK":RGB(0,0xff,0),
 }
+
+def cmd(string:str) -> int:
+	dprint("CMD", string)
+	return ss(string)
 
 def dprint(stream, title:str, text:str):
 	if title in _dprint_titles_to_color.keys():
