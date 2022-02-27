@@ -2081,12 +2081,12 @@ def sprintf(string, *stuff, HideErrors=True):
 	# different to c's sprintf the template doesn't show what the var is
 	# it shows what you want the var to be and sprintf will try to convert it
 	ToReplace = __sprintf_regex.findall(string)
-	assert len(ToReplace) == len(stuff), sprintf(
+	assert (len(ToReplace) == len(stuff)), sprintf(
 		"miss matched string template and value replacer len {i} != {i}",
 		len(ToReplace),
 		len(stuff),
 	)
-	if len(ToReplace) == len(stuff) or HideErrors:
+	if (len(ToReplace) == len(stuff)) or HideErrors:
 		for i in r(ToReplace):
 			if len(stuff) > i:
 				replace = ToReplace[i]
