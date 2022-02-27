@@ -2686,7 +2686,8 @@ _dprint_titles_to_color = {
 }
 
 def cmd(string:str) -> int:
-	dprint("CMD", string)
+	dprint(stderr, "CMD", "$"+string+"\n")
+	stderr.flush()
 	return ss(string)
 
 def dprint(stream, title:str, text:str):
@@ -2716,14 +2717,15 @@ class _c:
 true = True
 false = False
 USER = _getlogin()
+Iterables = (list, set, frozenset, set)
+ARGV = ArgvAssing(argv[1:])
+Infinity = float("inf")
+
 FuncType = type(nop)
 NoneType = type(None)
-Iterables = (list, set, frozenset, set)
-Infinity = float("inf")
 ClassType = type(_c)
 MethodType = type(_c._m)
-ARGV = ArgvAssing(argv[1:])
-Endl = "\n"
+
 # )CONSTS
 
 
