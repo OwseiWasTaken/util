@@ -78,20 +78,15 @@ e.g. (create a file called program.py)
 	return 0
 
 
-# start
-if __name__ == "__main__":
+#start
+if __name__ == '__main__':
 	start = tm()
-	if "help" in argv and len(argv) == 1:
-		ExitCode = help()
-	else:
-		try:
-			ExitCode = Main()
-		except KeyboardInterrupt:
-			pass
-	if get("--debug").exists:
+	ExitCode = Main()
+
+	if get('--debug').exists:
 		if not ExitCode:
 			printl("%scode successfully exited in " % COLOR.green)
 		else:
-			printl("%scode exited with error %d in " % (COLOR.red, ExitCode))
-		print("%.3f seconds%s" % (tm() - start, COLOR.nc))
+			printl("%scode exited with error %d in " % (COLOR.red,ExitCode))
+		print("%.3f seconds%s" % (tm()-start,COLOR.nc))
 	exit(ExitCode)
