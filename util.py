@@ -2686,7 +2686,7 @@ _dprint_titles_to_color = {
 }
 
 def cmd(string:str) -> int:
-	dprint(stderr, "CMD", "$"+string+"\n")
+	dprint(stderr, "CMD", string+"\n")
 	stderr.flush()
 	return ss(string)
 
