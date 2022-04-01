@@ -2700,6 +2700,9 @@ def draise(errtype:str, text:str):
 f"[{RGB(0xff,0,0)}{errtype}{RGB(0xff,0xff,0xff)}]{text}"
 	)
 
+def interest(tax:float, time:int,  value:float) -> float:
+	return (tax**time) * value
+
 # )STUFF
 # (CONSTS
 class WrongClosingName(Exception):
