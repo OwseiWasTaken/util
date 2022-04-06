@@ -2703,6 +2703,12 @@ f"[{RGB(0xff,0,0)}{errtype}{RGB(0xff,0xff,0xff)}]{text}"
 def interest(tax:float, time:int,  value:float) -> float:
 	return (tax**time) * value
 
+def PickFrom(prompt:str, lst:list[Any]) -> Any:
+	while True:
+		x = input(prompt)
+		if x in lst:
+			return x
+
 # )STUFF
 # (CONSTS
 class WrongClosingName(Exception):
