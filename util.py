@@ -85,10 +85,11 @@ if OS in ["linux", "darwin"]:
 	from tty import setraw
 	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
 	from fcntl import ioctl
-	sfo = sin.fileno() # get fd
-	OldSettings = tcgetattr(sfo) # get fd state
 
-	def GetCh(charlen = 1) -> str:
+	sfo = sin.fileno()	# get fd
+	OldSettings = tcgetattr(sfo)  # get fd state
+
+	def GetCh(charlen=1) -> str:
 		try:
 			setraw(sfo)
 			ch = sin.read(charlen)
@@ -120,6 +121,7 @@ if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py
 		)
 
 	sfo = None
+
 	def GetCh() -> str:
 		char = msvcrt.getch()
 		while msvcrt.kbhit():
@@ -634,11 +636,13 @@ class color:
 		White = "\x1b[0;107m"
 
 
-def RGB(r:int | str, g : int | str, b: int | str) -> str:
+def RGB(r: int | str, g: int | str, b: int | str) -> str:
 	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
 
-def _RGB(z, x, r, g, b) -> str: # what is z and x?!?!
+
+def _RGB(z, x, r, g, b) -> str:  # what is z and x?!?!
 	return "\x1b[%s;%s;%s;%s;%sm" % (z, x, r, g, b)
+
 
 # color modes:
 # 1:light, 2:dim, 3:italics, 4:underline, 5:blink
@@ -1562,7 +1566,6 @@ class get:
 		for indicator in SingleList(this.gets):  # list
 			other = [*other, *this.argvs.get(indicator, [])]
 
-
 		if other:
 			ret.append(other)
 		else:
@@ -1575,7 +1578,6 @@ class get:
 				ret.append(True)
 		else:
 			ret.append(None)
-
 
 		if other and other[0] and other[0] in "-+987654321":  # MakeEval
 			ret.append(eval(other[0]))
@@ -2210,7 +2212,6 @@ def IsLeapYear(year=None):
 		return False
 
 
-
 __sprintf_types: dict[str, Callable[[Any], Any]] = {
 	"i": int,
 	"f": float,
@@ -2326,10 +2327,12 @@ def FastSingleList(Listing: list[Any]) -> Any:
 			ret.append(item)
 	return ret
 
+
 @cache
-def frpos(value, move): # 'fast' relative pos
+def frpos(value, move):  # 'fast' relative pos
 	# move is defined by user
 	return "\x1b[%i%c" % (value, move)
+
 
 @cache
 def rpos(y, x):  # relative pos func
@@ -2470,7 +2473,7 @@ def _XMP_SEncode(structure: dict[str, Any], rl: int = 0) -> str:
 			if isinstance(structure[k], list):
 				ret += f"{rs}[{k} {str(structure[k]).replace('[', '{').replace(']', '}')}]\n"
 			if isinstance(structure[k], str):
-				ret += f"{rs}[{k} \"{structure[k]}\"]\n"
+				ret += f'{rs}[{k} "{structure[k]}"]\n'
 			else:
 				ret += f"{rs}[{k} {repr(structure[k])}]\n"
 		if rl == 0:
@@ -2649,10 +2652,13 @@ class Temperature:
 
 	KTF = KelvinToFahrenheit
 
-def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tuple[int, Any]:
+
+def OnDict(
+	xmp: dict[Any, Any], path: Iterable[Any], AlwaysReturnFoud=False
+) -> tuple[int, Any]:
 	# (dict tree, []PathToTake, ARF=False) -> (error index (0 = OK) , value)
 	rn = xmp
-	path = path.copy() # de-ref []Path
+	path = path.copy()	# de-ref []Path
 	r = 0
 	if len(path) > 0:
 		next = path.pop(0)
@@ -2678,36 +2684,43 @@ def OnDict(xmp:dict[Any, Any], path:Iterable[Any], AlwaysReturnFoud=False) -> tu
 	else:
 		return 0, rn
 
+
 _dprint_titles_to_color = {
-	"ERROR":RGB(0xff, 0, 0),
-	"INFO":RGB(0xff, 0xff, 0x0),
-	"CMD":RGB(0xff,0xff,0xff),
-	"CHECK":RGB(0,0xff,0),
+	"ERROR": RGB(0xFF, 0, 0),
+	"INFO": RGB(0xFF, 0xFF, 0x0),
+	"CMD": RGB(0xFF, 0xFF, 0xFF),
+	"CHECK": RGB(0, 0xFF, 0),
 }
 
-def cmd(string:str) -> int:
-	dprint(stderr, "CMD", string+"\n")
+
+def cmd(string: str) -> int:
+	dprint(stderr, "CMD", string + "\n")
 	stderr.flush()
 	return ss(string)
 
-def dprint(stream, title:str, text:str):
+
+def dprint(stream, title: str, text: str):
 	if title in _dprint_titles_to_color.keys():
-		title = '['+_dprint_titles_to_color[title]+title+RGB(0xff, 0xff, 0xff)+']'
-	stream.write(title+": "+text)
+		title = (
+			"[" + _dprint_titles_to_color[title] + title + RGB(0xFF, 0xFF, 0xFF) + "]"
+		)
+	stream.write(title + ": " + text)
 
-def draise(errtype:str, text:str):
-	raise Exception(
-f"[{RGB(0xff,0,0)}{errtype}{RGB(0xff,0xff,0xff)}]{text}"
-	)
 
-def interest(tax:float, time:int,  value:float) -> float:
-	return (tax**time) * value
+def draise(errtype: str, text: str):
+	raise Exception(f"[{RGB(0xff,0,0)}{errtype}{RGB(0xff,0xff,0xff)}]{text}")
 
-def PickFrom(prompt:str, lst:list[Any]) -> Any:
+
+def interest(tax: float, time: int, value: float) -> float:
+	return (tax ** time) * value
+
+
+def PickFrom(prompt: str, lst: list[Any]) -> Any:
 	while True:
 		x = input(prompt)
 		if x in lst:
 			return x
+
 
 # )STUFF
 # (CONSTS
@@ -2717,6 +2730,7 @@ class WrongClosingName(Exception):
 
 def nop(*a, **b):
 	pass
+
 
 class _c:
 	def _m(this):
