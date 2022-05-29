@@ -2739,7 +2739,10 @@ class _c:
 
 true = True
 false = False
-USER = _getlogin()
+try:
+    USER = _getlogin()
+except FileNotFoundError:
+    USER = "USER"
 Iterables = (list, set, frozenset, set)
 ARGV = ArgvAssing(argv[1:])
 Infinity = float("inf")
