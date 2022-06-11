@@ -5,6 +5,7 @@
 
 # (IMPORTS
 
+
 from time import strftime as __ftime__
 from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
@@ -36,7 +37,7 @@ from sys import (
 
 from sys import stdout, stdin, stderr
 from dataclasses import dataclass
-from enum import IntEnum, Enum, auto as iota  # (1, 2, 3, ...), fafo, go's iota
+from enum import IntEnum, Enum, auto as iota	# (1, 2, 3, ...), fafo, go's iota
 
 from re import compile as comreg
 
@@ -87,7 +88,7 @@ if OS in ["linux", "darwin"]:
 	from fcntl import ioctl
 
 	sfo = sin.fileno()	# get fd
-	OldSettings = tcgetattr(sfo)  # get fd state
+	OldSettings = tcgetattr(sfo)	# get fd state
 
 	def GetCh(charlen=1) -> str:
 		try:
@@ -111,7 +112,7 @@ if OS in ["linux", "darwin"]:
 		stdout.write("\x1b[0H")
 
 
-else:  # (prolly) windows
+else:	# (prolly) windows
 	import msvcrt
 
 	def notify(title="", body=""):
@@ -342,36 +343,44 @@ def json(file: str, obj: object = None) -> dict | None:
 		return None
 
 
-def GetInt(msg: str, excepts=[], default=None) -> int:
+def GetInt(msg: str, excepts=[]) -> int:
 	"""
 	will return an integer by inputing a string with {msg, end}
 	and converting it to int
 	if the user enters an invalid input the function will restart
 	"""
-	x = input(f"{msg}")
+	x = input(msg)
 	try:
 		if x in excepts:
-			return default
+			return x
 		y = int(x)
-		return int(x)
+		return y
 	except ValueError:
-		return GetInt(msg)
+		return GetInt(msg, excepts=excepts)
 
 
-def GetFloat(msg: str, excepts=[], default=None) -> float:
+def GetFloat(msg: str, excepts=[]) -> float:
 	"""
 	will return an float by inputing a string with {msg, end}
 	and converting it to int
 	if the user enters an invalid input the function will restart
 	"""
-	x = input(f"{msg}")
+	x = input(msg)
 	try:
 		if x in excepts:
-			return default
+			return x
 		y = float(x)
-		return float(x)
+		return y
 	except ValueError:
-		return GetFloat(msg)
+		return GetFloat(msg, excepts=excepts)
+
+def GetType(msg: str, t:type) -> Any:
+	x = input(msg)
+	try:
+		y = t(x)
+		return y
+	except ValueError:
+		return GetType(msg, t)
 
 
 def IsPrime(ask: int) -> bool:
@@ -477,7 +486,7 @@ def prints(*msg, sep=", "):
 	stdout.write(f"{msg}")
 
 
-def sprint(msg):  # simple print
+def sprint(msg):	# simple print
 	stdout.write(msg)
 
 
@@ -507,8 +516,8 @@ class COLOR:
 	blue = "\033[0;34m"
 	cyan = "\033[0;36m"
 	white = "\033[0;37m"
-	GreenishCyan = "\033[0;96m"  # kinda too complex
-	orange = "\033[0;33m"  # bruh
+	GreenishCyan = "\033[0;96m"	# kinda too complex
+	orange = "\033[0;33m"	# bruh
 	# orange			=			"\033[0;91m" # bruh
 
 	DarkBlue = "\033[0;94m"
@@ -544,7 +553,7 @@ class COLOR:
 	MODE_ITALICS = 3
 	MODE_UNDERLINED = 4
 	MODE_BLINK = 5
-	MODE_SIX = 6  # idk what it is
+	MODE_SIX = 6	# idk what it is
 	MODE_BKGROUND = 7
 	MODE_HIDDEN = 8
 	MODE_CROSSED = 9
@@ -640,7 +649,7 @@ def RGB(r: int | str, g: int | str, b: int | str) -> str:
 	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
 
 
-def _RGB(z, x, r, g, b) -> str:  # what is z and x?!?!
+def _RGB(z, x, r, g, b) -> str:	# what is z and x?!?!
 	return "\x1b[%s;%s;%s;%s;%sm" % (z, x, r, g, b)
 
 
@@ -699,7 +708,7 @@ def StrToMs(ipts: str) -> int:
 
 def bhask(a, b, c) -> tuple[int, int]:
 	delt = ((b ** 2) - (4 * a * c)) ** 0.5
-	b *= -1  # can be anyware before x,y
+	b *= -1	# can be anyware before x,y
 	a *= 2
 	x: int = (b + delt) / a
 	y: int = (b - delt) / a
@@ -922,13 +931,13 @@ class BDP:
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
 		this.IgnoreDataSize = IgnoreDataSize
-		if OS == "linux":  # gud os
+		if OS == "linux":	# gud os
 			if not exists(f"/home/{USER}/BDP"):
 				ss("mkdir /BDP/")
 			if not name.startswith("~/BDP/"):
 				name = f"~/BDP/{name}"
 			name = name.replace("//", "/").replace("~", f"/home/{USER}")
-		elif OS == "windows":  # bad os
+		elif OS == "windows":	# bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
 				ss(f"mkdir C:/users/{USER}/BDP/")
 			if not name.startswith(f"~/BDP/"):
@@ -975,7 +984,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"""
 			return f"""name: {this.name}\n{COLOR.orange}data too big to display
 BDP(IgnoreDataSize=True) to ignore size{COLOR.nc}"""
 
-	def __call__(this, data=None) -> Any:  # this breaks occasionaly
+	def __call__(this, data=None) -> Any:	# this breaks occasionaly
 
 		if data == None and this.data == None:
 			return this.load()
@@ -1275,7 +1284,7 @@ def graphics(*intst: list[int], UnderAvg=COLOR.red, OverAvg=COLOR.green) -> list
 	t = {6: "⠿", 5: "⠟", 4: "⠏", 3: "⠇", 2: "⠃", 1: "⠄", 0: " "}
 	for ManyIndex in r(manys):
 		many = manys[ManyIndex]
-		scale = round(many / (1 / 6))  # one for each braille ball
+		scale = round(many / (1 / 6))	# one for each braille ball
 		fulls = scale // 6
 		l = f"{ManyIndex} : "
 
@@ -1317,7 +1326,7 @@ def DrawHLine(x, XTo, y, Color, char=" "):
 	len = (XTo - x) + 1
 	stdout.write(
 		ps + Color + char * len + COLOR.nc + char * (_x - len)
-	)  # if optmizing change XTO -> msg lenght
+	)	# if optmizing change XTO -> msg lenght
 	stdout.flush()
 
 
@@ -1391,14 +1400,14 @@ class TextBox:
 			if GetCh() == "[":	# escape code
 				ch = GetCh()
 
-				if ch == "C" and this.CURSOR < len(this.STRING) - 2:  # go right
+				if ch == "C" and this.CURSOR < len(this.STRING) - 2:	# go right
 					this.CURSOR += 1
-				elif ch == "D" and this.CURSOR > -1:  # go left
+				elif ch == "D" and this.CURSOR > -1:	# go left
 					this.CURSOR -= 1
 
-				elif ch == "3":  # may be del
+				elif ch == "3":	# may be del
 					ch = GetCh()
-					if ch == "~":  # delete key
+					if ch == "~":	# delete key
 						this.STRING = list(this.STRING)
 						this.STRING.pop(this.CURSOR + 1)
 						this.STRING = "".join(this.STRING) + " "
@@ -1408,7 +1417,7 @@ class TextBox:
 				# if ch == '~': # insert key
 				# pass
 
-		elif char == "\x7f" and this.CURSOR > -1:  # backspace
+		elif char == "\x7f" and this.CURSOR > -1:	# backspace
 			if (
 				not this.CURSOR == len(this.STRING) - 2 or not this.IsOverChar
 			):	# "normal" delete
@@ -1416,7 +1425,7 @@ class TextBox:
 				this.STRING.pop(this.CURSOR)
 				this.STRING = "".join(this.STRING) + " "
 				this.CURSOR -= 1
-			else:  # if @ $ of line del not backspace
+			else:	# if @ $ of line del not backspace
 				this.STRING = list(this.STRING)
 				this.STRING[this.CURSOR + 1] = " "
 				this.STRING = "".join(this.STRING)
@@ -1448,7 +1457,7 @@ class TextBox:
 				else:
 					this.STRING = ReplaceStringByIndex(
 						this.STRING, this.CURSOR, char
-					)  # create or replace
+					)	# create or replace
 
 	@property
 	def IsOverChar(this) -> bool:
@@ -1473,7 +1482,7 @@ class TextBox:
 
 			# chars.append(repr(char))
 
-			if char == "\r":  # <Enter> to send
+			if char == "\r":	# <Enter> to send
 				return this.STRING.strip()
 
 			this.SetChar(char)
@@ -1563,7 +1572,7 @@ class get:
 		other: list[str] = []
 		this.argvs
 
-		for indicator in SingleList(this.gets):  # list
+		for indicator in SingleList(this.gets):	# list
 			other = [*other, *this.argvs.get(indicator, [])]
 
 		if other:
@@ -1571,7 +1580,7 @@ class get:
 		else:
 			ret.append([])
 
-		if other:  # MakeBool
+		if other:	# MakeBool
 			if other[0] and other[0] in "-+0987654321":
 				ret.append(not not eval(other[0]))
 			else:
@@ -1579,13 +1588,13 @@ class get:
 		else:
 			ret.append(None)
 
-		if other and other[0] and other[0] in "-+987654321":  # MakeEval
+		if other and other[0] and other[0] in "-+987654321":	# MakeEval
 			ret.append(eval(other[0]))
 		else:
 			ret.append(None)
 
 		al = list(this.argvs.keys())
-		ret.append(any([x in al for x in this.gets]))  # exists
+		ret.append(any([x in al for x in this.gets]))	# exists
 
 		return ret
 
@@ -1597,7 +1606,7 @@ def _RmDirLinux(dir: str) -> int:
 	return ss(f"rm -rf {dir}")
 
 
-def _RmDirWindows(dir: str) -> int:  # not sure if works
+def _RmDirWindows(dir: str) -> int:	# not sure if works
 	for file in ls(dir):
 		if file.endswith("/"):
 			_RmDirWindows(file)
@@ -1621,8 +1630,8 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"""
 
 
 def TrimSpaces(string: str) -> str:
-	while "  " in string:
-		string = string.replace("  ", " ")
+	while "	" in string:
+		string = string.replace("	", " ")
 	return string
 
 
@@ -1661,7 +1670,7 @@ def MakeString(
 		if char == quote and pos > 0 and line[pos - 1] != escape:
 			if MaintainQuotes:
 				now += '"'
-			InString ^= InString  # invert
+			InString ^= InString	# invert
 		else:
 			# " start or end string
 			if char == sep and not InString:
@@ -1761,15 +1770,15 @@ class window:
 		# def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 		# DrawBottom, DrawTop, DrawLeft, DrawRigh
 		x1, y1 = this.MinX - 1, this.MinY - 1
-		x2, y2 = this.MaxX, this.MaxY + 1  # may do -1 @ MaxX
+		x2, y2 = this.MaxX, this.MaxY + 1	# may do -1 @ MaxX
 		if this.DrawBottom:
-			DrawHLine(x1, x2, y2, Color)  # bottom
+			DrawHLine(x1, x2, y2, Color)	# bottom
 		if this.DrawTop:
-			DrawHLine(x1, x2, y1, Color)  # top
+			DrawHLine(x1, x2, y1, Color)	# top
 		if this.DrawLeft:
-			DrawVLine(y1, y2, x1, Color)  # left
+			DrawVLine(y1, y2, x1, Color)	# left
 		if this.DrawRight:
-			DrawVLine(y1, y2, x2, Color)  # right
+			DrawVLine(y1, y2, x2, Color)	# right
 
 		# DtrawRectangle(
 		#	(this.MinX-1, this.MinY-1),
@@ -2024,7 +2033,7 @@ class _AdvTextBox:
 			if this.cursor:
 				this.cursor -= 1
 
-	@staticmethod  # decorator for custom status bar
+	@staticmethod	# decorator for custom status bar
 	def ShowMode(this):
 		if this.InNormalMode:
 			t = SetColorMode(COLOR.green, "7") + " normal "
@@ -2124,7 +2133,7 @@ def AdvTextBox(
 
 def ArgvAssing(
 	args: list[str],
-) -> dict[None | str, list[str]]:  # omfg it's so much better
+) -> dict[None | str, list[str]]:	# omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
 	# items that start with '-' will be a key, the rest wil be values
@@ -2160,9 +2169,9 @@ def DoAll(lst, func):
 	return list(map(func, lst))
 
 
-class Filer:  # plain text, for UseFile file check BDP (in this lib)
+class Filer:	# plain text, for UseFile file check BDP (in this lib)
 	def __init__(this, name, contents=[], ReadIfExistis=True):
-		name = abspath(name)  # absolute path
+		name = abspath(name)	# absolute path
 		if ReadIfExistis and exists(name):
 			with open(name, "r") as file:
 				lines = file.readlines()
@@ -2329,13 +2338,13 @@ def FastSingleList(Listing: list[Any]) -> Any:
 
 
 @cache
-def frpos(value, move):  # 'fast' relative pos
+def frpos(value, move):	# 'fast' relative pos
 	# move is defined by user
 	return "\x1b[%i%c" % (value, move)
 
 
 @cache
-def rpos(y, x):  # relative pos func
+def rpos(y, x):	# relative pos func
 	# y > 0 down
 	if y < 0:
 		ver = "A"
@@ -2380,7 +2389,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str, Any]:
 	i = 0
 	structure: dict[str, Any] = {}
 	contnow: dict[str, Any] = {}
-	condepth = []  # keep track of active conteiner tree
+	condepth = []	# keep track of active conteiner tree
 	contname = ""
 	aliases: dict[str, Any] = {
 		"null": None,
@@ -2416,7 +2425,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str, Any]:
 				else:
 					structure[contname[1:]] = contnow
 					contname = ""
-			else:  # real contname
+			else:	# real contname
 				contnow = {}
 		else:
 			if char == "[":
@@ -2427,7 +2436,7 @@ def _XMP_Decode(filename: str, XmpCheck=True) -> dict[str, Any]:
 					+ len(varname) : i
 					+ len(varname)
 					+ str(cont[i + len(varname) :]).find("]")
-				]  # help
+				]	# help
 				i += len(varname) + cont[i + len(varname) :].find("]")
 				if contname:
 					if varval[0] == "{" and varval[-1] == "}":
@@ -2509,8 +2518,8 @@ class Window:
 		this.l = TopLeft[1]
 		this.b = BottomRight[0]
 		this.r = BottomRight[1]
-		this.y = this.t  # + t && < b
-		this.x = this.l  # + l && > r
+		this.y = this.t	# + t && < b
+		this.x = this.l	# + l && > r
 		#
 		this.wprint = this.puts
 		this.write = this.iputs
@@ -2715,6 +2724,7 @@ def interest(tax: float, time: int, value: float) -> float:
 	return (tax ** time) * value
 
 
+
 def PickFrom(prompt: str, lst: list[Any]) -> Any:
 	while True:
 		x = input(prompt)
@@ -2740,9 +2750,9 @@ class _c:
 true = True
 false = False
 try:
-    USER = _getlogin()
+	USER = _getlogin()
 except FileNotFoundError:
-    USER = "USER"
+	USER = "USER"
 Iterables = (list, set, frozenset, set)
 ARGV = ArgvAssing(argv[1:])
 Infinity = float("inf")
@@ -2753,7 +2763,6 @@ ClassType = type(_c)
 MethodType = type(_c._m)
 
 # )CONSTS
-
 
 if __name__ == "__main__":
 	for i in get("-r", "-c").list:
