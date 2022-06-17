@@ -17,6 +17,7 @@ from time import time as tm, sleep as slp
 from os.path import isfile, exists, abspath
 from typing import Callable, Any, Optional, Iterator, Iterable
 from random import randint as rint, choice as ritem
+from pathlib import Path
 from os import (
 	getcwd as pwd,
 	system as ss,
@@ -931,15 +932,16 @@ class BDP:
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
 		this.IgnoreDataSize = IgnoreDataSize
+		assert USER == "USER", "can't get username"
 		if OS == "linux":	# gud os
-			if not exists(f"/home/{USER}/BDP"):
-				ss("mkdir /BDP/")
+			if ss("cd ~/BDP"):
+				cmd("mkdir ~/BDP/")
 			if not name.startswith("~/BDP/"):
 				name = f"~/BDP/{name}"
-			name = name.replace("//", "/").replace("~", f"/home/{USER}")
+			#name = name.replace("//", "/").replace("~", f"/home/{USER}")
 		elif OS == "windows":	# bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
-				ss(f"mkdir C:/users/{USER}/BDP/")
+				cmd(f"mkdir C:/users/{USER}/BDP/")
 			if not name.startswith(f"~/BDP/"):
 				name = f"~/BDP/{name}"
 				# / -> \ && ~ -> C:\...
@@ -955,16 +957,15 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"""
 		if this.autoload and this.exists:
 			this.load()
 
-	def save(this, data=None) -> str:
+	def save(this, data=None) -> int:
 		if data == None:
 			data = this.data
 			if data == None:
-				return "no data to save"
+				return 1
 		if not this.exists:
-			with open(this.name, "w"):
-				pass
+			Path(this.name).touch()
 		UseFile(this.name, data)
-		return "saved"
+		return 0
 
 	def load(this):
 		if exists(this.name):
