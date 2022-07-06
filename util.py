@@ -2732,6 +2732,74 @@ def PickFrom(prompt: str, lst: list[Any]) -> Any:
 		if x in lst:
 			return x
 
+def MatrixCanAdd(M1:list[list[int]], M2:list[list[int]]) -> bool:
+	return len(M1[0]) == len(M2[0]) and len(M1) == len(M2)
+
+# TODO i did it wrong
+# dunno why
+def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
+	return [[1]]
+	assert MatrixCanAdd(M1, M2), f"Can't add matrixes {M1} {M2}"
+	nm = [0]*len(M1[0])
+	nm = [nm]
+	nm*= len(M1)
+	for i in r(M1):
+		for j in r(M1[0]):
+			print(i, j)
+			print(M1[i][j], M2[i][j])
+			print(nm[i][j])
+			nm[i][j] = M1[i][j]+M2[i][j]
+			print(nm[i][j])
+			print(nm)
+			print("")
+	return nm
+
+#M1 = [
+#[1, 0, 3],
+#[0, 1, -3],
+#]
+#
+#M2 = [
+#[0,1, 0],
+#[0,1, 0],
+#]
+#
+#print(MatrixAdd(M1, M2))
+
+def DvToNvBall2D(DvV, DvH, rnd=4) -> tuple[int, int]:
+	# nav ball °
+	N = 0
+	ab = abs(DvH) + abs(DvV)
+
+	# Hp, Hn
+	Hp, Hn = 0, 0
+
+	if DvH > 0:
+		Hp = DvH
+	else:
+		Hn = abs(DvH)
+
+	Hp, Hn = (90*Hp/ab, 270*Hn/ab)
+
+	# Vp, Vn
+	Vp, Vn = 0, 0
+
+	if DvV > 0:
+		Vp = DvV
+	else:
+		Vn = abs(DvV)
+
+	if Hn > 0:
+		Vp, Vn = (360*Vp/ab, 180*Vn/ab)
+	else:
+		Vp, Vn = (0*Vp/ab, 180*Vn/ab)
+
+	N += (Hp + Hn) + (Vp + Vn)
+
+
+	return N, round((DvV**2 + DvH**2) ** 0.5, rnd)
+
+print(DvToNvBall2D(3, -2))
 
 # )STUFF
 # (CONSTS
