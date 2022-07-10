@@ -2746,7 +2746,7 @@ def RngNoDRep(size, min, max) -> list[int]:
 	ret = []
 	t = 0
 	for i in r(size):
-		t = (t+rint(min, max-1))%max+1
+		t = ((t+rint(min, max))%max-1)+2
 		ret.append(t)
 	return ret
 
