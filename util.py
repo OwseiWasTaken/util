@@ -2750,6 +2750,9 @@ def RngNoDRep(size, min, max) -> list[int]:
 		ret.append(t)
 	return ret
 
+def root(num, cao) -> float:
+	return num ** (1/cao)
+
 # )STUFF
 # (CONSTS
 
