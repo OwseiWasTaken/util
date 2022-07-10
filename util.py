@@ -647,7 +647,7 @@ def RGB(r: int | str, g: int | str, b: int | str) -> str:
 	return "\x1b[38;2;%s;%s;%sm" % (r, g, b)
 
 
-def _RGB(z, x, r, g, b) -> str:	# what is z and x?!?!
+def ARGB(z, x, r, g, b) -> str:	# what is z and x?!?!
 	return "\x1b[%s;%s;%s;%s;%sm" % (z, x, r, g, b)
 
 
