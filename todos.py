@@ -2,6 +2,13 @@
 # imports
 from util import *
 
+comment = {
+	".py":"#",
+	".go":"//",
+	".c":"//",
+	".cpp":"//",
+}
+
 class Todo:
 	def __init__(this, frm, at, name, rank, desc):
 		this.frm = frm
@@ -10,14 +17,16 @@ class Todo:
 		this.rank = rank
 		this.desc = desc
 	def __str__(this):
-		return f"{this.name} - {this.desc}"
+		return f"{this.name}{this.desc}"
 
-##TODO(3): fix this
 def GetTodos(file:str) -> list[Todo]:
+	cmnt = comment[file[file.find('.'):]]
+	cmntl = len(cmnt)
 	todos:list[Todo] = []
 	fs:str
 	line:str
 	rank:int
+	nm:bool
 	name:str
 	with open(file, "r") as f:
 		fs=f.readlines()
@@ -25,17 +34,20 @@ def GetTodos(file:str) -> list[Todo]:
 		line = fs[i]
 		if not line:
 			continue
-		if not line[0] == '#':
+		if not line[0:cmntl] == cmnt:
 			continue
-		if not line[0:6] == "#TODO(":
+		if not line[0:5+cmntl] == cmnt+"TODO(":
 			continue
 		if line.endswith("\n"):
 			line = line[:-1]
-		line = line[6:]
+		line = line[5+cmntl:]
 		rank = line[:line.find(')')]
 		line = line[line.find(')')+1:]
-		name = line[:line.find(':')]
-		line = line[line.find(':')+2:]
+		if line.find(':') == 0:
+			raise Exception(f"Todo ({file}{AT}{i+1}) doesn't have a name")
+		else:
+			name = ' '+(line[:line.find(':')].lstrip())
+			line = " - "+line[line.find(':')+2:]
 
 		todos.append(Todo(file, i+1, name, rank, line))
 	return sorted(todos, key=lambda x: x.rank)
@@ -50,6 +62,10 @@ def Main() -> int:
 	todos:list[Todo] = []
 	for file in files:
 		todos += GetTodos(file)
+
+	if len(todos) == 0:
+		return 1
+
 	f = todos[0].frm
 	print(f"{f}:")
 	if get("--nd").exists:
