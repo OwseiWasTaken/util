@@ -1,2 +1,1 @@
 numpy
-if in POSIX: gi
