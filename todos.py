@@ -31,7 +31,7 @@ def GetTodos(file:str) -> list[Todo]:
 	with open(file, "r") as f:
 		fs=f.readlines()
 	for i in r(fs):
-		line = fs[i]
+		line = fs[i].lstrip()
 		if not line:
 			continue
 		if not line[0:cmntl] == cmnt:
@@ -56,11 +56,36 @@ TABSIZE	= 2
 TAB = " "*TABSIZE
 AT = RGB(100,100,255)+'@'+RGB(255,255,255)
 
+def LoadFL(fl) -> list[str]:
+	ret:list[str] = []
+	with open(fl, "r") as f:
+		fs=f.readlines()
+	for line in fs:
+		line = line.strip()
+		#TODO(4) Todo on txt: make todos.py's load from .txt add .txt's todoes to file's todo list
+		if not line:
+			continue
+		if line[0] == "/":
+			ret.append(line)
+		elif line[0:2] == "./":
+			ret.append(line[2:])
+	return ret
+
+
 # main
 def Main() -> int:
 	files = get("").list
-	todos:list[Todo] = []
+	fls:list[str] = []
+
+
 	for file in files:
+		if file.endswith(".txt"):
+			fls += LoadFL(file)
+		else:
+			fls.append(file)
+
+	todos:list[Todo] = []
+	for file in fls:
 		todos += GetTodos(file)
 
 	if len(todos) == 0:

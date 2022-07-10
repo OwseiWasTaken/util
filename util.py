@@ -2,6 +2,7 @@
 
 # (IMPORTS
 
+#TODO(5) encryption: Make encrypt and decrypt funcs
 
 from time import strftime as __ftime__
 from json import dump as _JsonDump, load as _JsonLoad
