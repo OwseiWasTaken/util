@@ -2744,19 +2744,8 @@ def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
 			nm[i].append(M1[i][j]+M2[i][j])
 	return nm
 
-M1 = [
-[1, 0, 3],
-[0, 1, -3],
-]
 
-M2 = [
-[0,1, 0],
-[0,1, -1],
-]
-
-print(MatrixAdd(M1, M2))
-
-def DvToNvBall2D(DvV, DvH, rnd=4) -> tuple[int, int]:
+def DvToAngle2D(DvV, DvH, rnd=4) -> tuple[int, int]:
 	# nav ball °
 	N = 0
 	ab = abs(DvH) + abs(DvV)
