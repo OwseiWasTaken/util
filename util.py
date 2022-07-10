@@ -1,7 +1,4 @@
 #! /usr/bin/python3.10
-# TODO:
-# test pos (and other cursor) funcs in windows
-# sshkeyboard?, it's slow, but VERY easy to work with
 
 # (IMPORTS
 
@@ -1031,42 +1028,6 @@ def rcase(word: str, chance: float = 0.5) -> str:
 			char = char.lower()
 		wd += char
 	return wd
-
-
-# TODO(#5): test EncryptS func
-def EncryptS(var: str, key: int) -> list[int]:
-	return [ord(char) + key for char in var]
-	# ret = []
-	# for char in str(var):
-	# ret.append(ord(char)+key)
-	# return ret
-
-
-# TODO(#6): test DecryptS func
-def DecryptS(var: list[int], key: int) -> str:
-	return "".join([f"{chr(char-key)}" for char in var])
-	# ret = []
-	# for char in var:
-	# ret.append(f"{chr(char-key)}")
-	# return "".join(ret)
-
-
-def AdvEncryptS(var, key, deep) -> list[int]:
-	if deep <= 0:
-		deep = 1
-	if deep == 1 or deep == 0:
-		return EncryptS(var, key)
-	else:
-		return AdvEncryptS(var, key * deep, deep - 1)
-
-
-def AdvDecryptS(var, key, deep) -> str:
-	if deep <= 0:
-		deep = 1
-	if deep == 1:
-		return DecryptS(var, key)
-	else:
-		return AdvDecryptS(var, key * deep, deep - 1)
 
 
 def numbers(times, nums=0) -> int:
