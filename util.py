@@ -2737,29 +2737,24 @@ def MatrixCanAdd(M1:list[list[int]], M2:list[list[int]]) -> bool:
 
 def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
 	assert MatrixCanAdd(M1, M2), f"Can't add matrixes {M1} {M2}"
-	nm = [0]*len(M1[0])
-	nm = [nm]
-	nm*= len(M1)
+	nm = []
 	for i in r(M1):
+		nm.append([])
 		for j in r(M1[0]):
-			nm[i][j] = M1[i][j]+M2[i][j]
+			nm[i].append(M1[i][j]+M2[i][j])
 	return nm
 
-#M1 = [
-#[1, 0, 3],
-#[0, 1, -3],
-#]
-#
-#M2 = [
-#[0,1, 0],
-#[0,1, 0],
-#]
-#
-MR = [
-[, , ],
-[, , ],
+M1 = [
+[1, 0, 3],
+[0, 1, -3],
 ]
-#print(MatrixAdd(M1, M2))
+
+M2 = [
+[0,1, 0],
+[0,1, -1],
+]
+
+print(MatrixAdd(M1, M2))
 
 def DvToNvBall2D(DvV, DvH, rnd=4) -> tuple[int, int]:
 	# nav ball °
