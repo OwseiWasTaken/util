@@ -2735,23 +2735,14 @@ def PickFrom(prompt: str, lst: list[Any]) -> Any:
 def MatrixCanAdd(M1:list[list[int]], M2:list[list[int]]) -> bool:
 	return len(M1[0]) == len(M2[0]) and len(M1) == len(M2)
 
-# TODO i did it wrong
-# dunno why
 def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
-	return [[1]]
 	assert MatrixCanAdd(M1, M2), f"Can't add matrixes {M1} {M2}"
 	nm = [0]*len(M1[0])
 	nm = [nm]
 	nm*= len(M1)
 	for i in r(M1):
 		for j in r(M1[0]):
-			print(i, j)
-			print(M1[i][j], M2[i][j])
-			print(nm[i][j])
 			nm[i][j] = M1[i][j]+M2[i][j]
-			print(nm[i][j])
-			print(nm)
-			print("")
 	return nm
 
 #M1 = [
@@ -2764,6 +2755,10 @@ def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
 #[0,1, 0],
 #]
 #
+MR = [
+[, , ],
+[, , ],
+]
 #print(MatrixAdd(M1, M2))
 
 def DvToNvBall2D(DvV, DvH, rnd=4) -> tuple[int, int]:
@@ -2798,8 +2793,6 @@ def DvToNvBall2D(DvV, DvH, rnd=4) -> tuple[int, int]:
 
 
 	return N, round((DvV**2 + DvH**2) ** 0.5, rnd)
-
-print(DvToNvBall2D(3, -2))
 
 # )STUFF
 # (CONSTS
