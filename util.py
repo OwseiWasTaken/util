@@ -1030,7 +1030,7 @@ def rcase(word: str, chance: float = 0.5) -> str:
 	return wd
 
 
-def numbers(times, nums=0) -> int:
+def numbers(times, nums=0) -> list[int]:
 	return eval(f"[{nums}" + f", {nums}" * (times - 1) + "]")
 
 
