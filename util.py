@@ -1036,6 +1036,7 @@ def numbers(times, nums=0) -> list[int]:
 
 def ShowTextGif(sprites, SleepTime=0.35, times=-1):
 	# if times is negative the loop won't stop || if times = 0, it will be len(sprites)
+
 	if times == 0:
 		times = len(sprites)
 	if times < 0:
@@ -1062,13 +1063,15 @@ def NoDecimal(number: float) -> int:
 
 def number(num: str) -> int | float | None:
 	if all([char in "0987654321+-.*/" for char in num]):
-		return eval(num)
+		try:
+			return eval(num)
+		except SyntaxError:
+			return "SE"
 	return None
 
 
 def TimesInNumber(TimesIn, NumberTo) -> bool:
 	return not not (sum([rbool(TimesIn) for x in r(NumberTo)]))
-	# return bo/ol(sum([rbool(TimesIn) for x in r(NumberTo)]))
 
 
 def NumSum(numbers: int | float) -> int:
@@ -2739,8 +2742,17 @@ def DvToAngle2D(DvV, DvH, rnd=4) -> tuple[int, int]:
 
 	return N, round((DvV**2 + DvH**2) ** 0.5, rnd)
 
+def RngNoDRep(size, min, max) -> list[int]:
+	ret = []
+	t = 0
+	for i in r(size):
+		t = (t+rint(min, max-1))%max+1
+		ret.append(t)
+	return ret
+
 # )STUFF
 # (CONSTS
+
 class WrongClosingName(Exception):
 	pass
 
