@@ -2,8 +2,6 @@
 
 # (IMPORTS
 
-#TODO(5) encryption: Make encrypt and decrypt funcs
-
 from time import strftime as __ftime__
 from json import dump as _JsonDump, load as _JsonLoad
 from pickle import dump as _PickleDump, load as _PickleLoad
@@ -147,11 +145,11 @@ if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py
 class __time:
 	@property
 	def sec(this) -> str:
-		return __ftime__(f"%S")
+		return __ftime__("%S")
 
 	@property
 	def min(this) -> str:
-		return __ftime__(f"%M")
+		return __ftime__("%M")
 
 	@property
 	def hour(this) -> str:
@@ -190,8 +188,9 @@ class log:
 			tme = f"at {time.day} {time.hour}:{time.min}:{time.sec} : "
 
 		this.LOG.append(f"{ask}")
-		if this.autosave:
-			this.save()
+		#TODO(2) Log Save: log.save doesn't exist!
+		#if this.autosave:
+		#	this.save()
 
 	def PopByIndex(this, index: int):
 		return this.LOG.pop(index)
