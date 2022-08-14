@@ -2,12 +2,23 @@
 # imports
 from util import *
 
+
 comment = {
 	".py":"#",
 	".go":"//",
 	".c":"//",
 	".cpp":"//",
 }
+rankcolor = {
+	'1':RGB(255,0,0),
+	'2':RGB(250,100,100),
+	'3':RGB(250,80,10),
+	'4':RGB(100,200,100),
+	'5':RGB(0,255,0),
+	'6':RGB(40,150,180),
+	'7':RGB(100,100,255),
+}
+nodesc = RGB(140,140,140)+"No Descriotion"+RGB(255,255,255)
 
 class Todo:
 	def __init__(this, frm, at, name, rank, desc):
@@ -44,12 +55,18 @@ def GetTodos(file:str) -> list[Todo]:
 		rank = line[:line.find(')')]
 		line = line[line.find(')')+1:]
 		if line.find(':') == 0:
-			raise Exception(f"Todo ({file}{AT}{i+1}) doesn't have a name")
+			name = line[2:]
+			line = ": "+nodesc
 		else:
-			name = ' '+(line[:line.find(':')].lstrip())
-			line = " - "+line[line.find(':')+2:]
+			if ':' in line:
+				name = (line[:line.find(':')].lstrip())
+				line = ": "+line[line.find(':')+2:]
+			else:
+				name = line[1:]
+				line = ": "+nodesc
 
 		todos.append(Todo(file, i+1, name, rank, line))
+
 	return sorted(todos, key=lambda x: x.rank)
 
 TABSIZE	= 2
@@ -62,7 +79,6 @@ def LoadFL(fl) -> list[str]:
 		fs=f.readlines()
 	for line in fs:
 		line = line.strip()
-		#TODO(4) Todo on txt: make todos.py's load from .txt add .txt's todoes to file's todo list
 		if not line:
 			continue
 		if line[0] == "/":
@@ -75,6 +91,9 @@ def LoadFL(fl) -> list[str]:
 # main
 def Main() -> int:
 	files = get("").list
+	if len(files) == 0:
+		if exists("todos.txt"):
+			files = ["todos.txt"]
 	fls:list[str] = []
 
 
@@ -93,18 +112,18 @@ def Main() -> int:
 
 	f = todos[0].frm
 	print(f"{f}:")
-	if get("--nd").exists:
+	if get("--sd").exists:
 		for td in todos:
 			if td.frm != f:
 				f = td.frm
 				print(f"\n{f}:")
-			print(TAB+f"{td.rank}{AT}{td.at} {td.name}")
+			print(TAB+f"{rankcolor.get(td.rank,'')}{td.rank}{RGB(255,255,255)}{AT}{td.at} "+str(td))
 	else:
 		for td in todos:
 			if td.frm != f:
 				f = td.frm
 				print(f"\n{f}:")
-			print(TAB+f"{td.rank}{AT}{td.at} "+str(td))
+			print(TAB+f"{rankcolor.get(td.rank,'')}{td.rank}{RGB(255,255,255)}{AT}{td.at} {td.name}")
 	return 0
 
 
