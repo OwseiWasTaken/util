@@ -1597,8 +1597,9 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"""
 
 
 def TrimSpaces(string: str) -> str:
-  while " " in string:
-    string = string.replace(" ", " ")
+  #""+"" so no \t
+  while " "+" " in string:
+    string = string.replace(" "+" ", " ")
   return string
 
 
