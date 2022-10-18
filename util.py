@@ -2818,6 +2818,8 @@ class Matriz:
 
 
 	def __repr__(this):
+		return f"{this.size}, {this.conc}"
+	def __str__(this):
 		return '\n'.join([str(i) for i in this.items]).replace(',', "")
 
 
