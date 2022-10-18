@@ -43,7 +43,7 @@ from re import compile as comreg
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 # https://regex101.com/
 # find wrong tab indentation (n/n+2)
-# ^\(\t\)[^\t]*\n\(\1\)\t\t[^\t]
+# ^\(\t\+\)[^\t]\+\n\(\1\)\t\t[^\t]\+
 # )LINKS
 
 # (LICENSE
