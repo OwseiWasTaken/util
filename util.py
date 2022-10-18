@@ -42,6 +42,8 @@ from re import compile as comreg
 # (LINKS
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
 # https://regex101.com/
+# find wrong tab indentation (n/n+2)
+# ^\(\t\)[^\t]*\n\(\1\)\t\t[^\t]
 # )LINKS
 
 # (LICENSE
@@ -67,10 +69,8 @@ from re import compile as comreg
 if OS in ["linux", "darwin"]:
 	try:
 		import gi
-
 		gi.require_version("Notify", "0.7")
 		from gi.repository import Notify
-
 		def notify(title="", body=""):
 			Notify.init("util.py/func/notify/init")
 			Notify.Notification.new(str(title), str(body)).show()
@@ -2787,18 +2787,18 @@ class Matriz:
 		return ""
 
 	def __add__(this, m):
-			assert not this.CanAdd(m) # print func's return for explanation
-			return Matriz(this.size,
+		assert not this.CanAdd(m) # print func's return for explanation
+		return Matriz(this.size,
+			list(
 				list(
-					list(
-						this.items[i][x]+m.items[i][x]
-						for x in r(this.items[i])
-					) for i in r(this.items)
-				)
+					this.items[i][x]+m.items[i][x]
+					for x in r(this.items[i])
+				) for i in r(this.items)
 			)
+		)
 
 	def __sub__(this, m):
-			assert not this.CanAdd(m) # print func's return for explanation
+		assert not this.CanAdd(m) # print func's return for explanation
 			return Matriz(this.size,
 				list(
 					list(
@@ -2819,6 +2819,7 @@ class Matriz:
 
 	def __repr__(this):
 		return f"{this.size}, {this.conc}"
+
 	def __str__(this):
 		return '\n'.join([str(i) for i in this.items]).replace(',', "")
 
