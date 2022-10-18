@@ -2332,7 +2332,7 @@ def rpos(y, x): # relative pos func
 		ret += "\x1B[%i%c" % (abs(y), ver)
 	return ret
 	# \x1b[<Value> prefix
-	# up Y:  A
+	# up Y:	 A
 	# down Y: B
 	# forward X: C
 	# backward X:D
@@ -2746,6 +2746,7 @@ def root(num, cao) -> float:
 
 class Matriz:
 	def __init__(this, size, items):
+		this.size = size
 		this.lines = size[0]
 		this.collums = size[1]
 		if len(items) == this.lines:
@@ -2777,26 +2778,48 @@ class Matriz:
 		sc = c*(d*h-e*g)
 		return sa-sb+sc
 
-	def CanAdd(this, m:Matrix)
+	def CanAdd(this, m) -> str:
+		# maybe try to make input into matriz?
+		if type(m) != type(this):
+			return "Input is not of type util.Matriz"
+		if this.size != m.size:
+			return "Size of input doesn't match size of Matriz"
+		# no error
+		return ""
 
-	def __add__(this, m:Matrix):
-			assert this.CanAdd(m)
-			return
+	def __add__(this, m):
+			assert not this.CanAdd(m) # print func's return for explanation
+			return (
+				list(
+					list(
+						this.items[i][x]+m.items[i][x]
+						for x in r(this.items[i])
+					) for i in r(this.items)
+				)
+			)
 
-def MatrixCanAdd(M1:list[list[int]], M2:list[list[int]]) -> bool:
-	return len(M1[0]) == len(M2[0]) and len(M1) == len(M2)
+	def __sub__(this, m):
+			assert not this.CanAdd(m) # print func's return for explanation
+			return (
+				list(
+					list(
+						this.items[i][x]-m.items[i][x]
+						for x in r(this.items[i])
+					) for i in r(this.items)
+				)
+			)
 
-def MatrixAdd(M1:list[list[int]], M2:list[list[int]]) -> list[list[int]]:
-	assert MatrixCanAdd(M1, M2), f"Can't add matrixes {M1} {M2}"
-	nm = []
-	for i in r(M1):
-		nm.append([])
-		for j in r(M1[0]):
-			nm[i].append(M1[i][j]+M2[i][j])
-	return nm
+	def __repr__(this):
+		return f"{this.items}"
 
-
-
+#m1 = Matriz((3, 3), [0, 3, 0, 3, 0, 0, 0, 0, 3])
+#m2 = Matriz((3, 3), [3, 0, 0, 0, 0, 3, 0, 3, 0])
+#m3 = Matriz((2, 2), [3, 4, 2, 4])
+#m4 = [4, 3, 5, 3]
+#if not (e:=m1.CanAdd(m4)):
+#	print(m1+m4)
+#else:
+#	print(e)
 
 # )STUFF
 # (CONSTS
