@@ -2749,19 +2749,18 @@ class Matriz:
 		this.size = size
 		this.lines = size[0]
 		this.collums = size[1]
-		if len(items) == this.lines:
-			this.items = items
-		elif len(items) == this.lines*this.collums:
-			this.items = []
-			j = -1
-			for i in r(items):
-				if not i%this.collums:
-					j+=1
-					this.items.append([])
-				this.items[j].append(items[i])
-		this.conc = []
-		for i in this.items:
-			this.conc+=i
+		items = FastSingleList(items)
+		this.conc = items
+
+		assert this.lines*this.collums == len(items)
+		# make into list[tuple[int]]?
+		this.items:list[list[int, float]] = []
+		j = -1
+		for i in r(items):
+			if not i%this.collums:
+				j+=1
+				this.items.append([])
+			this.items[j].append(items[i])
 
 	def GetDet(this) -> int:
 		if this.lines == 3 and this.collums == 3:
@@ -2789,7 +2788,7 @@ class Matriz:
 
 	def __add__(this, m):
 			assert not this.CanAdd(m) # print func's return for explanation
-			return (
+			return Matriz(this.size,
 				list(
 					list(
 						this.items[i][x]+m.items[i][x]
@@ -2800,7 +2799,7 @@ class Matriz:
 
 	def __sub__(this, m):
 			assert not this.CanAdd(m) # print func's return for explanation
-			return (
+			return Matriz(this.size,
 				list(
 					list(
 						this.items[i][x]-m.items[i][x]
@@ -2809,17 +2808,18 @@ class Matriz:
 				)
 			)
 
-	def __repr__(this):
-		return f"{this.items}"
+	def __mul__(this, m):
+		#https://stackoverflow.com/questions/10508021/matrix-multiplication-in-pure-python
+		zip_b = list(zip(*m.items))
+		return Matriz((this.collums,this.lines),
+			[[sum(ele_a*ele_b for ele_a, ele_b in zip(row_a, col_b))
+				for col_b in zip_b]
+				for row_a in this.items])
 
-#m1 = Matriz((3, 3), [0, 3, 0, 3, 0, 0, 0, 0, 3])
-#m2 = Matriz((3, 3), [3, 0, 0, 0, 0, 3, 0, 3, 0])
-#m3 = Matriz((2, 2), [3, 4, 2, 4])
-#m4 = [4, 3, 5, 3]
-#if not (e:=m1.CanAdd(m4)):
-#	print(m1+m4)
-#else:
-#	print(e)
+
+	def __repr__(this):
+		return '\n'.join([str(i) for i in this.items]).replace(',', "")
+
 
 # )STUFF
 # (CONSTS
