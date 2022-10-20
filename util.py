@@ -2799,14 +2799,14 @@ class Matriz:
 
 	def __sub__(this, m):
 		assert not this.CanAdd(m) # print func's return for explanation
-			return Matriz(this.size,
+		return Matriz(this.size,
+			list(
 				list(
-					list(
-						this.items[i][x]-m.items[i][x]
-						for x in r(this.items[i])
-					) for i in r(this.items)
-				)
+					this.items[i][x]-m.items[i][x]
+					for x in r(this.items[i])
+				) for i in r(this.items)
 			)
+		)
 
 	def __mul__(this, m):
 		#https://stackoverflow.com/questions/10508021/matrix-multiplication-in-pure-python
@@ -2823,6 +2823,28 @@ class Matriz:
 	def __str__(this):
 		return '\n'.join([str(i) for i in this.items]).replace(',', "")
 
+def GetIndvDiff(lst:list[float], tavg:int) -> float:
+	cavg = average(lst)
+	# avg diff
+	davg = cavg-tavg
+	return round(davg/len(lst), 4)*10
+
+def AvgRand(size: int, vmin:int, vmax:int, tavg:float) -> list[int]:
+	ret = []
+	for i in r(size):
+		ret.append(rint(vmin, vmax))
+	indd = GetIndvDiff(ret, tavg)
+	for i in r(size):
+		ret[i] += (0.5 * round((ret[i]-indd)/5))
+		if ret[i] > vmax:
+			ret[i%len(ret)] += ret[i]-vmax
+			ret[i] = vmax
+		if ret[i] < vmin:
+			ret[i%len(ret)] += ret[i]+vmin
+			ret[i] = vmin
+	indd = GetIndvDiff(ret, tavg)
+	print(indd)
+	return ret
 
 # )STUFF
 # (CONSTS
