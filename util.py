@@ -1180,7 +1180,7 @@ def mid(
 ) -> str:
 	iterate = LenToBe - len(msg)
 	if iterate < 0:
-		if type(msg) in [float, int]:
+		if type(msg) in (float, int):
 			return round(msg, iterate)
 		return msg[:iterate]
 
@@ -1510,7 +1510,7 @@ class get:
 		for index in r(gets):
 			if gets[index] == "":
 				gets[index] = None
-			if type(gets[index]) != NoneType and gets[index][0] != "-":
+			if type(gets[index]) == str and gets[index][0] != "-":
 				gets[index] = "-" + gets[index]
 		# get normal args if no custom
 		if argvs == None:
@@ -2784,7 +2784,7 @@ class Matriz:
 		return sa-sb+sc
 
 	def __add__(this, m):
-		if type(m) != type(this):
+		if type(m) != Self:
 			return Matriz(
 				list(list(this.items[l][c]+m for c in r(this.collums)) for l in
 					r(this.lines)), this.size
@@ -2800,7 +2800,7 @@ class Matriz:
 		)
 
 	def __sub__(this, m):
-		if type(m) != type(this):
+		if type(m) != Self:
 			return Matriz(
 				list(list(this.items[l][c]-m for c in r(this.collums)) for l in
 					r(this.lines)), this.size
