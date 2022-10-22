@@ -2744,8 +2744,14 @@ def RngNoDRep(size, min, max) -> list[int]:
 def root(num, cao) -> float:
 	return num ** (1/cao)
 
+_Matriz_priorize_square = True
 class Matriz:
-	def __init__(this, size, items):
+	def __init__(this, items:list[int], size:tuple[int, int]=(0, 0)):
+		if size == (0, 0):
+			if _Matriz_priorize_square and not (s:=root(len(items), 2)).is_integer():
+				size = (s, s)
+			else:
+				size = (1, len(items))
 		this.size = size
 		this.lines = size[0]
 		this.collums = size[1]
@@ -2777,44 +2783,59 @@ class Matriz:
 		sc = c*(d*h-e*g)
 		return sa-sb+sc
 
-	def CanAdd(this, m) -> str:
-		# maybe try to make input into matriz?
-		if type(m) != type(this):
-			return "Input is not of type util.Matriz"
-		if this.size != m.size:
-			return "Size of input doesn't match size of Matriz"
-		# no error
-		return ""
-
 	def __add__(this, m):
-		assert not this.CanAdd(m) # print func's return for explanation
-		return Matriz(this.size,
+		if type(m) != type(this):
+			return Matriz(
+				list(list(this.items[l][c]+m for c in r(this.collums)) for l in
+					r(this.lines)), this.size
+			)
+		assert this.size == m.size, "Size of input doesn't match size of Matriz"
+		return Matriz(
 			list(
 				list(
 					this.items[i][x]+m.items[i][x]
 					for x in r(this.items[i])
 				) for i in r(this.items)
-			)
+			), this.size,
 		)
 
 	def __sub__(this, m):
-		assert not this.CanAdd(m) # print func's return for explanation
-		return Matriz(this.size,
+		if type(m) != type(this):
+			return Matriz(
+				list(list(this.items[l][c]-m for c in r(this.collums)) for l in
+					r(this.lines)), this.size
+				)
+		assert this.size == m.size, "Size of input doesn't match size of Matriz"
+		return Matriz(
 			list(
 				list(
 					this.items[i][x]-m.items[i][x]
 					for x in r(this.items[i])
 				) for i in r(this.items)
-			)
+			), this.size
 		)
 
 	def __mul__(this, m):
+		if type(m) != type(m):
+			return (
+				list(list(this.items[l][c]*m for c in r(this.collums)) for l in
+					r(this.lines)),
+			this.size
+			)
 		#https://stackoverflow.com/questions/10508021/matrix-multiplication-in-pure-python
 		zip_b = list(zip(*m.items))
-		return Matriz((this.collums,this.lines),
+		return Matriz(
 			[[sum(ele_a*ele_b for ele_a, ele_b in zip(row_a, col_b))
 				for col_b in zip_b]
-				for row_a in this.items])
+				for row_a in this.items],
+				(this.collums,m.collums)
+			)
+
+	def __div__(this, m):
+		if type(m) != type(m):
+			return (this.size,
+				list(list(this.items[l][c]/m for c in r(this.collums)) for l in r(this.lines))
+			)
 
 
 	def __repr__(this):
@@ -2822,6 +2843,11 @@ class Matriz:
 
 	def __str__(this):
 		return '\n'.join([str(i) for i in this.items]).replace(',', "")
+
+a = Matriz([1, 4, 4, 1])
+b = Matriz([4, 1, 1, 4])
+
+
 
 def GetIndvDiff(lst:list[float], tavg:int) -> float:
 	cavg = average(lst)
@@ -2843,7 +2869,6 @@ def AvgRand(size: int, vmin:int, vmax:int, tavg:float) -> list[int]:
 			ret[i%len(ret)] += ret[i]+vmin
 			ret[i] = vmin
 	indd = GetIndvDiff(ret, tavg)
-	print(indd)
 	return ret
 
 # )STUFF
