@@ -2844,10 +2844,6 @@ class Matriz:
 	def __str__(this):
 		return '\n'.join([str(i) for i in this.items]).replace(',', "")
 
-a = Matriz([1, 4, 4, 1])
-b = Matriz([4, 1, 1, 4])
-
-
 
 def GetIndvDiff(lst:list[float], tavg:int) -> float:
 	cavg = average(lst)
