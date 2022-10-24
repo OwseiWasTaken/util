@@ -1,4 +1,4 @@
-#! /usr/bin/python3.10
+#! /usr/local/bin/python3.11
 
 # (IMPORTS
 
@@ -2867,6 +2867,92 @@ def AvgRand(size: int, vmin:int, vmax:int, tavg:float) -> list[int]:
 	indd = GetIndvDiff(ret, tavg)
 	return ret
 
+def ehx(x):
+	return hex(x)[2:]
+
+# slot: [type(1b), [size(1b)], content(4b..sizeb)]
+
+#int8
+#string # size defined by slot
+#<int8> array
+#<multi> array # type defined in slot
+
+#customVar.BDPType = <type>
+#_nBCTIs.append(foo)
+
+_nBDP_rInterps = []
+_nBDP_wInterps = {}
+# pre types
+class nBDP:
+	def __init__(this, name:str, rIn=_nBDP_rInterps, wIn=_nBDP_wInterps):
+		this.cursor = -1
+		with open(f"/home/{USER}/nBDP/{name}", "rb") as f:
+			file = f.read()
+		this.file = file
+		#print(this.file)
+
+	# pack -> tuple[type, *cont]
+	# array = [*pack]
+	def SealArray(this, inpt) -> list[tuple[Any]]:
+		ret = []
+		for i in inpt:
+			s = _nBDP_wInterps[type(i)](i)
+			ret.append(s)
+		return ret
+
+	def OpenArray(this, inpt) -> list[tuple[Any]]:
+		ret = []
+		for i in inpt:
+			s = _nBDP_rInterps[i[0]](*i[1:])
+			ret.append(s)
+		return ret
+
+	def PackToStr(this, pack):
+		pass
+
+	#reader
+	def ThisChar(this):
+		return this.file[this.cursor]
+
+	def NextChar(this):
+		this.cursor+=1
+		return this.file[this.cursor]
+
+	#int
+	def ReadInt(size, *cont):
+		x = 0
+		for i in r(size):
+			# +=*9 = =*10
+			x+=x*9+cont[i]
+		return x
+
+	def WriteInt(cont) -> tuple[int, int, int]:
+		x = 0
+		c = cont
+		while c:
+			x+=1
+			c = c>>1
+		if d:=x%8:
+			x+=8-d
+		# if len == 8: i -> i8?
+		return 0, x//8, cont
+
+	#str
+	def ReadStr(size, cont):
+		x = ""
+		for i in r(size):
+			x+=chr(cont[i])
+		return x
+
+	def WriteStr(string) -> tuple[int, int, list[int]]:
+		assert len(string) < 256
+		return 1,len(string),[ord(i) for i in string]
+
+# don't run rInterps out of nBDP
+_nBDP_rInterps = [nBDP.ReadInt, nBDP.ReadStr]
+_nBDP_wInterps = {int:nBDP.WriteInt, str:nBDP.WriteStr}
+
+
 # )STUFF
 # (CONSTS
 
@@ -2895,6 +2981,7 @@ FuncType = type(nop)
 NoneType = type(None)
 ClassType = type(_c)
 MethodType = type(_c._m)
+TypeType = type(type(USER))
 
 # )CONSTS
 
@@ -2903,8 +2990,13 @@ if __name__ == "__main__":
 		exec(i)
 	for i in get("-e", "").list:
 		print(eval(i))
-	# adapt cmd.py (lib) for this
+	# adapt cmd.py (lib) for this (for window)
 	if get("--cli").exists:
 		# python3.10, interactive mode, util lib imported
-		ss("python3.10 -i -m util")
+		ss("python3.11 -i -m util")
 #!END
+
+x=nBDP("cum")
+out = x.SealArray([1, 4, 6, "hi"])
+print(out)
+print(x.OpenArray(out))
