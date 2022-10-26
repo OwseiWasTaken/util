@@ -2883,46 +2883,19 @@ class nBDP:
 			file = f.read()
 		this.file = file
 
-	# seal packs into array
-	#@timeit
-	def SealArray(this, inpt) -> list[tuple[Any]]:
-		# get interpt from dict (by type) and exec with value
-		l = SingleList([this.writers[type(i)](i) for i in inpt])
-		for i in l:
-			assert (0 <= i) and (i <= 255), "nBDP.SealArray: a byte is bigger than 255"
-		return l
-
-	def ResetReader(this, fl):
-		this.cursor = 0
-		_file = this.file
-		this.file = fl
-		return _file
-
-	def WriteFile(this, cont):
-		a = this.SealArray(cont)
-		with open(this.filename, "wb") as f:
-			file = f.write(bytes(a))
-
-	#@timeit
-	def OpenArray(this, inpt) -> list[tuple[Any]]:
-		_file = this.ResetReader(inpt)
-		ret = []
-		while this.This != -1:
-			if IsBitSet(this.This, 7):
-				ret+=this.ReadArray()
-			else:
-				ret.append( this.readers[this.This](this) )
-		this.file = _file
-		return ret
-
-	#@timeit
-	def ReadFile(this):
-		ret = []
-		while this.This != -1:
-			ret.append( this.readers[this.This](this) )
-		return ret
 
 	#reader
+	def ResetReader(this, fl):
+		c = this.cursor
+		this.cursor = 0
+		f = this.file
+		this.file = fl
+		return f, c
+
+	def RelaunchReader(this, f, c):
+		this.file = f
+		this.c = c
+
 	@property
 	def This(this) -> str:
 		if len(this.file) == this.cursor+1:
@@ -2936,6 +2909,58 @@ class nBDP:
 		this.cursor+=1
 		return this.file[this.cursor]
 
+	#packs
+	#@timeit
+	def SealArray(this, inpt) -> list[tuple[Any]]:
+		# get interpt from dict (by type) and exec with value
+		l = SingleList([this.writers[type(i)](i) for i in inpt])
+		for i in l:
+			assert (0 <= i) and (i <= 255), "nBDP.SealArray: a byte is bigger than 255"
+		return l
+
+	#@timeit
+	def OpenArray(this, inpt) -> list[tuple[Any]]:
+		# reset reader
+		f, c = this.ResetReader(inpt)
+		# read input as file
+		t = this.ReadFile()
+		# relaunch reader
+		this.RelaunchReader(f, c)
+		return t
+
+	#file
+	#@timeit
+	def ReadFile(this):
+		ret = []
+		while this.This != -1:
+			if IsBitSet(this.This, 7):
+				ret.append(this.ReadArray())
+			else:
+				ret.append( this.readers[this.This](this) )
+				this.Next()
+		return ret
+
+	def WriteFile(this, cont):
+		a = this.SealArray(cont)
+		with open(this.filename, "wb") as f:
+			file = f.write(bytes(a))
+
+	#special types
+	def ReadArray(this):
+		t = this.This&0b01111111
+		s = this.Next()
+		ret = []
+		if t:
+			rdr = this.readers[t]
+			for i in r(s):
+				ret.append( rdr(this) )
+		else:
+			for i in r(s):
+				ret.append( this.readers[this.This](this) )
+				this.Next()
+		return ret
+
+	#types
 	def ReadInt(this):
 		size = this.Next()
 		x = 0
@@ -2943,7 +2968,6 @@ class nBDP:
 			# +=*9 = =*10
 			x+=x*255+this.Next()
 		# readers must always go to the next byte
-		this.Next()
 		return x
 
 	#int
@@ -2977,7 +3001,6 @@ class nBDP:
 		for i in r(size):
 			x+=chr(this.Next())
 		# readers must always go to the next byte
-		this.Next()
 		return x
 
 	def WriteStr(string) -> tuple[int, int, int]:
@@ -3032,5 +3055,5 @@ if __name__ == "__main__":
 
 x = nBDP("test")
 #i37, i99
-out = x.ReadFile()
+out = x.OpenArray([1, 1, 80, 0b10000001, 2, 1, 37, 1, 99])
 print(out)
