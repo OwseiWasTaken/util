@@ -782,7 +782,7 @@ def count(end: int, start: int = 0, jmp: int = 1) -> Iterator[int]:
 def timeit(func):
 	def wrapper(*args, **kwargs) -> float:
 		timer = tm()
-		func(args, **kwargs)
+		func(*args, **kwargs)
 		return round(tm() - timer, 6)
 
 	return wrapper
@@ -929,7 +929,8 @@ class BDP:
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
 		this.IgnoreDataSize = IgnoreDataSize
-		assert USER == "USER", "can't get username"
+		#wtf was i thinking!
+		#assert USER == "USER", "can't get username"
 		if OS == "linux": # gud os
 			if ss("cd ~/BDP"):
 				cmd("mkdir ~/BDP/")
@@ -2856,10 +2857,11 @@ def AvgRand(size: int, vmin:int, vmax:int, tavg:float) -> list[int]:
 def ehx(x):
 	return hex(x)[2:]
 
-# slot: [type(1b), [size(1b)], content(4b..sizeb)]
+# pack: [type(1b), content(?b)]
+# array = [*pack]
 
-#int8
-#string # size defined by slot
+#int # size defined by pack
+#string # size defined by pack
 #<int8> array
 #<multi> array # type defined in slot
 
@@ -2881,9 +2883,8 @@ class nBDP:
 			file = f.read()
 		this.file = file
 
-	# pack -> tuple[type, *content]
-	# array = [*pack]
 	# seal packs into array
+	#@timeit
 	def SealArray(this, inpt) -> list[tuple[Any]]:
 		# get interpt from dict (by type) and exec with value
 		l = SingleList([this.writers[type(i)](i) for i in inpt])
@@ -2891,22 +2892,30 @@ class nBDP:
 			assert (0 <= i) and (i <= 255), "nBDP.SealArray: a byte is bigger than 255"
 		return l
 
+	def ResetReader(this, fl):
+		this.cursor = 0
+		_file = this.file
+		this.file = fl
+		return _file
+
 	def WriteFile(this, cont):
 		a = this.SealArray(cont)
 		with open(this.filename, "wb") as f:
 			file = f.write(bytes(a))
 
-	# open non-file array
+	#@timeit
 	def OpenArray(this, inpt) -> list[tuple[Any]]:
-		_file = this.file
-		this.file = inpt
-		this.cursor = 0
+		_file = this.ResetReader(inpt)
 		ret = []
 		while this.This != -1:
-			ret.append( this.readers[this.This](this) )
+			if IsBitSet(this.This, 7):
+				ret+=this.ReadArray()
+			else:
+				ret.append( this.readers[this.This](this) )
 		this.file = _file
 		return ret
 
+	#@timeit
 	def ReadFile(this):
 		ret = []
 		while this.This != -1:
@@ -3021,6 +3030,7 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-#x = nBDP("test")
-#x.WriteFile(["hello", 127])
-# print(x.ReadFile())
+x = nBDP("test")
+#i37, i99
+out = x.ReadFile()
+print(out)
