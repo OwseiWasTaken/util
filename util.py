@@ -2869,24 +2869,34 @@ def ehx(x):
 nBDPrI = []
 nBDPwI = {}
 # pre types
+#TODO: write file
 class nBDP:
 	def __init__(this, name:str, rIn=nBDPrI, wIn=nBDPwI):
 		this.readers = rIn
 		this.writers = wIn
 		this.cursor = 0
-		with open(f"/home/{USER}/nBDP/{name}", "rb") as f:
+		this.filename = f"/home/{USER}/nBDP/{name}"
+		with open(this.filename, "rb") as f:
 			#int array
 			file = f.read()
 		this.file = file
 
-	# pack -> tuple[type, *cont]
+	# pack -> tuple[type, *content]
 	# array = [*pack]
+	# seal packs into array
 	def SealArray(this, inpt) -> list[tuple[Any]]:
 		# get interpt from dict (by type) and exec with value
-		l = ([this.writers[type(i)](i) for i in inpt])
-		#print(l)
-		return SingleList(l)
+		l = SingleList([this.writers[type(i)](i) for i in inpt])
+		for i in l:
+			assert (0 <= i) and (i <= 255), "nBDP.SealArray: a byte is bigger than 255"
+		return l
 
+	def WriteFile(this, cont):
+		a = this.SealArray(cont)
+		with open(this.filename, "wb") as f:
+			file = f.write(bytes(a))
+
+	# open non-file array
 	def OpenArray(this, inpt) -> list[tuple[Any]]:
 		_file = this.file
 		this.file = inpt
@@ -2963,7 +2973,7 @@ class nBDP:
 
 	def WriteStr(string) -> tuple[int, int, int]:
 		assert len(string) < 256
-		return len(nBDPrI),len(string),*[ord(i) for i in string]
+		return 2,len(string),*[ord(i) for i in string]
 
 # )STUFF
 # (CONSTS
@@ -2981,8 +2991,8 @@ class _c:
 	def _m(this):
 		pass
 
-nBDPrI = [nop, nBDP.ReadInt, nBDP.ReadStr]
-nBDPwI = {int:nBDP.WriteInt, str:nBDP.WriteStr}
+nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr]
+nBDPwI.update({int:nBDP.WriteInt, str:nBDP.WriteStr})
 
 try:
 	USER = _getlogin()
@@ -3011,8 +3021,6 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-x=nBDP("cum", nBDPrI, nBDPwI)
-
-out = x.SealArray([65541])
-print(out)
-print(x.OpenArray(out))
+#x = nBDP("test")
+#x.WriteFile(["hello", 127])
+# print(x.ReadFile())
