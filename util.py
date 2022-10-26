@@ -2626,6 +2626,8 @@ def KelvinToFahrenheit(Kelvin: float) -> float:
 KTF = KelvinToFahrenheit
 
 
+# search dict's path
+# dict[a][b][c] and so on
 def OnDict(
 	xmp: dict[Any, Any], path: Iterable[Any], AlwaysReturnFoud=False
 ) -> tuple[int, Any]:
@@ -2633,30 +2635,18 @@ def OnDict(
 	rn = xmp
 	path = path.copy()	# de-ref []Path
 	r = 0
-	if len(path) > 0:
+	while len(path) > 0:
 		next = path.pop(0)
-		if next in rn.keys():
-			rn = xmp[next]
-		else:
-			if AlwaysReturnFoud:
-				return r, rn
-			return r, None
-	while len(path):
-		r += 1
-		next = path.pop(0)
-		# found next goto in tree
-		if next in rn.keys():
+		r+=1
+		if (type(rn) == dict) and next in rn.keys():
 			rn = rn[next]
-		# path was broken
 		else:
 			if AlwaysReturnFoud:
 				return r, rn
 			return r, None
-		if len(path) == 0:
-			return 0, rn
-	else:
-		return 0, rn
-
+	if AlwaysReturnFoud:
+		return r, rn
+	return r, None
 
 _dprint_titles_to_color = {
 	"ERROR": RGB(0xFF, 0, 0),
@@ -2876,11 +2866,13 @@ def ehx(x):
 #customVar.BDPType = <type>
 #_nBCTIs.append(foo)
 
-_nBDP_rInterps = []
-_nBDP_wInterps = {}
+nBDPrI = []
+nBDPwI = {}
 # pre types
 class nBDP:
-	def __init__(this, name:str, rIn=_nBDP_rInterps, wIn=_nBDP_wInterps):
+	def __init__(this, name:str, rIn=nBDPrI, wIn=nBDPwI):
+		this.readers = rIn
+		this.writers = wIn
 		this.cursor = 0
 		with open(f"/home/{USER}/nBDP/{name}", "rb") as f:
 			#int array
@@ -2891,24 +2883,24 @@ class nBDP:
 	# array = [*pack]
 	def SealArray(this, inpt) -> list[tuple[Any]]:
 		# get interpt from dict (by type) and exec with value
-		return SingleList([_nBDP_wInterps[type(i)](i) for i in inpt])
+		l = ([this.writers[type(i)](i) for i in inpt])
+		#print(l)
+		return SingleList(l)
 
 	def OpenArray(this, inpt) -> list[tuple[Any]]:
 		_file = this.file
 		this.file = inpt
+		this.cursor = 0
 		ret = []
-		for i in inpt:
-			print(this.This)
-			s = _nBDP_rInterps[i[0]](*i[1:])
-			ret.append(s)
+		while this.This != -1:
+			ret.append( this.readers[this.This](this) )
+		this.file = _file
 		return ret
 
 	def ReadFile(this):
 		ret = []
 		while this.This != -1:
-			print(this.This)
-			interp = _nBDP_rInterps[this.This]
-			ret.append(interp(this))
+			ret.append( this.readers[this.This](this) )
 		return ret
 
 	#reader
@@ -2925,27 +2917,38 @@ class nBDP:
 		this.cursor+=1
 		return this.file[this.cursor]
 
-	#int
 	def ReadInt(this):
 		size = this.Next()
 		x = 0
 		for i in r(size):
 			# +=*9 = =*10
-			x+=x*9+this.Next()
+			x+=x*255+this.Next()
 		# readers must always go to the next byte
 		this.Next()
 		return x
 
+	#int
 	def WriteInt(cont) -> tuple[int, int, int]:
+		# set size
 		x = 0
 		c = cont
 		while c:
 			x+=1
 			c = c>>1
 		if d:=x%8:
-			x+=8-d
-		# if len == 8: i -> i8?
-		return [1, x//8, cont]
+			d = 8-d
+			x+=d
+		# // to easly keep int
+		x=x//8
+		# set bytes
+		# invert
+		rs = ('0'*d) + bin(cont)[2:]
+		ret = []
+		for i in r(x):
+			i*=8
+			z = rs[i:i+8]
+			ret.append(int(z, 2))
+		return 1, x, *ret
 
 	#str
 	def ReadStr(this):
@@ -2960,7 +2963,7 @@ class nBDP:
 
 	def WriteStr(string) -> tuple[int, int, int]:
 		assert len(string) < 256
-		return [2,len(string),*[ord(i) for i in string]]
+		return len(nBDPrI),len(string),*[ord(i) for i in string]
 
 # )STUFF
 # (CONSTS
@@ -2978,8 +2981,8 @@ class _c:
 	def _m(this):
 		pass
 
-_nBDP_rInterps = [nop, nBDP.ReadInt, nBDP.ReadStr]
-_nBDP_wInterps = {int:nBDP.WriteInt, str:nBDP.WriteStr}
+nBDPrI = [nop, nBDP.ReadInt, nBDP.ReadStr]
+nBDPwI = {int:nBDP.WriteInt, str:nBDP.WriteStr}
 
 try:
 	USER = _getlogin()
@@ -3008,8 +3011,8 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-x=nBDP("cum")
-print(x.ReadFile())
-#out = x.SealArray([1, 4, 6, "hi"])
-#print(out)
-#print(x.OpenArray(out))
+x=nBDP("cum", nBDPrI, nBDPwI)
+
+out = x.SealArray([65541])
+print(out)
+print(x.OpenArray(out))
