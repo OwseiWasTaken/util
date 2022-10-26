@@ -2938,15 +2938,15 @@ class nBDP:
 		return 0, x//8, cont
 
 	#str
-	def ReadStr(size, cont):
+	def ReadStr(size, *cont):
 		x = ""
 		for i in r(size):
 			x+=chr(cont[i])
 		return x
 
-	def WriteStr(string) -> tuple[int, int, list[int]]:
+	def WriteStr(string) -> tuple[int, int, int]:
 		assert len(string) < 256
-		return 1,len(string),[ord(i) for i in string]
+		return 1,len(string),*[ord(i) for i in string]
 
 # don't run rInterps out of nBDP
 _nBDP_rInterps = [nBDP.ReadInt, nBDP.ReadStr]
