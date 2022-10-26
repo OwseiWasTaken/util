@@ -2956,12 +2956,14 @@ class nBDP:
 				ret.append( rdr(this) )
 		else:
 			for i in r(s):
-				ret.append( this.readers[this.This](this) )
+				# go to type (from array size)
 				this.Next()
+				ret.append( this.readers[this.This](this) )
 		return ret
 
 	#types
 	def ReadInt(this):
+		# get size (from type)
 		size = this.Next()
 		x = 0
 		for i in r(size):
@@ -2971,7 +2973,7 @@ class nBDP:
 		return x
 
 	#int
-	def WriteInt(cont) -> tuple[int, int, int]:
+	def WriteInt(cont):
 		# set size
 		x = 0
 		c = cont
@@ -3003,7 +3005,7 @@ class nBDP:
 		# readers must always go to the next byte
 		return x
 
-	def WriteStr(string) -> tuple[int, int, int]:
+	def WriteStr(string):
 		assert len(string) < 256
 		return 2,len(string),*[ord(i) for i in string]
 
@@ -3055,5 +3057,5 @@ if __name__ == "__main__":
 
 x = nBDP("test")
 #i37, i99
-out = x.OpenArray([1, 1, 80, 0b10000001, 2, 1, 37, 1, 99])
+out = x.OpenArray([1, 1, 80, 0b10000000, 2, 1, 1, 37, 1, 1, 99])
 print(out)
