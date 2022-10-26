@@ -451,7 +451,7 @@ def prints(*msg, sep=", "):
 	sout.write(f"{msg}")
 
 
-def sprint(msg):  # simple print
+def sprint(msg):	# simple print
 	sout.write(msg)
 
 
@@ -480,8 +480,8 @@ class COLOR:
 	magenta = "\033[0;35m"
 	blue = "\033[0;36m"
 	white = "\033[0;37m"
-	GreenishCyan = "\033[0;96m"  # kinda too complex ()
-	orange = "\033[0;33m"  # bruh
+	GreenishCyan = "\033[0;96m"	 # kinda too complex ()
+	orange = "\033[0;33m"	 # bruh
 	# orange			=			"\033[0;91m" # bruh
 	cyan = "\033[0;34m"
 
@@ -572,7 +572,7 @@ def StrToMs(ipts: str) -> int:
 
 def bhask(a, b, c) -> tuple[int]:
 	delt = ((b ** 2) - (4 * a * c)) ** 0.5
-	b *= -1  # can be anyware before x,y
+	b *= -1	 # can be anyware before x,y
 	a *= 2
 	x = (b + delt) / a
 	y = (b - delt) / a
@@ -809,13 +809,13 @@ class BDP:
 		# c:/users/{USER}/BDP
 		this.autoload = autoload
 		this.IgnoreDataSize = IgnoreDataSize
-		if OS == "linux":  # gud os
+		if OS == "linux":	 # gud os
 			if not exists(f"/home/{USER}/BDP"):
 				ss("mkdir /BDP/")
 			if not name.startswith("~/BDP/"):
 				name = f"~/BDP/{name}"
 			name = name.replace("//", "/").replace("~", f"/home/{USER}")
-		elif OS == "windows":  # bad os
+		elif OS == "windows":	 # bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
 				ss(f"mkdir C:/users/{USER}/BDP/")
 			if not name.startswith(f"~/BDP/"):
@@ -862,7 +862,7 @@ if you can help, please contribute at https://OwseiWasTaken/util.py'
 			return f"name: {this.name}\n{COLOR.orange}data too big to display\n\
 BDP(IgnoreDataSize=True) to ignore size{COLOR.nc}"
 
-	def __call__(this, data=None) -> any:  # this breaks occasionaly
+	def __call__(this, data=None) -> any:	 # this breaks occasionaly
 
 		if data == None and this.data == None:
 			return this.load()
@@ -1138,7 +1138,7 @@ def graphics(*intst: list[int], UnderAvg=COLOR.red, OverAvg=COLOR.green) -> list
 	t = {6: "⠿", 5: "⠟", 4: "⠏", 3: "⠇", 2: "⠃", 1: "⠄", 0: " "}
 	for ManyIndex in r(manys):
 		many = manys[ManyIndex]
-		scale = round(many / (1 / 6))  # one for each braille ball
+		scale = round(many / (1 / 6))	 # one for each braille ball
 		fulls = scale // 6
 		l = f"{ManyIndex} : "
 
@@ -1189,7 +1189,7 @@ def DrawHLine(x, XTo, y, Color, char=" "):
 	len = (XTo - x) + 1
 	sout.write(
 		ps + Color + char * len + COLOR.nc + char * (_x - len)
-	)  # if optmizing change XTO -> msg lenght
+	)	 # if optmizing change XTO -> msg lenght
 	sout.flush()
 
 
@@ -1263,14 +1263,14 @@ class TextBox:
 			if GetCh() == "[":	# escape code
 				ch = GetCh()
 
-				if ch == "C" and this.CURSOR < len(this.STRING) - 2:  # go right
+				if ch == "C" and this.CURSOR < len(this.STRING) - 2:	# go right
 					this.CURSOR += 1
-				elif ch == "D" and this.CURSOR > -1:  # go left
+				elif ch == "D" and this.CURSOR > -1:	# go left
 					this.CURSOR -= 1
 
-				elif ch == "3":  # may be del
+				elif ch == "3":	 # may be del
 					ch = GetCh()
-					if ch == "~":  # delete key
+					if ch == "~":	 # delete key
 						this.STRING = list(this.STRING)
 						this.STRING.pop(this.CURSOR + 1)
 						this.STRING = "".join(this.STRING) + " "
@@ -1280,7 +1280,7 @@ class TextBox:
 				# if ch == '~': # insert key
 				# pass
 
-		elif char == "\x7f" and this.CURSOR > -1:  # backspace
+		elif char == "\x7f" and this.CURSOR > -1:	 # backspace
 			if (
 				not this.CURSOR == len(this.STRING) - 2 or not this.IsOverChar
 			):	# "normal" delete
@@ -1288,7 +1288,7 @@ class TextBox:
 				this.STRING.pop(this.CURSOR)
 				this.STRING = "".join(this.STRING) + " "
 				this.CURSOR -= 1
-			else:  # if @ $ of line del not backspace
+			else:	 # if @ $ of line del not backspace
 				this.STRING = list(this.STRING)
 				this.STRING[this.CURSOR + 1] = " "
 				this.STRING = "".join(this.STRING)
@@ -1313,7 +1313,7 @@ class TextBox:
 				else:
 					this.STRING = ReplaceStringByIndex(
 						this.STRING, this.CURSOR, char
-					)  # create or replace
+					)	 # create or replace
 
 	@property
 	def IsOverChar(this) -> bool:
@@ -1336,7 +1336,7 @@ class TextBox:
 
 			# chars.append(repr(char))
 
-			if char == "\r":  # <Enter> to send
+			if char == "\r":	# <Enter> to send
 				return this.STRING.strip()
 
 			this.SetChar(char)
@@ -1414,7 +1414,7 @@ class get:
 		other: list[str] = []
 		this.argvs
 
-		for indicator in SingleList(this.gets):  # list
+		for indicator in SingleList(this.gets):	 # list
 
 			other = [*other, *this.argvs.get(indicator, [])]
 		if other:
@@ -1422,7 +1422,7 @@ class get:
 		else:
 			ret.append([])
 
-		if other:  # MakeBool
+		if other:	 # MakeBool
 			if other[0] in "-+0987654321":
 				ret.append(not not eval(other[0]))
 			else:
@@ -1430,13 +1430,13 @@ class get:
 		else:
 			ret.append(None)
 
-		if other and other[0] in "-+987654321":  # MakeEval
+		if other and other[0] in "-+987654321":	 # MakeEval
 			ret.append(eval(other[0]))
 		else:
 			ret.append(None)
 
 		al = list(this.argvs.keys())
-		ret.append(any([x in al for x in this.gets]))  # exists
+		ret.append(any([x in al for x in this.gets]))	 # exists
 
 		return ret
 
@@ -1448,7 +1448,7 @@ def _RmDirLinux(dir: str) -> int:
 	return ss(f"rm -rf {dir}")
 
 
-def _RmDirWindows(dir: str) -> int:  # not sure if works
+def _RmDirWindows(dir: str) -> int:	 # not sure if works
 	for file in ls(dir):
 		if file.endswith("/"):
 			_RmDirWindows(file)
@@ -1473,8 +1473,8 @@ if you can help, please contribute at https://OwseiWasTaken/util.py"
 
 
 def TrimSpaces(string: str) -> str:
-	while "  " in string:
-		string = string.replace("  ", " ")
+	while "	 " in string:
+		string = string.replace("	 ", " ")
 	return string
 
 
@@ -1597,15 +1597,15 @@ class window:
 		# def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 		# DrawBottom, DrawTop, DrawLeft, DrawRigh
 		x1, y1 = this.MinX - 1, this.MinY - 1
-		x2, y2 = this.MaxX, this.MaxY + 1  # may do -1 @ MaxX
+		x2, y2 = this.MaxX, this.MaxY + 1	 # may do -1 @ MaxX
 		if this.DrawBottom:
-			DrawHLine(x1, x2, y2, Color)  # bottom
+			DrawHLine(x1, x2, y2, Color)	# bottom
 		if this.DrawTop:
-			DrawHLine(x1, x2, y1, Color)  # top
+			DrawHLine(x1, x2, y1, Color)	# top
 		if this.DrawLeft:
-			DrawVLine(y1, y2, x1, Color)  # left
+			DrawVLine(y1, y2, x1, Color)	# left
 		if this.DrawRight:
-			DrawVLine(y1, y2, x2, Color)  # right
+			DrawVLine(y1, y2, x2, Color)	# right
 
 		# DtrawRectangle(
 		#	(this.MinX-1, this.MinY-1),
@@ -1859,7 +1859,7 @@ class _AdvTextBox:
 			if this.cursor:
 				this.cursor -= 1
 
-	@staticmethod  # decorator for custom status bar
+	@staticmethod	 # decorator for custom status bar
 	def ShowMode(this):
 		if this.InNormalMode:
 			t = SetColorMode(COLOR.green, "7") + " normal "
@@ -1965,7 +1965,7 @@ def RGB(r, g, b):
 
 def ArgvAssing(
 	args: list[str],
-) -> dict[Union[None, str], list[str]]:  # omfg it's so much better
+) -> dict[Union[None, str], list[str]]:	 # omfg it's so much better
 	# if args is [-d 4 u -4 f -d j /-3 -f]
 	# ret will be {
 	# items that start with '-' will be a key, the rest wil be values
@@ -1999,9 +1999,9 @@ def DoAll(lst, func):
 	return [func(l) for l in lst]
 
 
-class Filer:  # plain text, for UseFile file check BDP (in this lib)
+class Filer:	# plain text, for UseFile file check BDP (in this lib)
 	def __init__(this, name, contents=[], ReadIfExistis=True):
-		name = abspath(name)  # absolute path
+		name = abspath(name)	# absolute path
 		if ReadIfExistis and exists(name):
 			with open(name, "r") as file:
 				lines = file.readlines()
@@ -2051,7 +2051,7 @@ def IsLeapYear(year=None):
 		return False
 
 
-def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc):  # debug print
+def debugp(name, text, OuterColor=COLOR.nc, InnerColor=COLOR.nc):	 # debug print
 	sout.write(
 		f"{OuterColor}[{InnerColor}{name.upper()}{OuterColor}]{COLOR.nc} {text}\n"
 	)
@@ -2154,7 +2154,7 @@ def BinarySearch(lst: list[int], item: list[int]) -> int:
 	"""
 	Returns the position of item in the list if found, -1 otherwise.
 	List must be sorted.
-	"""  # is returing -1 a good idea?, it doesn't seem like one
+	"""	 # is returing -1 a good idea?, it doesn't seem like one
 	left = 0
 	right = len(lst) - 1
 	while left <= right:
