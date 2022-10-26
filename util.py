@@ -41,6 +41,7 @@ from re import compile as comreg
 # )IMPORTS
 # (LINKS
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
+#https://rszalski.github.io/magicmethods/
 # https://regex101.com/
 # find wrong tab indentation (n/n+2)
 # ^\(\t\+\)[^\t]\+\n\(\1\)\t\t[^\t]\+
@@ -66,6 +67,7 @@ from re import compile as comreg
 
 # (STUFF
 # OS especific func
+sfo = sin.fileno()	# get fd
 if OS in ["linux", "darwin"]:
 	try:
 		import gi
@@ -84,7 +86,6 @@ if OS in ["linux", "darwin"]:
 	from termios import tcgetattr, tcsetattr, TCSADRAIN, TIOCGWINSZ
 	from fcntl import ioctl
 
-	sfo = sin.fileno()	# get fd
 	OldSettings = tcgetattr(sfo)	# get fd state
 
 	def GetCh(charlen=1) -> str:
@@ -118,7 +119,6 @@ else: # (prolly) windows
 if you want to help, make your commit at https://github.com/OwseiWasTaken/uti.py"""
 		)
 
-	sfo = None
 
 	def GetCh() -> str:
 		char = msvcrt.getch()
@@ -413,7 +413,7 @@ class rng:
 
 	def get(this) -> list[int]:
 		if this.norep:
-			return RngNoRepetition(this.mn, this.mx, this.size)
+			return RngNoRep(this.mn, this.mx, this.size)
 		else:
 			this.var = []
 			for _ in range(this.size):
@@ -1063,10 +1063,8 @@ def NoDecimal(number: float) -> int:
 
 def number(num: str) -> int | float | None:
 	if all([char in "0987654321+-.*/" for char in num]):
-		try:
-			return eval(num)
-		except SyntaxError:
-			return "SE"
+		# no try/exc
+		return eval(num)
 	return None
 
 
@@ -1199,14 +1197,13 @@ def IsIterable(obj: object) -> bool:
 	return type(obj) in Iterables
 
 
+#flatten list
 def SingleList(args: list[Any]) -> list[Any]:
 	ret: list[Any] = []
 	for thing in args:
 		if IsIterable(thing):
-			# recourciveness (it that a word?)
-			RetA = SingleList(thing)
-			# set ret as *ret and *RetA
-			ret = [*ret, *RetA]
+			# cat ret with result
+			ret = [*ret, *SingleList(thing)]
 		else:
 			ret.append(thing)
 	return ret
@@ -2598,36 +2595,35 @@ def FootToMeter(foot: float) -> float:
 	return foot * 0.3048
 
 
-class Temperature:
-	def CelsiusToFahrenheit(Celsius: float) -> float:
-		return Celsius * 1.8 + 32
+def CelsiusToFahrenheit(Celsius: float) -> float:
+	return Celsius * 1.8 + 32
 
-	CTF = CelsiusToFahrenheit
+CTF = CelsiusToFahrenheit
 
-	def FahrenheitToCelsius(Fahrenheit: float) -> float:
-		return (Fahrenheit - 32) / 1.8
+def FahrenheitToCelsius(Fahrenheit: float) -> float:
+	return (Fahrenheit - 32) / 1.8
 
-	FTC = FahrenheitToCelsius
+FTC = FahrenheitToCelsius
 
-	def CelsiusToKelvin(Celsius: float) -> float:
-		return Celsius - 273.15
+def CelsiusToKelvin(Celsius: float) -> float:
+	return Celsius - 273.15
 
-	CTK = CelsiusToKelvin
+CTK = CelsiusToKelvin
 
-	def KelvinToCelsius(Kelvin: float) -> float:
-		return Kelvin + 273.15
+def KelvinToCelsius(Kelvin: float) -> float:
+	return Kelvin + 273.15
 
-	KTC = KelvinToCelsius
+KTC = KelvinToCelsius
 
-	def FahrenheitToKelvin(Fahrenheit: float) -> float:
-		return CelsiusToKelvin(FahrenheitToCelsius(Fahrenheit))
+def FahrenheitToKelvin(Fahrenheit: float) -> float:
+	return CelsiusToKelvin(FahrenheitToCelsius(Fahrenheit))
 
-	FTK = FahrenheitToKelvin
+FTK = FahrenheitToKelvin
 
-	def KelvinToFahrenheit(Kelvin: float) -> float:
-		return CelsiusToFahrenheit(KelvinToFahrenheit(Kelvin))
+def KelvinToFahrenheit(Kelvin: float) -> float:
+	return CelsiusToFahrenheit(KelvinToFahrenheit(Kelvin))
 
-	KTF = KelvinToFahrenheit
+KTF = KelvinToFahrenheit
 
 
 def OnDict(
@@ -2885,45 +2881,59 @@ _nBDP_wInterps = {}
 # pre types
 class nBDP:
 	def __init__(this, name:str, rIn=_nBDP_rInterps, wIn=_nBDP_wInterps):
-		this.cursor = -1
+		this.cursor = 0
 		with open(f"/home/{USER}/nBDP/{name}", "rb") as f:
+			#int array
 			file = f.read()
 		this.file = file
-		#print(this.file)
 
 	# pack -> tuple[type, *cont]
 	# array = [*pack]
 	def SealArray(this, inpt) -> list[tuple[Any]]:
-		ret = []
-		for i in inpt:
-			s = _nBDP_wInterps[type(i)](i)
-			ret.append(s)
-		return ret
+		# get interpt from dict (by type) and exec with value
+		return SingleList([_nBDP_wInterps[type(i)](i) for i in inpt])
 
 	def OpenArray(this, inpt) -> list[tuple[Any]]:
+		_file = this.file
+		this.file = inpt
 		ret = []
 		for i in inpt:
+			print(this.This)
 			s = _nBDP_rInterps[i[0]](*i[1:])
 			ret.append(s)
 		return ret
 
-	def PackToStr(this, pack):
-		pass
+	def ReadFile(this):
+		ret = []
+		while this.This != -1:
+			print(this.This)
+			interp = _nBDP_rInterps[this.This]
+			ret.append(interp(this))
+		return ret
 
 	#reader
-	def ThisChar(this):
+	@property
+	def This(this) -> str:
+		if len(this.file) == this.cursor+1:
+			return -1
 		return this.file[this.cursor]
 
-	def NextChar(this):
+	#@property
+	def Next(this) -> str:
+		if len(this.file) == this.cursor+1:
+			return -1
 		this.cursor+=1
 		return this.file[this.cursor]
 
 	#int
-	def ReadInt(size, *cont):
+	def ReadInt(this):
+		size = this.Next()
 		x = 0
 		for i in r(size):
 			# +=*9 = =*10
-			x+=x*9+cont[i]
+			x+=x*9+this.Next()
+		# readers must always go to the next byte
+		this.Next()
 		return x
 
 	def WriteInt(cont) -> tuple[int, int, int]:
@@ -2935,26 +2945,26 @@ class nBDP:
 		if d:=x%8:
 			x+=8-d
 		# if len == 8: i -> i8?
-		return 0, x//8, cont
+		return [1, x//8, cont]
 
 	#str
-	def ReadStr(size, *cont):
+	def ReadStr(this):
 		x = ""
+		size = this.Next()
+		assert size < 256
 		for i in r(size):
-			x+=chr(cont[i])
+			x+=chr(this.Next())
+		# readers must always go to the next byte
+		this.Next()
 		return x
 
 	def WriteStr(string) -> tuple[int, int, int]:
 		assert len(string) < 256
-		return 1,len(string),*[ord(i) for i in string]
-
-# don't run rInterps out of nBDP
-_nBDP_rInterps = [nBDP.ReadInt, nBDP.ReadStr]
-_nBDP_wInterps = {int:nBDP.WriteInt, str:nBDP.WriteStr}
-
+		return [2,len(string),*[ord(i) for i in string]]
 
 # )STUFF
 # (CONSTS
+
 
 class WrongClosingName(Exception):
 	pass
@@ -2968,12 +2978,14 @@ class _c:
 	def _m(this):
 		pass
 
+_nBDP_rInterps = [nop, nBDP.ReadInt, nBDP.ReadStr]
+_nBDP_wInterps = {int:nBDP.WriteInt, str:nBDP.WriteStr}
 
 try:
 	USER = _getlogin()
 except FileNotFoundError:
 	USER = "USER"
-Iterables = (list, set, frozenset)
+Iterables = (list, set, frozenset, tuple)
 ARGV = ArgvAssing(argv[1:])
 Infinity = float("inf")
 
@@ -2997,6 +3009,7 @@ if __name__ == "__main__":
 #!END
 
 x=nBDP("cum")
-out = x.SealArray([1, 4, 6, "hi"])
-print(out)
-print(x.OpenArray(out))
+print(x.ReadFile())
+#out = x.SealArray([1, 4, 6, "hi"])
+#print(out)
+#print(x.OpenArray(out))
