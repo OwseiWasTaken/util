@@ -2870,12 +2870,14 @@ def ehx(x):
 
 nBDPrI = []
 nBDPwI = {}
+nBDPTtI = {}
 # pre types
 #TODO: write file
 class nBDP:
-	def __init__(this, name:str, rIn=nBDPrI, wIn=nBDPwI):
+	def __init__(this, name:str, rIn=nBDPrI, wIn=nBDPwI, TtI=nBDPTtI):
 		this.readers = rIn
 		this.writers = wIn
+		this.TtI = TtI
 		this.cursor = 0
 		this.filename = f"/home/{USER}/nBDP/{name}"
 		with open(this.filename, "rb") as f:
@@ -2913,7 +2915,7 @@ class nBDP:
 	#@timeit
 	def SealArray(this, inpt) -> list[tuple[Any]]:
 		# get interpt from dict (by type) and exec with value
-		l = SingleList([this.writers[type(i)](i) for i in inpt])
+		l = SingleList([this.writers[type(i)](this, i) for i in inpt])
 		for i in l:
 			assert (0 <= i) and (i <= 255), "nBDP.SealArray: a byte is bigger than 255"
 		return l
@@ -2962,6 +2964,7 @@ class nBDP:
 		return ret
 
 	#types
+	#int
 	def ReadInt(this):
 		# get size (from type)
 		size = this.Next()
@@ -2972,8 +2975,7 @@ class nBDP:
 		# readers must always go to the next byte
 		return x
 
-	#int
-	def WriteInt(cont):
+	def WriteInt(this, cont):
 		# set size
 		x = 0
 		c = cont
@@ -3005,13 +3007,38 @@ class nBDP:
 		# readers must always go to the next byte
 		return x
 
-	def WriteStr(string):
+	def WriteStr(this, string):
 		assert len(string) < 256
 		return 2,len(string),*[ord(i) for i in string]
 
+	#list
+	def WriteList(this, cont):
+		if not len(cont):
+			return 0b10000000, 0
+		assert len(cont) < 256
+		st = True
+		lt = type(cont[0])
+		for i in cont:
+			if lt != type(i):
+				st=False
+		l = []
+		t = type(None)
+		if st:
+			t = 0b10000000 | this.TtI[lt]
+			w = this.writers[lt]
+			# 1: sine typed array
+			# no SingleList so len works
+			l = [w(this, i)[1:] for i in cont]
+		else:
+			# no SingleList so len works
+			l = [this.writers[type(i)](this, i) for i in cont]
+			t = 0b10000000
+
+		return t, len(l), l
+
+
 # )STUFF
 # (CONSTS
-
 
 class WrongClosingName(Exception):
 	pass
@@ -3026,7 +3053,8 @@ class _c:
 		pass
 
 nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr]
-nBDPwI.update({int:nBDP.WriteInt, str:nBDP.WriteStr})
+nBDPwI.update({int:nBDP.WriteInt, str:nBDP.WriteStr, list:nBDP.WriteList})
+nBDPTtI.update({int:1, str:2})
 
 try:
 	USER = _getlogin()
@@ -3055,7 +3083,9 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-x = nBDP("test")
+#x = nBDP("test")
 #i37, i99
-out = x.OpenArray([1, 1, 80, 0b10000000, 2, 1, 1, 37, 1, 1, 99])
-print(out)
+#out = x.OpenArray([1, 1, 80, 128, 2, 1, 1, 37, 1, 1, 99])
+#i = (x.SealArray(["hi", [37, 99]]))
+#print(i)
+#print(x.OpenArray(i))
