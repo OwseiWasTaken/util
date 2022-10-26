@@ -51,7 +51,7 @@ from re import compile as comreg
 # this is a general python lib that aims to make fast (fast as in "python fast")
 # usefull functions, classes and constants, such as IsBitSet, get class, USER
 # const and other things
-# 2022, by Pedro "owsei" Romero Manse
+# 2022, by "owsei"
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
