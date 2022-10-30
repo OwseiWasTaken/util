@@ -932,16 +932,16 @@ class BDP:
 		#wtf was i thinking!
 		#assert USER == "USER", "can't get username"
 		if OS == "linux": # gud os
-			if ss("cd ~/BDP"):
-				cmd("mkdir ~/BDP/")
-			if not name.startswith("~/BDP/"):
-				name = f"~/BDP/{name}"
+			if ss(f"cd {USER}/BDP"):
+				cmd(f"mkdir {USER}/BDP/")
+			if not name.startswith(f"{USER}/BDP/"):
+				name = f"{USER}/BDP/{name}"
 			#name = name.replace("//", "/").replace("~", f"/home/{USER}")
 		elif OS == "windows": # bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
 				cmd(f"mkdir C:/users/{USER}/BDP/")
-			if not name.startswith(f"~/BDP/"):
-				name = f"~/BDP/{name}"
+			if not name.startswith(f"{USER}/BDP/"):
+				name = f"{USER}/BDP/{name}"
 				# / -> \ && ~ -> C:\...
 			name = name.replace("/", "\\").replace("~", f"C:\\\\users\\{USER}")
 		else:
@@ -1338,132 +1338,6 @@ def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 
 def ReplaceStringByIndex(string: str, index: int, result: str) -> str:
 	return string[:index] + result + string[index + 1 :]
-
-
-class TextBox:
-	def __init__(this, StartString="", DrawRect=True, DoClear=True):
-		this.DrawRect = DrawRect
-		this.DoClear = DoClear
-		this.PrintableChars = " óíáàéç!\"#$%&'()*+, -./0123456789:;<=>\
-?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_´`abcdefghijklmnopqrstuvwxyz{|}~"
-		this.HSize, this.VSize = GetTerminalSize()
-		this.TextSixe = this.HSize - 2
-		this.STRING = StartString
-		this.CURSOR = len(this.STRING) - 1
-		this.STRING += " " * (this.TextSixe - len(this.STRING))
-
-	def __call__(this) -> str:
-		return this.loop()
-
-	def IsPrintableChar(this, char) -> bool:
-		return char in this.PrintableChars
-
-	def SetChar(this, char):
-		if char == "\x1b":	# escape key
-			if GetCh() == "[":	# escape code
-				ch = GetCh()
-
-				if ch == "C" and this.CURSOR < len(this.STRING) - 2:	# go right
-					this.CURSOR += 1
-				elif ch == "D" and this.CURSOR > -1:	# go left
-					this.CURSOR -= 1
-
-				elif ch == "3": # may be del
-					ch = GetCh()
-					if ch == "~": # delete key
-						this.STRING = list(this.STRING)
-						this.STRING.pop(this.CURSOR + 1)
-						this.STRING = "".join(this.STRING) + " "
-
-				# elif ch == '2': # may be insert
-				# ch = GetCh()
-				# if ch == '~': # insert key
-				# pass
-
-		elif char == "\x7f" and this.CURSOR > -1: # backspace
-			if (
-				not this.CURSOR == len(this.STRING) - 2 or not this.IsOverChar
-			):	# "normal" delete
-				this.STRING = list(this.STRING)
-				this.STRING.pop(this.CURSOR)
-				this.STRING = "".join(this.STRING) + " "
-				this.CURSOR -= 1
-			else: # if @ $ of line del not backspace
-				this.STRING = list(this.STRING)
-				this.STRING[this.CURSOR + 1] = " "
-				this.STRING = "".join(this.STRING)
-
-		else:
-			if this.IsPrintableChar(char):
-				if (
-					this.CURSOR < len(this.STRING) - 2
-				):	# if char is going to be added move cursor right
-					this.CURSOR += 1
-				if this.CURSOR >= len(
-					this.STRING
-				):	# if cursor if off screen get it back
-					this.CURSOR -= 1
-
-				# strg = this.STRING.strip()
-				# if len(strg)-1 <= this.CURSOR:
-				# strg = this.STRING[:this.CURSOR]
-				# ClearLine(1)
-				# stdout.write(f"{pos(1, 1)}{repr(strg)}{len(strg)-1 == this.CURSOR}|{len(strg)}|{this.CURSOR}")
-				# if not len(strg)-1 == this.CURSOR: # place not replace
-
-				if (
-					this.STRING[-1] == " "
-				):	# move string right to add char to CURSOR's spot
-					this.STRING = list(this.STRING)[:-1]
-					this.STRING.insert(this.CURSOR, char)
-					this.STRING = "".join(this.STRING)
-				else:
-					this.STRING = ReplaceStringByIndex(
-						this.STRING, this.CURSOR, char
-					) # create or replace
-
-	@property
-	def IsOverChar(this) -> bool:
-		return this.STRING[this.CURSOR + 1] != " "
-
-	def loop(this) -> str:
-		ShowCursor()
-		if this.DoClear:
-			clear()
-		if this.DrawRect:
-			DrawRectangle(
-				(this.VSize - 3, 0),
-				(this.VSize, this.HSize - 1),
-				BkColor=COLOR.BkBrGrey,
-			)
-		char = ""
-
-		# chars = []
-
-		while True:
-			# stdout.write(pos(this.VSize-1, this.HSize))
-
-			# chars.append(repr(char))
-
-			if char == "\r":	# <Enter> to send
-				return this.STRING.strip()
-
-			this.SetChar(char)
-
-			# stdout.write(f"{pos(1, 1)}{chars}")
-			# ClearLine(4)
-			# stdout.write(f"{pos(4, 4)} \
-
-			if this.DrawRect:
-				stdout.write(f"{pos(this.VSize-2, 1)}{COLOR.nc}{this.STRING}")
-				stdout.write(pos(this.VSize - 2, this.CURSOR + 2))
-			else:
-				stdout.write(f"{pos(this.VSize-1, 1)}{COLOR.nc}{this.STRING}")
-				stdout.write(pos(this.VSize - 1, this.CURSOR + 2))
-
-			stdout.flush()
-
-			char = GetCh()
 
 
 def GetPrimeFactors(number: int) -> list[int]:
