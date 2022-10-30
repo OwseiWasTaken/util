@@ -2914,7 +2914,7 @@ class nBDP:
 	#packs
 	#@timeit
 	def SealArray(this, inpt:list[Any]) -> list[int]:
-		assert type(inpt) == list
+		assert type(inpt) in Iterables
 		# get interpt from dict (by type) and exec with value
 		l = SingleList([this.writers[type(i)](this, i) for i in inpt])
 		for i in l:
@@ -2923,7 +2923,7 @@ class nBDP:
 
 	#@timeit
 	def OpenArray(this, inpt:list[int]) -> list[Any]:
-		assert type(inpt) == list
+		assert type(inpt) in Iterables
 		# reset reader
 		f, c = this.ResetReader(inpt)
 		# read input as file
@@ -3104,8 +3104,7 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-x = nBDP("test")
-#i37, i99
-out = (x.SealArray([True, True, False]))
-print(out)
-print(x.OpenArray(out))
+#x = nBDP("test")
+#out = (x.SealArray([True, True, False]))
+#print(out)
+#print(x.OpenArray(out))
