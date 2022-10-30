@@ -2887,14 +2887,14 @@ class nBDP:
 
 
 	#reader
-	def ResetReader(this, fl):
+	def ResetReader(this, fl:bytes) -> tuple[bytes, int]:
 		c = this.cursor
 		this.cursor = 0
 		f = this.file
 		this.file = fl
 		return f, c
 
-	def RelaunchReader(this, f, c):
+	def RelaunchReader(this, f:bytes, c:int):
 		this.file = f
 		this.c = c
 
@@ -2913,7 +2913,8 @@ class nBDP:
 
 	#packs
 	#@timeit
-	def SealArray(this, inpt) -> list[tuple[Any]]:
+	def SealArray(this, inpt:list[Any]) -> list[int]:
+		assert type(inpt) == list
 		# get interpt from dict (by type) and exec with value
 		l = SingleList([this.writers[type(i)](this, i) for i in inpt])
 		for i in l:
@@ -2921,7 +2922,8 @@ class nBDP:
 		return l
 
 	#@timeit
-	def OpenArray(this, inpt) -> list[tuple[Any]]:
+	def OpenArray(this, inpt:list[int]) -> list[Any]:
+		assert type(inpt) == list
 		# reset reader
 		f, c = this.ResetReader(inpt)
 		# read input as file
@@ -2932,7 +2934,7 @@ class nBDP:
 
 	#file
 	#@timeit
-	def ReadFile(this):
+	def ReadFile(this) -> list[Any]:
 		ret = []
 		while this.This != -1:
 			if IsBitSet(this.This, 7):
@@ -3036,6 +3038,12 @@ class nBDP:
 
 		return t, len(l), l
 
+	#bool
+	def ReadBool(this):
+		return not not this.Next()
+	def WriteBool(this, cont):
+		return 5, +cont
+
 
 # )STUFF
 # (CONSTS
@@ -3052,8 +3060,21 @@ class _c:
 	def _m(this):
 		pass
 
-nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr]
-nBDPwI.update({int:nBDP.WriteInt, str:nBDP.WriteStr, list:nBDP.WriteList})
+# nBDP id -> type
+#	1 int
+# 2 str
+# 3 double (float)
+# 4 dict
+# 5 bool
+# 128+t = array<t>
+#
+
+nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr, nop, nop, nBDP.ReadBool]
+nBDPwI.update( {
+	int:nBDP.WriteInt, str:nBDP.WriteStr,
+	list:nBDP.WriteList, dict:nop,
+	float:nop, bool:nBDP.WriteBool,
+})
 nBDPTtI.update({int:1, str:2})
 
 try:
@@ -3083,9 +3104,8 @@ if __name__ == "__main__":
 		ss("python3.11 -i -m util")
 #!END
 
-#x = nBDP("test")
+x = nBDP("test")
 #i37, i99
-#out = x.OpenArray([1, 1, 80, 128, 2, 1, 1, 37, 1, 1, 99])
-#i = (x.SealArray(["hi", [37, 99]]))
-#print(i)
-#print(x.OpenArray(i))
+out = (x.SealArray([True, True, False]))
+print(out)
+print(x.OpenArray(out))
