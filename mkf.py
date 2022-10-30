@@ -1,4 +1,4 @@
-#! /usr/bin/python3.10
+#! /usr/local/bin/python3.11
 # imports
 from util import *
 
