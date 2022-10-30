@@ -2913,7 +2913,7 @@ class nBDP:
 
 	#packs
 	#@timeit
-	def SealArray(this, inpt:list[Any]) -> list[int]:
+	def SealArray(this, *inpt:Iterable[Any]) -> list[int]:
 		assert type(inpt) in Iterables
 		# get interpt from dict (by type) and exec with value
 		l = SingleList([this.writers[type(i)](this, i) for i in inpt])
@@ -2922,7 +2922,7 @@ class nBDP:
 		return l
 
 	#@timeit
-	def OpenArray(this, inpt:list[int]) -> list[Any]:
+	def OpenArray(this, *inpt:Iterable[int]) -> list[Any]:
 		assert type(inpt) in Iterables
 		# reset reader
 		f, c = this.ResetReader(inpt)
@@ -2953,6 +2953,10 @@ class nBDP:
 	def ReadArray(this):
 		t = this.This&0b01111111
 		s = this.Next()
+		# if len 0, nothing to do
+		if s == 0:
+			this.Next()
+			return []
 		ret = []
 		if t:
 			rdr = this.readers[t]
