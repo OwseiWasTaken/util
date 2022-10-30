@@ -2573,3 +2573,7 @@ if __name__ == "__main__":
 		# python3.10, interactive mode, util lib imported
 		ss("python3.11 -i -m util")
 #!END
+# float -> bin
+#bin(struct.unpack('!I', struct.pack('!f', num))[0])[2:].zfill(32)
+# bin -> float
+# struct.unpack('!f',struct.pack('!I', int(binary, 2)))[0] # not tested yet
