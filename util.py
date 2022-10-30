@@ -932,16 +932,16 @@ class BDP:
 		#wtf was i thinking!
 		#assert USER == "USER", "can't get username"
 		if OS == "linux": # gud os
-			if ss(f"cd {USER}/BDP"):
-				cmd(f"mkdir {USER}/BDP/")
-			if not name.startswith(f"{USER}/BDP/"):
-				name = f"{USER}/BDP/{name}"
+			if ss(f"cd /home/{USER}/BDP"):
+				cmd(f"mkdir /home/{USER}/BDP/")
+			if not name.startswith(f"/home/{USER}/BDP/"):
+				name = f"/home/{USER}/BDP/{name}"
 			#name = name.replace("//", "/").replace("~", f"/home/{USER}")
 		elif OS == "windows": # bad os
 			if not exists(f"C:/users/{USER}/BDP/"):
 				cmd(f"mkdir C:/users/{USER}/BDP/")
-			if not name.startswith(f"{USER}/BDP/"):
-				name = f"{USER}/BDP/{name}"
+			if not name.startswith(f"/home/{USER}/BDP/"):
+				name = f"/home/{USER}/BDP/{name}"
 				# / -> \ && ~ -> C:\...
 			name = name.replace("/", "\\").replace("~", f"C:\\\\users\\{USER}")
 		else:
@@ -1338,7 +1338,6 @@ def DrawRectangle(UpLeft, DownRight, BkColor, DoubleWidthVerticalLine=False):
 
 def ReplaceStringByIndex(string: str, index: int, result: str) -> str:
 	return string[:index] + result + string[index + 1 :]
-
 
 def GetPrimeFactors(number: int) -> list[int]:
 	factor = 2
