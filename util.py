@@ -42,7 +42,7 @@ from re import compile as comreg
 # )IMPORTS
 # (LINKS
 # __ class methods https://www.tutorialsteacher.com/python/magic-methods-in-python
-#https://rszalski.github.io/magicmethods/
+# https://rszalski.github.io/magicmethods/
 # https://regex101.com/
 # find wrong tab indentation (n/n+2)
 # ^\(\t\+\)[^\t]\+\n\(\1\)\t\t[^\t]\+
@@ -381,7 +381,6 @@ def GetType(msg: str, t:type) -> Any:
 	except ValueError:
 		return GetType(msg, t)
 
-
 def IsPrime(ask: int) -> bool:
 	msg = False
 	if ask > 1:
@@ -455,7 +454,7 @@ def print(*msg, end="\n", sep=", "):
 	# make msg
 	# sep.join(...) então os argumentos são "juntados" com o sep
 	# [str(m) for m in msg] para transformar todo valor em string
-	msg = sep.join([str(m) for m in msg])
+	msg = sep.join(map(str, msg))
 
 	# write msg
 	# escrever a msg no terminal
@@ -468,7 +467,7 @@ def print(*msg, end="\n", sep=", "):
 
 def printl(*msg, sep=", "):
 	# make msg
-	msg = sep.join([str(m) for m in msg])
+	msg = sep.join(map(str, msg))
 
 	# write msg
 	stdout.write(f"{msg}")
@@ -479,14 +478,14 @@ def printl(*msg, sep=", "):
 
 def prints(*msg, sep=", "):
 	# make msg
-	msg = sep.join([str(m) for m in msg])
+	msg = sep.join(map(str, msg))
 
 	# write msg
 	stdout.write(f"{msg}")
 
 
 def sprint(msg):	# simple print
-	stdout.write(msg)
+	stdout.write( sep.join(map(str, msg)) )
 
 
 def input(*msg, sep=", "):
@@ -507,10 +506,10 @@ def GCH(TEQ):
 
 class COLOR:
 	nc = "\033[0;00m"
-
-	black = "\033[0;30m"
 	red = "\033[0;31m"
 	green = "\033[0;32m"
+
+	black = "\033[0;30m"
 	magenta = "\033[0;35m"
 	blue = "\033[0;34m"
 	cyan = "\033[0;36m"
