@@ -1373,6 +1373,7 @@ class OStream:
 
 
 class get:
+	#@cache
 	def __init__(this, *gets, argvs=None):
 		# guard for gets formatting
 		if not gets:
@@ -2532,12 +2533,10 @@ class _c:
 # nBDP id -> type
 #	1 int
 # 2 str
-# 3 double (float)
+#
 # 4 dict
 # 5 bool
 # 128+t = array<t>
-#
-
 nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr, nop, nop, nBDP.ReadBool]
 nBDPwI.update( {
 	int:nBDP.WriteInt, str:nBDP.WriteStr,
@@ -2552,6 +2551,7 @@ except FileNotFoundError:
 	USER = "USER"
 Iterables = (list, set, frozenset, tuple)
 ARGV = ArgvAssing(argv[1:])
+argc = len(argv)
 Infinity = float("inf")
 
 FuncType = type(nop)
