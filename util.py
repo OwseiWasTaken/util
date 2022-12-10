@@ -746,7 +746,7 @@ def rchar(size=1) -> str:
 
 
 def GetWLen(msg: str, ln: int, end: str = "\n") -> int:
-	assert type(ln) == int, f"lengh type != int \n {ln} of type {type(ln)} != int"
+	assert type(ln) == int, f"lenght type != int \n {ln} of type {type(ln)} != int"
 	"""
 	will return an str by inputing a string with {msg, end}
 	if the user enters an invalid input the function will restart
