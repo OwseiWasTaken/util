@@ -2116,18 +2116,44 @@ def OnDict(
 	return r, None
 
 _dprint_titles_to_color = {
-	"ERROR": RGB(0xFF, 0, 0),
-	"INFO": RGB(0xFF, 0xFF, 0x0),
-	"CMD": RGB(0xFF, 0xFF, 0xFF),
-	"CHECK": RGB(0, 0xFF, 0),
+	"ERROR": RGB(0xFF, 0x00, 0x00),
+	"INFO" : RGB(0xFF, 0xFF, 0x00),
+	"CMD"  : RGB(0xFF, 0xFF, 0xFF),
+	"CHECK": RGB(0x00, 0xFF, 0x00),
+}
+
+_dprint_titles_to_stream = {
+	"ERROR": stderr,
+	"INFO" : stdout,
+	"CMD"  : stdout,
+	"CHECK": stdout,
 }
 
 def dprint(stream, title: str, text: str):
+	if not stream:
+		stream = _dprint_titles_to_stream.get(title, stdout)
 	if title in _dprint_titles_to_color.keys():
 		title = (
-			"[" + _dprint_titles_to_color[title] + title + RGB(0xFF, 0xFF, 0xFF) + "]"
+				"[" + _dprint_titles_to_color[title] + title + RGB(0xFF, 0xFF, 0xFF) + "]: "
 		)
-	stream.write(title + ": " + text)
+	stream.write(title + text)
+
+def fdprint(*args:list[str]):
+	if len(args) == 1:
+		dprint(None, "INFO", args[0])
+	elif len(args) == 2:
+		dprint(None, args[0], args[1])
+	elif len(args) == 3:
+		prel = args[0]
+		title = args[1]
+		text = args[2]
+		if title in _dprint_titles_to_color.keys():
+			title = (
+					'[' + _dprint_titles_to_color[title] + title + RGB(0xFF, 0xFF, 0xFF) + f" {prel}]: "
+			)
+		print(title, end=text)
+	else:
+		fdprint("ERROR", f"fdprint len:{len(args)}\nfdprint can only handle 1, 2 or 3 args")
 
 def cmd(string: str, **kwargs) -> int:
 	dprint(stderr, "CMD", string + "\n")
@@ -2533,8 +2559,8 @@ class _c:
 # nBDP id -> type
 #	1 int
 # 2 str
-#
-# 4 dict
+# 3
+# 4
 # 5 bool
 # 128+t = array<t>
 nBDPrI += [nop, nBDP.ReadInt, nBDP.ReadStr, nop, nop, nBDP.ReadBool]
@@ -2559,6 +2585,8 @@ NoneType = type(None)
 ClassType = type(_c)
 MethodType = type(_c._m)
 TypeType = type(type(USER))
+
+ThisFileName = argv[0].split('/')[-1]
 
 # )CONSTS
 
