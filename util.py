@@ -2540,6 +2540,21 @@ class nBDP:
 	def WriteBool(this, cont):
 		return 5, +cont
 
+class Stair:
+	def __init__(this, start:int = 0, spacing=' '):
+		this.v = start
+		this.spacing = spacinw
+	def __call__(this, add:int=None):
+		if add:
+			this.v = max(this.v, add)
+		else:
+			return add
+	def reset():
+		this.v = 0
+	def rfill(this, s:str):
+		return s+this.spacing*(this.v-len(s))
+	def lfill(this, s:str):
+		return this.spacing*(this.v-len(s))+s
 
 # )STUFF
 # (CONSTS
